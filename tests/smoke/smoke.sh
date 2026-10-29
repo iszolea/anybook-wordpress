@@ -173,7 +173,7 @@ wp plugin install autoptimize --activate
 for o in autoptimize_js=on autoptimize_js_aggregate=on autoptimize_js_defer_not_aggregate=on autoptimize_js_defer_inline=on; do
 	wp option update "${o%%=*}" "${o#*=}"
 done
-check_speed autoptimize 'wp-content/cache/autoptimize/js/'
+check_speed autoptimize 'wp-content/cache/autoptimize/'
 wp plugin deactivate autoptimize
 wp plugin install litespeed-cache --activate
 for o in optm-js_min=1 optm-js_comb=1 optm-js_comb_ext_inl=1 optm-js_defer=2; do
