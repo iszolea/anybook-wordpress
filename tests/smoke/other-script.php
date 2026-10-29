@@ -9,6 +9,6 @@
 add_action(
 	'wp_enqueue_scripts',
 	function () {
-		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'comment-reply' ); // Not on Autoptimize's default exclusion list, as jQuery is.
 	}
 );
