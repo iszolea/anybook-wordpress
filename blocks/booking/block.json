@@ -1,0 +1,63 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "anybook/booking",
+	"version": "0.1.0",
+	"title": "Anybook booking",
+	"category": "widgets",
+	"icon": "calendar-alt",
+	"description": "Your Anybook booking widget: all your units, one unit, your appointments or one service.",
+	"keywords": [ "booking", "reservation", "appointments", "calendar", "anybook" ],
+	"textdomain": "anybook",
+	"attributes": {
+		"show": {
+			"type": "string",
+			"enum": [ "all", "unit", "appointments", "service" ],
+			"default": "all"
+		},
+		"unit": {
+			"type": "string",
+			"default": ""
+		},
+		"service": {
+			"type": "string",
+			"default": ""
+		},
+		"accent": {
+			"type": "string",
+			"default": ""
+		},
+		"text": {
+			"type": "string",
+			"default": ""
+		},
+		"guestLinks": {
+			"type": "boolean",
+			"default": false
+		},
+		"buttonText": {
+			"type": "string",
+			"default": ""
+		},
+		"detailsHeading": {
+			"type": "string",
+			"default": ""
+		},
+		"datesText": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"className": false,
+		"customClassName": false
+	},
+	"example": {
+		"attributes": {
+			"show": "all"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css"
+}
