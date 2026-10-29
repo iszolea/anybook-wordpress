@@ -76,7 +76,10 @@ class Assets {
 		}
 	}
 
-	/** Called by the renderer: make sure the script is on this page. */
+	/**
+	 * Called by the renderer: make sure the script is on this page. Block themes render the page before the head
+	 * is printed, so then it still goes in the head; after the head (classic themes, widgets) it goes in the footer.
+	 */
 	public static function enqueue() {
 		if ( ! wp_script_is( self::HANDLE, 'registered' ) ) {
 			wp_register_script(
@@ -86,7 +89,7 @@ class Assets {
 				null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- as in register().
 				array(
 					'strategy'  => 'defer',
-					'in_footer' => true,
+					'in_footer' => did_action( 'wp_head' ) > 0,
 				)
 			);
 		}

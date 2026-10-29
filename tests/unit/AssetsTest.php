@@ -33,6 +33,19 @@ class AssetsTest extends TestCase {
 		$this->assertEmpty( $this->scripts['enqueued'] );
 	}
 
+	public function test_rendered_before_the_head_goes_in_the_head() {
+		$this->connect();
+		Functions\when( 'did_action' )->justReturn( 0 ); // A block theme renders the template before wp_head.
+		Assets::enqueue();
+		$this->assertFalse( $this->scripts['registered']['anybook-widget']['args']['in_footer'] );
+	}
+
+	public function test_rendered_after_the_head_goes_in_the_footer() {
+		$this->connect();
+		Assets::enqueue();
+		$this->assertTrue( $this->scripts['registered']['anybook-widget']['args']['in_footer'] );
+	}
+
 	public function test_block_counts_as_the_widget() {
 		$this->viewing( '<!-- wp:anybook/booking /-->' );
 		$this->assertTrue( Assets::view_has_widget() );

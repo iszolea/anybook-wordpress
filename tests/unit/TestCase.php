@@ -93,6 +93,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 				return $t->home . '/wp-admin/' . $path;
 			}
 		);
+		Functions\when( 'did_action' )->justReturn( 1 );
 		Functions\when( 'get_bloginfo' )->justReturn( 'Example & Co' );
 		Functions\when( 'current_user_can' )->alias(
 			function ( $cap ) use ( $t ) {
