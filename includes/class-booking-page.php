@@ -51,6 +51,12 @@ class Booking_Page {
 		return $id > 0 && 'publish' === get_post_status( $id );
 	}
 
+	/** Whether the remembered page was made private, pending or scheduled: the plugin then leaves it alone. */
+	public static function is_held_back() {
+		$id = self::current_id();
+		return $id > 0 && ! in_array( get_post_status( $id ), array( 'draft', 'publish', 'trash' ), true );
+	}
+
 	/**
 	 * Makes the page as a draft, or keeps the one already made as it is (a trashed one is replaced).
 	 *
@@ -85,7 +91,8 @@ class Booking_Page {
 	 */
 	public static function publish( $id ) {
 		$id = (int) $id;
-		if ( $id > 0 && 'publish' !== get_post_status( $id ) && 'trash' !== get_post_status( $id ) ) {
+		// Only a draft: a page the admin made private, pending or scheduled stays as they chose.
+		if ( $id > 0 && 'draft' === get_post_status( $id ) ) {
 			wp_update_post(
 				array(
 					'ID'          => $id,

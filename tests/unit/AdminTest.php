@@ -127,7 +127,7 @@ class AdminTest extends TestCase {
 	}
 
 	public function test_each_notice_code_has_words_and_a_type() {
-		$codes = array( 'connected', 'connected-pending', 'disconnected', 'saved', 'error-cancelled', 'error-not-owner', 'error-not-approved', 'error-other', 'bad-state', 'bad-return', 'bad-code', 'unknown-business', 'unreachable', 'bad-colour', 'bad-site', 'site-not-allowed', 'origin-mismatch', 'checked-recently', 'page-failed' );
+		$codes = array( 'connected', 'connected-pending', 'disconnected', 'saved', 'error-cancelled', 'error-not-owner', 'error-not-approved', 'error-other', 'bad-state', 'bad-return', 'bad-code', 'unknown-business', 'unreachable', 'bad-colour', 'bad-site', 'site-not-allowed', 'origin-mismatch', 'checked-recently', 'page-published', 'page-failed' );
 		foreach ( $codes as $code ) {
 			$notice = Admin::notice( $code );
 			$this->assertIsArray( $notice, $code );
@@ -235,6 +235,41 @@ class AdminTest extends TestCase {
 		$_POST                             = array( 'anybook_make_page' => '1' );
 		$this->stop( 'handle_connect' );
 		$this->assertFalse( $this->transients['anybook_state_7']['page_made'] );
+	}
+
+	public function test_a_private_booking_page_is_neither_published_nor_offered() {
+		$this->posts[42]                   = new \WP_Post(
+			array(
+				'ID'          => 42,
+				'post_status' => 'private',
+			)
+		);
+		$this->options['anybook_settings'] = array( 'page_id' => 42 );
+		$_POST                             = array( 'anybook_make_page' => '1' );
+		$e                                 = $this->stop( 'handle_connect' );
+		parse_str( (string) parse_url( $e->url, PHP_URL_QUERY ), $query );
+		$this->assertArrayNotHasKey( 'guest_page', $query );
+		$this->assertFalse( $this->transients['anybook_state_7']['page_made'] );
+		\Anybook\Booking_Page::publish( 42 );
+		$this->assertSame( 'private', $this->posts[42]->post_status, 'publish() touches drafts only' );
+	}
+
+	public function test_a_draft_page_anybook_already_uses_can_be_published_from_the_status() {
+		$this->connect( array( 'page_id' => 42 ) );
+		$this->posts[42] = new \WP_Post(
+			array(
+				'ID'           => 42,
+				'post_status'  => 'draft',
+				'post_content' => '[anybook]',
+			)
+		);
+		$this->http      = function () {
+			return self::json( 200, self::status_body() );
+		};
+		$this->assertStringContainsString( 'value="anybook_publish_page"', $this->page() );
+		$this->assertSame( 'page-published', $this->notice_of( $this->stop( 'handle_publish_page' ) ) );
+		$this->assertSame( 'publish', $this->posts[42]->post_status );
+		$this->assertStringNotContainsString( 'value="anybook_publish_page"', $this->page() );
 	}
 
 	public function test_connect_is_refused_when_admin_and_website_addresses_differ() {

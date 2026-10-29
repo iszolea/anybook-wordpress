@@ -95,7 +95,7 @@ read_secret | docker run --rm -i -v "$SRC:/src:ro" -e VERSION="$VERSION" -e SVN_
 		rsync -a --delete --exclude=.svn --include="*.png" --include="*.jpg" --include="*.svg" --exclude="*" /src/.wordpress-org/ assets/
 	fi
 	svn add -q --force trunk assets
-	svn status | awk "/^!/ {print \$2}" | xargs -r svn rm -q
+	svn status | grep "^!" | cut -c9- | while IFS= read -r gone; do svn rm -q "$gone"; done
 	svn copy -q trunk "tags/$VERSION"
 	svnq commit -q -m "Release $VERSION (go-ahead: $GO_AHEAD)"
 	echo "committed $VERSION to trunk, tags/$VERSION and assets"

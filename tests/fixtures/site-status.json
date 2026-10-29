@@ -1,1 +1,31 @@
-{"name":"E2E Houseboats","onlineBooking":true,"approved":true,"originAllowed":true,"guestPage":"this-site","hasUnits":true,"hasServices":false,"cspSources":[{"directive":"script-src","sources":"https://app.anybookapp.com https://js.stripe.com"}]}
+{
+	"name": "E2E Houseboats",
+	"onlineBooking": true,
+	"approved": true,
+	"originAllowed": true,
+	"guestPage": "this-site",
+	"hasUnits": true,
+	"hasServices": false,
+	"cspSources": [
+		{
+			"directive": "script-src",
+			"sources": "https://localhost https://js.stripe.com"
+		},
+		{
+			"directive": "connect-src",
+			"sources": "https://localhost https://api.stripe.com"
+		},
+		{
+			"directive": "frame-src",
+			"sources": "https://js.stripe.com https://hooks.stripe.com"
+		},
+		{
+			"directive": "style-src",
+			"sources": "'unsafe-inline'"
+		},
+		{
+			"directive": "img-src",
+			"sources": "https://*.stripe.com"
+		}
+	]
+}

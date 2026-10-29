@@ -38,6 +38,7 @@ class Admin {
 		'anybook_save_settings' => 'handle_save_settings',
 		'anybook_disconnect'    => 'handle_disconnect',
 		'anybook_refresh'       => 'handle_refresh',
+		'anybook_publish_page'  => 'handle_publish_page',
 	);
 
 	/** Hooks the page and its actions. */
@@ -91,7 +92,7 @@ class Admin {
 			return;
 		}
 		printf(
-			'<div class="notice notice-info is-dismissible"><p>%1$s</p><p><a class="button button-primary" href="%2$s">%3$s</a></p></div>',
+			'<div class="notice notice-info"><p>%1$s</p><p><a class="button button-primary" href="%2$s">%3$s</a></p></div>',
 			esc_html__( 'Anybook Online Booking is ready. Connect it to your Anybook business to show your booking widget on this website.', 'anybook' ),
 			esc_url( self::page_url() ),
 			esc_html__( 'Connect to Anybook', 'anybook' )
@@ -144,7 +145,10 @@ class Admin {
 		}
 		$guest_page = '';
 		$page_made  = false;
-		if ( ! empty( $_POST['anybook_make_page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
+		if ( ! empty( $_POST['anybook_make_page'] ) && Booking_Page::is_held_back() ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
+			// The admin made the page private, pending or scheduled on purpose: it is neither published nor offered.
+			$guest_page = '';
+		} elseif ( ! empty( $_POST['anybook_make_page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
 			if ( Booking_Page::is_published() ) {
 				$guest_page = (string) get_permalink( Booking_Page::current_id() );
 			} else {
@@ -231,6 +235,16 @@ class Admin {
 		self::redirect( self::page_url( 'disconnected' ) );
 	}
 
+	/**
+	 * Publishes the booking page the plugin made, for when Anybook already uses it as the guest page but the return
+	 * from Connect never arrived (the tab was closed after Allow, or the 15 minutes ran out).
+	 */
+	public static function handle_publish_page() {
+		self::check( 'anybook_publish_page' );
+		Booking_Page::publish( Booking_Page::current_id() );
+		self::redirect( self::page_url( 'page-published' ) );
+	}
+
 	/** Ask Anybook again for the status, at most once every 30 seconds per person (reviews S-L2, Q15). */
 	public static function handle_refresh() {
 		self::check( 'anybook_refresh' );
@@ -275,7 +289,7 @@ class Admin {
 			'connected-pending'  => array( 'warning', __( 'Connected. Anybook has not approved your business yet, so the booking widget will not show until it does.', 'anybook' ) ),
 			'disconnected'       => array( 'success', __( 'Disconnected. The booking widget no longer shows on this website, and your Book online page shows visitors nothing until you connect again. To stop this website showing your widget for good, remove it from allowed websites in Anybook too.', 'anybook' ) ),
 			'saved'              => array( 'success', __( 'Settings saved.', 'anybook' ) ),
-			'error-cancelled'    => array( 'warning', __( 'Connecting was cancelled on Anybook. Nothing was changed there, and the booking page stays a draft.', 'anybook' ) ),
+			'error-cancelled'    => array( 'warning', __( 'Connecting was cancelled on Anybook. Nothing was changed there, and a booking page made for this connect stays a draft.', 'anybook' ) ),
 			'error-not-owner'    => array( 'warning', __( 'Only your business\'s Owner can connect a website on Anybook. Ask the Owner to click Connect here, or enter your business code below.', 'anybook' ) ),
 			'error-not-approved' => array( 'warning', __( 'Your business is not approved on Anybook yet. Connect again once Anybook has approved it.', 'anybook' ) . ' ' . $fallback ),
 			'error-other'        => array( 'error', __( 'Anybook could not connect this site.', 'anybook' ) . ' ' . $fallback ),
@@ -289,6 +303,7 @@ class Admin {
 			'site-not-allowed'   => array( 'error', __( 'Only an administrator who may add scripts to this site can change the booking site address. Other settings were saved.', 'anybook' ) ),
 			'origin-mismatch'    => array( 'error', __( 'Your WordPress admin and your website have different addresses, so Connect would allow the wrong one. Enter your business code below instead.', 'anybook' ) ),
 			'checked-recently'   => array( 'info', __( 'Anybook was asked less than 30 seconds ago. The status below is its answer.', 'anybook' ) ),
+			'page-published'     => array( 'success', __( 'Your booking page is published.', 'anybook' ) ),
 			'page-failed'        => array( 'error', __( 'The booking page could not be made. Untick "Make a booking page for me" to connect without it.', 'anybook' ) ),
 		);
 		return isset( $notices[ $code ] ) ? $notices[ $code ] : null;
@@ -451,6 +466,14 @@ class Admin {
 			}
 			?>
 		</ul>
+		<?php if ( 'unpublished' === $problem && 'draft' === get_post_status( Booking_Page::current_id() ) && ! is_wp_error( $status ) && 'this-site' === $status['guestPage'] ) : ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="anybook_publish_page" />
+				<?php wp_nonce_field( 'anybook_publish_page' ); ?>
+				<p><?php esc_html_e( 'Anybook already uses this website for your guests\' email links, but the booking page is still a draft.', 'anybook' ); ?>
+				<?php submit_button( __( 'Publish the booking page', 'anybook' ), 'primary', 'submit', false ); ?></p>
+			</form>
+		<?php endif; ?>
 
 		<?php if ( ! is_wp_error( $status ) && $status['cspSources'] ) : ?>
 			<details>
