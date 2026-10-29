@@ -184,12 +184,17 @@ wp plugin deactivate litespeed-cache
 wp theme activate twentytwentyfive
 
 # Plugin Check (from wordpress.org) on the shipped tree (Q5): it must run, find no errors, and warn only about
-# what is listed here with its reason.
+# what is listed here (codes, as a pattern; none so far). A canary plugin with a known error shows the check and
+# this script do see errors.
 ALLOWED_WARNINGS='^$'
+pcheck() { docker run --rm -i --network $NET -v $P-html:/var/www/html --user 33:33 "${DBENV[@]}" wordpress:cli wp plugin check "$1" --format=csv --fields=file,line,type,code,message 2>&1 || true; }
 wp plugin install plugin-check --activate
-pc=$(wp plugin check anybook --format=csv --fields=file,line,type,code,message 2>&1 || true)
+docker exec $P-wp sh -c 'mkdir -p /var/www/html/wp-content/plugins/canary && printf "%s\n" "<?php" "/* Plugin Name: Canary */" "echo \$_GET[\"x\"];" > /var/www/html/wp-content/plugins/canary/canary.php && chown -R www-data /var/www/html/wp-content/plugins/canary'
+grep -q ',ERROR,' <<<"$(pcheck canary)" || fail "Plugin Check missed the canary's error"
+docker exec $P-wp rm -rf /var/www/html/wp-content/plugins/canary
+pc=$(pcheck anybook)
 echo "$pc" | sed 's/^/  plugin-check: /'
-grep -qE 'Success: Checks complete|^FILE: |^file,line,type' <<<"$pc" || fail "Plugin Check did not run"
+grep -qE 'Success: Checks complete|^file,line,type' <<<"$pc" || fail "Plugin Check did not run"
 grep -q ',ERROR,' <<<"$pc" && fail "Plugin Check found errors"
 warnings=$(grep ',WARNING,' <<<"$pc" | cut -d, -f4 | sort -u | grep -vE "$ALLOWED_WARNINGS" || true)
 [ -z "$warnings" ] || fail "Plugin Check warnings not on the allowed list: $warnings"
