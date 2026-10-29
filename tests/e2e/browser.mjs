@@ -151,14 +151,15 @@ async function visit( plugin ) {
 	const page = ( current = await context.newPage() );
 	const errors = [];
 	page.on( 'pageerror', ( error ) => errors.push( error.message ) );
-	await page.goto( `${ WP_URL }/?page_id=${ pageId }` );
+	const html = await ( await page.goto( `${ WP_URL }/?page_id=${ pageId }` ) ).text();
 
 	const scripts = await page.evaluate( () => [ ...document.querySelectorAll( 'script[src]' ) ].map( ( s ) => ( { src: s.src, head: s.parentElement === document.head } ) ) );
 	const widget = scripts.filter( ( s ) => s.src.includes( 'booking-widget.js' ) );
 	check( widget.length === 1 && widget[ 0 ].src === `${ ANYBOOK_URL }/widget/booking-widget.js` && widget[ 0 ].head, `widget script: ${ JSON.stringify( widget ) }` );
-	const marker = { autoptimize: 'autoptimize', 'litespeed-cache': 'litespeed' }[ plugin ];
+	const marker = { autoptimize: 'wp-content/cache/autoptimize/', 'litespeed-cache': 'litespeed/javascript' }[ plugin ];
 	if ( marker ) {
-		check( scripts.some( ( s ) => s.src.includes( marker ) ), `${ plugin } did not optimise the page's scripts` );
+		// Combined files (Autoptimize) or delayed scripts (LiteSpeed's type="litespeed/javascript") in the page as served.
+		check( html.includes( marker ), `${ plugin } did not optimise the page's scripts` );
 	}
 
 	// The widget really runs: its shadow root fills with the unit's calendar from Anybook, with nightly prices.
