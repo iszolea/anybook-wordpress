@@ -108,8 +108,8 @@ pass "booking page holds the Anybook booking block (block theme)"
 blk=$(wp post create --post_type=page --post_status=publish --post_title=Block --porcelain 	--post_content='<!-- wp:anybook/booking {"show":"service","service":"cut","accent":"#0B6E4F","buttonText":"Book now"} /-->')
 sc=$(wp post create --post_type=page --post_status=publish --post_title=Short --porcelain 	--post_content='[anybook service="cut" accent="#0B6E4F" button_text="Book now"]')
 want='<booking-widget business="bribie" api="https://app.anybookapp.com" service="cut" services texts="{&quot;toPayment&quot;:&quot;Book now&quot;}" style="--bw-accent:#0b6e4f;"></booking-widget>'
-page "/?page_id=$blk" | grep -qF "$want" || fail "block output: $(page "/?page_id=$blk" | grep -o '<booking-widget[^>]*>')"
-page "/?page_id=$sc" | grep -qF "$want" || fail "shortcode output: $(page "/?page_id=$sc" | grep -o '<booking-widget[^>]*>')"
+grep -qF "$want" <<<"$(page "/?page_id=$blk")" || fail "block output: $(page "/?page_id=$blk" | grep -o '<booking-widget[^>]*>')"
+grep -qF "$want" <<<"$(page "/?page_id=$sc")" || fail "shortcode output: $(page "/?page_id=$sc" | grep -o '<booking-widget[^>]*>')"
 pass "block and shortcode give the same element"
 
 wp eval 'echo WP_Block_Type_Registry::get_instance()->is_registered( "anybook/booking" ) ? "yes" : "no";' | grep -qx yes 	|| fail "block not registered"
@@ -127,7 +127,7 @@ wp eval "wp_set_current_user( $contrib ); \$q = new WP_REST_Request( 'GET', '/an
 pass "catalogue refresh: contributors get the cache"
 
 other=$(wp post create --post_type=post --post_status=publish --post_title=Hello --post_content='No widget' --porcelain)
-page "/?p=$other" | grep -q 'booking-widget' && fail "page without the widget loads it"
+grep -q 'booking-widget' <<<"$(page "/?p=$other")" && fail "page without the widget loads it"
 pass "a page without the widget loads no script"
 
 # Elementor keeps a page's content in _elementor_data (Q9): the script still goes in the head.
@@ -144,7 +144,7 @@ classic=$(wp eval 'echo Anybook\Booking_Page::content();')
 [ "$classic" = "$(printf '<!-- wp:shortcode -->\n[anybook guest_links="yes"]\n<!-- /wp:shortcode -->')" ] || fail "classic booking page content: $classic"
 cpage=$(wp post create --post_type=page --post_status=publish --post_title="Classic booking" --post_content="$classic" --porcelain)
 [ -n "$(head_tag "/?page_id=$cpage")" ] || fail "classic theme: script not in the head of the booking page"
-page "/?page_id=$cpage" | grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links>' || fail "classic theme: no element"
+grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links>' <<<"$(page "/?page_id=$cpage")" || fail "classic theme: no element"
 wp post create --post_type=post --post_status=publish --post_title="Listed" --post_content='[anybook]' >/dev/null
 home=$(page "/")
 grep -q '<booking-widget' <<<"$home" || fail "classic theme: the post list does not render the shortcode"
@@ -166,7 +166,7 @@ check_speed() { # name, evidence pattern
 	done
 	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the widget: $tag"
 	[ "$(grep -o 'booking-widget\.js' <<<"$body" | wc -l)" = "1" ] || fail "$1 copied the widget script"
-	page "/?page_id=$cpage" | grep -q '<booking-widget business="bribie"' || fail "$1 lost the element"
+	grep -q '<booking-widget business="bribie"' <<<"$(page "/?page_id=$cpage")" || fail "$1 lost the element"
 	pass "$1 ($(wp plugin get "$1" --field=version)) with script optimisations on leaves the widget alone"
 }
 wp plugin install autoptimize --activate
