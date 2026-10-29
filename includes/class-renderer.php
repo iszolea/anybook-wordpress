@@ -103,7 +103,7 @@ class Renderer {
 			$show = '' !== $service ? 'service' : ( '' !== $unit ? 'unit' : 'all' );
 		}
 		if ( 'overview' === $show ) {
-			// The overview has its own choices; the widget's colours and wording are not for it.
+			// The overview has its own choices; it takes the settings page's colours, not the block's own or its wording.
 			return array(
 				'overview' => true,
 				'weeks'    => isset( $choice['weeks'] ) ? $choice['weeks'] : '',
@@ -220,6 +220,19 @@ class Renderer {
 		if ( 'people' === $rows && '' !== $service ) {
 			$attrs['rows']    = 'people';
 			$attrs['service'] = $service;
+		}
+		// The colours chosen on the settings page, as the widget has them (the dialog it opens takes the same look).
+		$style  = '';
+		$accent = Settings::clean_colour( Settings::get( 'accent' ) );
+		$text   = Settings::clean_colour( Settings::get( 'text' ) );
+		if ( '' !== $accent ) {
+			$style .= '--bw-accent:' . $accent . ';';
+		}
+		if ( '' !== $text ) {
+			$style .= '--bw-text:' . $text . ';';
+		}
+		if ( '' !== $style ) {
+			$attrs['style'] = $style;
 		}
 
 		$html = '';

@@ -29,6 +29,19 @@ class OverviewTest extends TestCase {
 		$this->assertSame( 'defer', $registered['args']['strategy'] );
 	}
 
+	/**
+	 * Review Q-13: the colours chosen on the plugin's settings page are the overview's too, as for the widget.
+	 */
+	public function test_the_settings_colours_are_the_overviews_too() {
+		$this->connect(
+			array(
+				'accent' => '#123456',
+				'text'   => '#222222',
+			)
+		);
+		$this->assertStringContainsString( ' style="--bw-accent:#123456;--bw-text:#222222;"></booking-overview>', Shortcode::render( array( 'show' => 'overview' ) ) );
+	}
+
 	public function test_defaults_written_out_are_left_out() {
 		$this->connect();
 		$html = Shortcode::render(
