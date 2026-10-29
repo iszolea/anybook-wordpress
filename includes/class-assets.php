@@ -12,17 +12,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Loads Anybook's widget script, only on pages that show the widget.
+ * Loads Anybook's widget script, only on pages that show the widget, and the availability overview's script
+ * (booking-overview.js) on pages that show the overview (PBI 30581). A page with both gets both.
  *
- * The script is the documented service (readme, External services), loaded from the booking site's plain
- * address with no version, so a widget release reaches every site at once. It is the only remote code the plugin
- * loads. It runs `defer`, in the head when the page is known to hold the widget (so a guest's #bw= email link is
- * read before any tag manager can tidy the address), otherwise in the footer. Speed plugins are asked, through
- * their own filters and attributes, to leave it alone: combined, delayed or moved, it can miss the guest link.
+ * The scripts are the documented service (readme, External services), loaded from the booking site's plain
+ * address with no version, so a widget release reaches every site at once. They are the only remote code the
+ * plugin loads. Each runs `defer`, in the head when the page is known to hold it (so a guest's #bw= email link
+ * is read before any tag manager can tidy the address), otherwise in the footer. Speed plugins are asked, through
+ * their own filters and attributes, to leave both alone: combined, delayed or moved, the widget can miss the
+ * guest link.
  */
 class Assets {
 
 	const HANDLE = 'anybook-widget';
+
+	/** The availability overview's script. */
+	const OVERVIEW_HANDLE = 'anybook-overview';
+
+	/** Each script's path on the booking site, by handle. */
+	const PATHS = array(
+		self::HANDLE          => '/widget/booking-widget.js',
+		self::OVERVIEW_HANDLE => '/widget/booking-overview.js',
+	);
 
 	/** Hooks the loader and the speed-plugin exclusions. */
 	public static function init() {
@@ -49,20 +60,34 @@ class Assets {
 
 	/** The widget script's address on the booking site. */
 	public static function script_url() {
-		return Settings::site() . '/widget/booking-widget.js';
+		return Settings::site() . self::PATHS[ self::HANDLE ];
+	}
+
+	/** The overview script's address on the booking site. */
+	public static function overview_script_url() {
+		return Settings::site() . self::PATHS[ self::OVERVIEW_HANDLE ];
 	}
 
 	/**
-	 * On a front-end view of a connected site whose post holds the widget, enqueues the script in the head. Other
-	 * views get it from enqueue() when the widget renders. A site that is not connected reads only the small
-	 * autoloaded flag here (review S-I5), and a view without the widget reads nothing more.
+	 * On a front-end view of a connected site whose post holds the widget or the overview, enqueues its script in
+	 * the head (both when it holds both). Other views get them from enqueue() and enqueue_overview() when they
+	 * render. A site that is not connected reads only the small autoloaded flag here (review S-I5), and a view
+	 * without either reads nothing more.
 	 */
 	public static function register() {
 		if ( ! Settings::maybe_connected() || ! self::view_has_widget() || ! Settings::is_connected() ) {
 			return;
 		}
-		self::register_script( false );
-		wp_enqueue_script( self::HANDLE );
+		$shows = self::view_shows();
+		if ( $shows['overview'] ) {
+			self::register_script( self::OVERVIEW_HANDLE, false );
+			wp_enqueue_script( self::OVERVIEW_HANDLE );
+		}
+		// A page builder that only said "yes" through the filter gets the widget script, as before.
+		if ( $shows['widget'] || ! $shows['overview'] ) {
+			self::register_script( self::HANDLE, false );
+			wp_enqueue_script( self::HANDLE );
+		}
 	}
 
 	/**
@@ -70,21 +95,36 @@ class Assets {
 	 * is printed, so then it still goes in the head; after the head (classic themes, widgets) it goes in the footer.
 	 */
 	public static function enqueue() {
-		if ( ! wp_script_is( self::HANDLE, 'registered' ) ) {
-			self::register_script( did_action( 'wp_head' ) > 0 );
-		}
-		wp_enqueue_script( self::HANDLE );
+		self::enqueue_handle( self::HANDLE );
+	}
+
+	/** Called by the renderer for the overview: make sure its script is on this page, as enqueue() does. */
+	public static function enqueue_overview() {
+		self::enqueue_handle( self::OVERVIEW_HANDLE );
 	}
 
 	/**
-	 * Registers the widget script, deferred and with no version.
+	 * Registers a script if it is not yet (head or footer, see enqueue()) and enqueues it.
 	 *
-	 * @param bool $in_footer Whether it goes in the footer.
+	 * @param string $handle HANDLE or OVERVIEW_HANDLE.
 	 */
-	private static function register_script( $in_footer ) {
+	private static function enqueue_handle( $handle ) {
+		if ( ! wp_script_is( $handle, 'registered' ) ) {
+			self::register_script( $handle, did_action( 'wp_head' ) > 0 );
+		}
+		wp_enqueue_script( $handle );
+	}
+
+	/**
+	 * Registers the widget or the overview script, deferred and with no version.
+	 *
+	 * @param string $handle    HANDLE or OVERVIEW_HANDLE.
+	 * @param bool   $in_footer Whether it goes in the footer.
+	 */
+	private static function register_script( $handle, $in_footer ) {
 		wp_register_script(
-			self::HANDLE,
-			self::script_url(),
+			$handle,
+			Settings::site() . self::PATHS[ $handle ],
 			array(),
 			null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- no ?ver=: Anybook serves the plain address fresh, so releases arrive at once.
 			array(
@@ -103,13 +143,59 @@ class Assets {
 	}
 
 	/**
-	 * Attributes on the widget's script tag that ask Cloudflare Rocket Loader, LiteSpeed, WP Rocket, Jetpack
+	 * What the queried post shows: the widget, the overview or both. It reads the post's content and Elementor's
+	 * copy of it (see Booking_Page::post_has_widget()), so call it only once view_has_widget() said yes.
+	 *
+	 * @return array{widget: bool, overview: bool}
+	 */
+	public static function view_shows() {
+		$post = get_queried_object();
+		$text = $post instanceof \WP_Post ? (string) $post->post_content : '';
+		if ( $post instanceof \WP_Post ) {
+			$elementor = get_post_meta( $post->ID, '_elementor_data', true );
+			$text     .= is_string( $elementor ) ? "\n" . $elementor : '';
+		}
+		return self::shows_in( $text );
+	}
+
+	/**
+	 * Whether some content holds the widget, the overview or both: each `[anybook ...]` shortcode and
+	 * `anybook/booking` block counts as the overview when it says show="overview", otherwise as the widget. Elementor
+	 * keeps the shortcode JSON-escaped (show=\"overview\"), which is read the same.
+	 *
+	 * @param string $text Post content.
+	 * @return array{widget: bool, overview: bool}
+	 */
+	public static function shows_in( $text ) {
+		$shows = array(
+			'widget'   => false,
+			'overview' => false,
+		);
+		$text  = (string) $text;
+		if ( preg_match_all( '/\[anybook(?:\s[^\]]*)?\]/', $text, $found ) ) {
+			foreach ( $found[0] as $shortcode ) {
+				$kind           = preg_match( '/\sshow\s*=\s*\\\\?["\']?overview\b/i', $shortcode ) ? 'overview' : 'widget';
+				$shows[ $kind ] = true;
+			}
+		}
+		if ( preg_match_all( '#wp:anybook\\\\?/booking(?:\s+(\{.*?\}))?\s*/?-->#s', $text, $found ) ) {
+			foreach ( $found[1] as $settings ) {
+				$kind           = preg_match( '/\\\\?"show\\\\?"\s*:\s*\\\\?"overview\\\\?"/', $settings ) ? 'overview' : 'widget';
+				$shows[ $kind ] = true;
+			}
+		}
+		return $shows;
+	}
+
+	/**
+	 * Attributes on the widget's and the overview's script tags that ask Cloudflare Rocket Loader, LiteSpeed, WP Rocket, Jetpack
 	 * Boost and others to leave it as it is.
 	 *
 	 * @param array $attributes Script tag attributes.
 	 */
 	public static function script_attributes( $attributes ) {
-		if ( ! is_array( $attributes ) || ! isset( $attributes['id'] ) || self::HANDLE . '-js' !== $attributes['id'] ) {
+		$ids = array( self::HANDLE . '-js', self::OVERVIEW_HANDLE . '-js' );
+		if ( ! is_array( $attributes ) || ! isset( $attributes['id'] ) || ! in_array( $attributes['id'], $ids, true ) ) {
 			return $attributes;
 		}
 		return array_merge(
@@ -126,14 +212,13 @@ class Assets {
 	}
 
 	/**
-	 * Adds the script's path to a speed plugin's exclusion list.
+	 * Adds the scripts' paths to a speed plugin's exclusion list.
 	 *
 	 * @param mixed $items Patterns.
 	 */
 	public static function add_script_path( $items ) {
-		$items   = is_array( $items ) ? $items : array();
-		$items[] = '/widget/booking-widget.js';
-		return $items;
+		$items = is_array( $items ) ? $items : array();
+		return array_merge( $items, array_values( self::PATHS ) );
 	}
 
 	/**
@@ -149,34 +234,42 @@ class Assets {
 	}
 
 	/**
-	 * Adds the script handle to a list of handles.
+	 * Adds the scripts' handles to a list of handles.
 	 *
 	 * @param mixed $items Handles.
 	 */
 	public static function add_handle( $items ) {
-		$items   = is_array( $items ) ? $items : array();
-		$items[] = self::HANDLE;
-		return $items;
+		$items = is_array( $items ) ? $items : array();
+		return array_merge( $items, array_keys( self::PATHS ) );
 	}
 
 	/**
-	 * Adds the script to a comma-separated exclusion list.
+	 * Adds the scripts to a comma-separated exclusion list.
 	 *
 	 * @param mixed $items Comma-separated patterns.
 	 */
 	public static function add_to_list( $items ) {
 		$items = is_string( $items ) ? trim( $items ) : '';
-		return ( '' === $items ? '' : $items . ', ' ) . 'widget/booking-widget.js';
+		$mine  = implode( ', ', array_map( 'ltrim', array_values( self::PATHS ), array( '/', '/' ) ) );
+		return ( '' === $items ? '' : $items . ', ' ) . $mine;
 	}
 
 	/**
-	 * W3 Total Cache: do not minify the widget's tag.
+	 * W3 Total Cache: do not minify the widget's or the overview's tag.
 	 *
 	 * @param bool   $do_minify  Whether W3TC would minify this tag.
 	 * @param string $script_tag The tag.
 	 */
 	public static function w3tc_skip( $do_minify, $script_tag ) {
-		return ( is_string( $script_tag ) && false !== strpos( $script_tag, '/widget/booking-widget.js' ) ) ? false : $do_minify;
+		if ( ! is_string( $script_tag ) ) {
+			return $do_minify;
+		}
+		foreach ( self::PATHS as $path ) {
+			if ( false !== strpos( $script_tag, $path ) ) {
+				return false;
+			}
+		}
+		return $do_minify;
 	}
 
 	/**

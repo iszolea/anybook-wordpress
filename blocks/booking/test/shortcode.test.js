@@ -87,3 +87,68 @@ describe( 'attributesFromShortcode', () => {
 		).toBeUndefined();
 	} );
 } );
+
+describe( 'attributesFromShortcode for the availability overview', () => {
+	it( 'keeps show="overview" and maps its choices', () => {
+		expect(
+			attributesFromShortcode(
+				'[anybook show="overview" weeks="8" prices="yes" units="belle,kayak" rows="people" service="0f8fad5b-d9cb-469f-a165-70867728950e"]'
+			)
+		).toEqual( {
+			show: 'overview',
+			weeks: 8,
+			prices: true,
+			units: 'belle,kayak',
+			rows: 'people',
+			service: '0f8fad5b-d9cb-469f-a165-70867728950e',
+		} );
+		expect(
+			attributesFromShortcode( '[anybook show="Overview"]' )
+		).toEqual( { show: 'overview' } );
+	} );
+
+	it( 'keeps weeks a whole number from 2 to 26', () => {
+		const weeks = ( typed ) =>
+			attributesFromShortcode(
+				`[anybook show="overview" weeks="${ typed }"]`
+			).weeks;
+		expect( weeks( '99' ) ).toBe( 26 );
+		expect( weeks( '1' ) ).toBe( 2 );
+		expect( weeks( ' 4 ' ) ).toBe( 4 );
+		expect( weeks( 'x' ) ).toBeUndefined();
+		expect( weeks( '-5' ) ).toBeUndefined();
+		expect( weeks( '3.5' ) ).toBeUndefined();
+	} );
+
+	it( 'shows prices only for prices="yes"', () => {
+		const prices = ( typed ) =>
+			attributesFromShortcode(
+				`[anybook show="overview" prices="${ typed }"]`
+			).prices;
+		expect( prices( 'yes' ) ).toBe( true );
+		expect( prices( 'YES' ) ).toBe( true );
+		expect( prices( 'true' ) ).toBeUndefined();
+		expect( prices( '1' ) ).toBeUndefined();
+	} );
+
+	it( 'drops bad unit codes and rows other than people', () => {
+		expect(
+			attributesFromShortcode(
+				"[anybook show='overview' units='belle,<script>,kayak_2,Kayak, raft ,belle' rows='staff']"
+			)
+		).toEqual( { show: 'overview', units: 'belle,raft' } );
+		expect(
+			attributesFromShortcode(
+				'[anybook show="overview" units="<b>" rows="People"]'
+			)
+		).toEqual( { show: 'overview', rows: 'people' } );
+	} );
+
+	it( 'leaves the overview choices out of the widget', () => {
+		expect(
+			attributesFromShortcode(
+				'[anybook unit="belle" weeks="8" prices="yes" rows="people"]'
+			)
+		).toEqual( { show: 'unit', unit: 'belle' } );
+	} );
+} );

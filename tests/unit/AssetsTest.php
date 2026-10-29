@@ -98,12 +98,12 @@ class AssetsTest extends TestCase {
 
 	public function test_speed_plugin_lists() {
 		$this->connect();
-		$this->assertSame( array( 'a', '/widget/booking-widget.js' ), Assets::add_script_path( array( 'a' ) ) );
-		$this->assertSame( array( '/widget/booking-widget.js' ), Assets::add_script_path( null ) );
+		$this->assertSame( array( 'a', '/widget/booking-widget.js', '/widget/booking-overview.js' ), Assets::add_script_path( array( 'a' ) ) );
+		$this->assertSame( array( '/widget/booking-widget.js', '/widget/booking-overview.js' ), Assets::add_script_path( null ) );
 		$this->assertSame( array( 'app.anybookapp.com' ), Assets::add_site_host( array() ) );
-		$this->assertSame( array( 'anybook-widget' ), Assets::add_handle( array() ) );
-		$this->assertSame( 'a.js, widget/booking-widget.js', Assets::add_to_list( 'a.js' ) );
-		$this->assertSame( 'widget/booking-widget.js', Assets::add_to_list( '' ) );
+		$this->assertSame( array( 'anybook-widget', 'anybook-overview' ), Assets::add_handle( array() ) );
+		$this->assertSame( 'a.js, widget/booking-widget.js, widget/booking-overview.js', Assets::add_to_list( 'a.js' ) );
+		$this->assertSame( 'widget/booking-widget.js, widget/booking-overview.js', Assets::add_to_list( '' ) );
 		$this->assertFalse( Assets::w3tc_skip( true, '<script src="https://app.anybookapp.com/widget/booking-widget.js">' ) );
 		$this->assertTrue( Assets::w3tc_skip( true, '<script src="/other.js">' ) );
 	}

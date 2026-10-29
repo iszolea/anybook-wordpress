@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-29T21:27:04+00:00\n"
+"POT-Creation-Date: 2026-10-29T22:12:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: anybook\n"
@@ -49,7 +49,7 @@ msgstr ""
 #: includes/class-admin.php:98
 #: includes/class-admin.php:351
 #: includes/class-admin.php:361
-#: blocks/booking/edit.js:187
+#: blocks/booking/edit.js:365
 #: build/booking/index.js:3
 msgid "Connect to Anybook"
 msgstr ""
@@ -355,14 +355,14 @@ msgid "Used by every booking widget on this site unless its block or shortcode s
 msgstr ""
 
 #: includes/class-admin.php:574
-#: blocks/booking/edit.js:329
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:479
+#: build/booking/index.js:7
 msgid "Main colour"
 msgstr ""
 
 #: includes/class-admin.php:578
-#: blocks/booking/edit.js:335
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:485
+#: build/booking/index.js:7
 msgid "Text colour"
 msgstr ""
 
@@ -437,203 +437,278 @@ msgstr ""
 msgid "This website itself stores no booking or payment details."
 msgstr ""
 
-#: includes/class-renderer.php:52
+#: includes/class-renderer.php:58
 msgid "The Anybook booking widget will show here once this site is connected to Anybook (Anybook in the WordPress admin menu)."
-msgstr ""
-
-#: blocks/booking/edit.js:29
-#: build/booking/index.js:1
-msgid "Book and go to payment"
-msgstr ""
-
-#: blocks/booking/edit.js:30
-#: build/booking/index.js:1
-msgid "Your details"
 msgstr ""
 
 #: blocks/booking/edit.js:31
 #: build/booking/index.js:1
+msgid "Book and go to payment"
+msgstr ""
+
+#: blocks/booking/edit.js:32
+#: build/booking/index.js:1
+msgid "Your details"
+msgstr ""
+
+#: blocks/booking/edit.js:33
+#: build/booking/index.js:1
 msgid "Choose your arrival date, then your departure date."
 msgstr ""
 
-#: blocks/booking/edit.js:78
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:97
+#: build/booking/index.js:7
 msgid "Your units and services could not be loaded."
 msgstr ""
 
-#: blocks/booking/edit.js:125
+#: blocks/booking/edit.js:144
 #: build/booking/index.js:1
 msgid "Type its code as Anybook shows it (letters, digits, - and _)."
 msgstr ""
 
-#: blocks/booking/edit.js:141
+#: blocks/booking/edit.js:160
 #: build/booking/index.js:1
 msgid "Choose…"
 msgstr ""
 
 #. translators: %s: a unit or service code no longer offered.
-#: blocks/booking/edit.js:147
+#: blocks/booking/edit.js:166
 #: build/booking/index.js:3
 #, js-format
 msgid "%s (no longer offered)"
 msgstr ""
 
-#: blocks/booking/edit.js:174
-#: blocks/booking/edit.js:414
+#: blocks/booking/edit.js:194
 #: build/booking/index.js:3
-#: build/booking/index.js:5
+msgid "Units"
+msgstr ""
+
+#: blocks/booking/edit.js:204
+#: build/booking/index.js:3
+msgid "Type their codes as Anybook shows them, separated by commas. Leave it empty for all your units."
+msgstr ""
+
+#: blocks/booking/edit.js:220
+#: blocks/booking/edit.js:625
+#: build/booking/index.js:3
+#: build/booking/index.js:7
+msgid "Your business has no units guests can book online."
+msgstr ""
+
+#: blocks/booking/edit.js:247
+#: build/booking/index.js:3
+msgid "Tick the units to show. None ticked shows all your units."
+msgstr ""
+
+#: blocks/booking/edit.js:281
+#: build/booking/index.js:3
+msgid "Weeks shown"
+msgstr ""
+
+#: blocks/booking/edit.js:291
+#: build/booking/index.js:3
+msgid "Show prices"
+msgstr ""
+
+#: blocks/booking/edit.js:305
+#: build/booking/index.js:3
+msgid "Appointment rows"
+msgstr ""
+
+#: blocks/booking/edit.js:309
+#: build/booking/index.js:3
+msgid "One row per service"
+msgstr ""
+
+#: blocks/booking/edit.js:313
+#: build/booking/index.js:3
+msgid "One row per team member"
+msgstr ""
+
+#: blocks/booking/edit.js:321
+#: blocks/booking/edit.js:634
+#: build/booking/index.js:3
+#: build/booking/index.js:7
+msgid "Service"
+msgstr ""
+
+#: blocks/booking/edit.js:330
+#: blocks/booking/edit.js:639
+#: build/booking/index.js:3
+#: build/booking/index.js:7
+msgid "Your business has no services guests can book online."
+msgstr ""
+
+#: blocks/booking/edit.js:352
+#: blocks/booking/edit.js:672
+#: build/booking/index.js:3
+#: build/booking/index.js:7
 msgid "Anybook booking"
 msgstr ""
 
-#: blocks/booking/edit.js:175
+#: blocks/booking/edit.js:353
 #: build/booking/index.js:3
 msgid "Connect this site to Anybook and your booking widget will show here."
 msgstr ""
 
-#: blocks/booking/edit.js:191
+#: blocks/booking/edit.js:369
 #: build/booking/index.js:3
 msgid "Ask the site’s administrator to connect it (Anybook in the WordPress admin menu)."
 msgstr ""
 
 #. translators: %s: unit name.
-#: blocks/booking/edit.js:216
-#: build/booking/index.js:4
+#: blocks/booking/edit.js:396
+#: build/booking/index.js:6
 #, js-format
 msgid "Booking for %s"
 msgstr ""
 
-#: blocks/booking/edit.js:219
-#: build/booking/index.js:4
+#: blocks/booking/edit.js:399
+#: build/booking/index.js:6
 msgid "All units (choose a unit in the sidebar)"
 msgstr ""
 
-#: blocks/booking/edit.js:221
-#: blocks/booking/edit.js:271
-#: build/booking/index.js:4
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:401
+#: blocks/booking/edit.js:590
+#: build/booking/index.js:6
+#: build/booking/index.js:7
 msgid "Appointments"
 msgstr ""
 
 #. translators: %s: service name.
-#: blocks/booking/edit.js:226
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:406
+#: build/booking/index.js:7
 #, js-format
 msgid "Appointments for %s"
 msgstr ""
 
-#: blocks/booking/edit.js:229
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:409
+#: build/booking/index.js:7
 msgid "Appointments (choose a service in the sidebar)"
 msgstr ""
 
-#: blocks/booking/edit.js:234
-#: blocks/booking/edit.js:263
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:414
+#: blocks/booking/edit.js:582
+#: build/booking/index.js:7
 msgid "All units"
 msgstr ""
 
-#: blocks/booking/edit.js:255
-#: build/booking/index.js:5
-msgid "What to show"
+#. translators: %d: number of weeks (2 to 26).
+#: blocks/booking/edit.js:427
+#: build/booking/index.js:4
+#, js-format
+msgid "Availability overview, %d weeks"
 msgstr ""
 
-#: blocks/booking/edit.js:259
-#: build/booking/index.js:5
-msgid "Show"
+#: blocks/booking/edit.js:431
+#: build/booking/index.js:4
+msgid ", with prices"
 msgstr ""
 
-#: blocks/booking/edit.js:267
+#. translators: %s: service name.
+#: blocks/booking/edit.js:453
 #: build/booking/index.js:5
-msgid "One unit"
+#, js-format
+msgid "team members for %s"
 msgstr ""
 
-#: blocks/booking/edit.js:275
+#: blocks/booking/edit.js:456
 #: build/booking/index.js:5
-msgid "One service"
+msgid "team members (choose a service in the sidebar)"
 msgstr ""
 
-#: blocks/booking/edit.js:289
-#: build/booking/index.js:5
-msgid "Try again"
-msgstr ""
-
-#: blocks/booking/edit.js:295
-#: build/booking/index.js:5
-msgid "Unit"
-msgstr ""
-
-#: blocks/booking/edit.js:300
-#: build/booking/index.js:5
-msgid "Your business has no units guests can book online."
-msgstr ""
-
-#: blocks/booking/edit.js:309
-#: build/booking/index.js:5
-msgid "Service"
-msgstr ""
-
-#: blocks/booking/edit.js:314
-#: build/booking/index.js:5
-msgid "Your business has no services guests can book online."
-msgstr ""
-
-#: blocks/booking/edit.js:325
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:475
+#: build/booking/index.js:7
 msgid "Colours"
 msgstr ""
 
-#: blocks/booking/edit.js:343
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:493
+#: build/booking/index.js:7
 msgid "Left empty, the colours on the Anybook settings page are used."
 msgstr ""
 
-#: blocks/booking/edit.js:350
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:500
+#: build/booking/index.js:7
 msgid "Wording"
 msgstr ""
 
-#: blocks/booking/edit.js:356
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:506
+#: build/booking/index.js:7
 msgid "Booking button"
 msgstr ""
 
-#: blocks/booking/edit.js:366
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:516
+#: build/booking/index.js:7
 msgid "Details heading"
 msgstr ""
 
-#: blocks/booking/edit.js:376
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:526
+#: build/booking/index.js:7
 msgid "Dates line"
 msgstr ""
 
-#: blocks/booking/edit.js:385
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:533
+#: build/booking/index.js:7
 msgid "Guest links"
 msgstr ""
 
-#: blocks/booking/edit.js:390
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:538
+#: build/booking/index.js:7
 msgid "Use this widget for guests’ email links"
 msgstr ""
 
-#: blocks/booking/edit.js:394
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:542
+#: build/booking/index.js:7
 msgid "Turn on for the widget on your guest page, so links in guests’ emails (manage, pay, extras) open here."
 msgstr ""
 
-#: blocks/booking/edit.js:425
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:574
+#: build/booking/index.js:7
+msgid "What to show"
+msgstr ""
+
+#: blocks/booking/edit.js:578
+#: build/booking/index.js:7
+msgid "Show"
+msgstr ""
+
+#: blocks/booking/edit.js:586
+#: build/booking/index.js:7
+msgid "One unit"
+msgstr ""
+
+#: blocks/booking/edit.js:594
+#: build/booking/index.js:7
+msgid "One service"
+msgstr ""
+
+#: blocks/booking/edit.js:598
+#: build/booking/index.js:7
+msgid "Availability overview"
+msgstr ""
+
+#: blocks/booking/edit.js:614
+#: build/booking/index.js:7
+msgid "Try again"
+msgstr ""
+
+#: blocks/booking/edit.js:620
+#: build/booking/index.js:7
+msgid "Unit"
+msgstr ""
+
+#: blocks/booking/edit.js:686
+#: build/booking/index.js:7
 msgid "Opens guests’ email links."
 msgstr ""
 
-#: blocks/booking/edit.js:429
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:690
+#: build/booking/index.js:7
 msgid "The live booking widget shows on the published page."
 msgstr ""
 
-#: blocks/booking/edit.js:435
-#: build/booking/index.js:5
+#: blocks/booking/edit.js:696
+#: build/booking/index.js:7
 msgid "Anybook settings"
 msgstr ""
 
@@ -646,7 +721,7 @@ msgstr ""
 #: blocks/booking/block.json
 #: build/booking/block.json
 msgctxt "block description"
-msgid "Your Anybook booking widget: all your units, one unit, your appointments or one service."
+msgid "Your Anybook booking widget: all your units, one unit, your appointments or one service, or an availability overview."
 msgstr ""
 
 #: blocks/booking/block.json
