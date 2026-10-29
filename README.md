@@ -8,3 +8,15 @@ Licence: GPLv2 or later (see `LICENSE`). This repository holds only the plugin's
 booking-system code.
 
 Branches: `develop` (changed only through pull requests) and `feature/pbi-<id>-<name>`.
+
+## Checks
+Docker Desktop is all the PC needs (no PHP):
+
+- `bash tools/docker-test.sh`: PHP lint on 7.4 and 8.3, PHPUnit unit tests (Brain Monkey) on both, PHPCS with the
+  WordPress Coding Standards and PHP 7.4 compatibility.
+- `bash tests/smoke/smoke.sh`: the committed tree in a real WordPress (latest image) with Anybook faked: connect
+  return, settings page, booking page and script loading, Plugin Check, multisite uninstall. `KEEP=1` keeps the
+  containers for a look; otherwise they are removed.
+- Translations template: `wp i18n make-pot . languages/anybook.pot --exclude=vendor,node_modules,tests,tools`.
+
+`package.json` (`@wordpress/scripts`, `@wordpress/env`) is ready for the block, which comes in PBI 30564 Step 4.

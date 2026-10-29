@@ -1,0 +1,352 @@
+# Copyright (C) 2026 Anybook
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Anybook Online Booking 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/anybook\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-29T18:23:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: anybook\n"
+
+#. Plugin Name of the plugin
+#: anybook.php
+#: includes/class-admin.php:49
+#: includes/class-admin.php:242
+#: includes/class-plugin.php:40
+msgid "Anybook Online Booking"
+msgstr ""
+
+#. Description of the plugin
+#: anybook.php
+msgid "Take bookings and card payments on your website with the Anybook booking widget."
+msgstr ""
+
+#. Author of the plugin
+#: anybook.php
+#: includes/class-admin.php:50
+msgid "Anybook"
+msgstr ""
+
+#. Author URI of the plugin
+#: anybook.php
+msgid "https://anybookapp.com"
+msgstr ""
+
+#: includes/class-admin.php:69
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:94
+msgid "Sorry, you are not allowed to connect this site to Anybook."
+msgstr ""
+
+#: includes/class-admin.php:189
+msgid "Sorry, you are not allowed to change the Anybook settings."
+msgstr ""
+
+#: includes/class-admin.php:210
+msgid "You can also enter your business code below: Anybook shows it to every staff member under Settings, Online booking."
+msgstr ""
+
+#: includes/class-admin.php:212
+msgid "Connected to Anybook."
+msgstr ""
+
+#: includes/class-admin.php:213
+msgid "Connected. Anybook has not approved your business yet, so the booking widget will not show until it does."
+msgstr ""
+
+#: includes/class-admin.php:214
+msgid "Disconnected. To stop this website showing your booking widget, remove it from allowed websites in Anybook too."
+msgstr ""
+
+#: includes/class-admin.php:215
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-admin.php:216
+msgid "Connecting was cancelled on Anybook. Nothing was changed there."
+msgstr ""
+
+#: includes/class-admin.php:217
+msgid "Only your business's Owner can connect a website on Anybook. Ask the Owner to click Connect here, or enter your business code below."
+msgstr ""
+
+#: includes/class-admin.php:218
+msgid "Your business is not approved on Anybook yet. Connect again once Anybook has approved it."
+msgstr ""
+
+#: includes/class-admin.php:219
+msgid "Anybook could not connect this site."
+msgstr ""
+
+#: includes/class-admin.php:220
+msgid "That connect link has expired or was already used. Please click Connect to Anybook again."
+msgstr ""
+
+#: includes/class-admin.php:221
+msgid "Anybook sent back something the plugin could not read. Please click Connect to Anybook again."
+msgstr ""
+
+#: includes/class-admin.php:222
+msgid "That is not a business code. Codes are letters, numbers and dashes, like bribie."
+msgstr ""
+
+#: includes/class-admin.php:223
+msgid "Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business."
+msgstr ""
+
+#: includes/class-admin.php:224
+#: includes/class-client.php:119
+msgid "Anybook could not be reached. Please try again in a minute."
+msgstr ""
+
+#: includes/class-admin.php:225
+msgid "The booking site address must be https, with no path, like https://app.anybookapp.com. Other settings were saved."
+msgstr ""
+
+#: includes/class-admin.php:226
+msgid "The booking page could not be made. Untick \"Make a booking page for me\" to connect without it."
+msgstr ""
+
+#: includes/class-admin.php:262
+#: includes/class-admin.php:265
+msgid "Connect to Anybook"
+msgstr ""
+
+#: includes/class-admin.php:263
+msgid "Anybook opens in this window. Sign in as your business's Owner and click Allow: Anybook lets this website show your booking widget and, if you like, uses the booking page below for your guests' email links. No keys or passwords are copied."
+msgstr ""
+
+#: includes/class-admin.php:268
+msgid "Or enter your business code"
+msgstr ""
+
+#: includes/class-admin.php:269
+msgid "For staff who are not the Owner. This only connects the plugin: add this website to allowed websites and set your guest page in Anybook yourself (Settings, Online booking)."
+msgstr ""
+
+#: includes/class-admin.php:273
+msgid "Business code"
+msgstr ""
+
+#: includes/class-admin.php:274
+msgid "for example bribie"
+msgstr ""
+
+#: includes/class-admin.php:275
+msgid "Save code"
+msgstr ""
+
+#: includes/class-admin.php:297
+msgid "Use my booking page as the guest page"
+msgstr ""
+
+#: includes/class-admin.php:298
+msgid "Make a booking page for me (\"Book online\") and use it as the guest page"
+msgstr ""
+
+#. translators: %s: booking site address.
+#: includes/class-admin.php:308
+#, php-format
+msgid "Connecting sends this website's name and address to Anybook (%s)."
+msgstr ""
+
+#: includes/class-admin.php:324
+msgid "Status"
+msgstr ""
+
+#. translators: 1: business name, 2: business code.
+#: includes/class-admin.php:328
+#, php-format
+msgid "Connected to %1$s (business code %2$s)."
+msgstr ""
+
+#: includes/class-admin.php:335
+msgid "Your business is approved on Anybook."
+msgstr ""
+
+#: includes/class-admin.php:335
+msgid "Your business is waiting for Anybook's approval."
+msgstr ""
+
+#: includes/class-admin.php:339
+msgid "Online booking is on."
+msgstr ""
+
+#: includes/class-admin.php:339
+msgid "Online booking is off on Anybook (Settings, Online booking)."
+msgstr ""
+
+#. translators: %s: this website's address.
+#: includes/class-admin.php:345
+#, php-format
+msgid "This website (%s) is allowed to show your booking widget."
+msgstr ""
+
+#. translators: %s: this website's address.
+#: includes/class-admin.php:347
+#, php-format
+msgid "This website (%s) is not on your allowed websites in Anybook: the widget will not load here. Connect again as the Owner, or add it in Anybook (Settings, Online booking)."
+msgstr ""
+
+#: includes/class-admin.php:350
+msgid "Your guest page is on this website."
+msgstr ""
+
+#: includes/class-admin.php:351
+msgid "Your guest page is on another website. Guests' email links open there."
+msgstr ""
+
+#: includes/class-admin.php:352
+msgid "You have no guest page yet: guests' email links need one (see Set your guest page below)."
+msgstr ""
+
+#: includes/class-admin.php:358
+msgid "The booking page the plugin made has been deleted."
+msgstr ""
+
+#: includes/class-admin.php:359
+msgid "The booking page is not published."
+msgstr ""
+
+#: includes/class-admin.php:360
+msgid "The booking page no longer holds the Anybook widget."
+msgstr ""
+
+#: includes/class-admin.php:371
+msgid "If your site sends a content security policy"
+msgstr ""
+
+#: includes/class-admin.php:372
+msgid "Give these lines to whoever manages your site's security headers. The plugin sets no policy itself."
+msgstr ""
+
+#. translators: %s: names of speed plugins.
+#: includes/class-admin.php:390
+#, php-format
+msgid "Speed plugins found: %s. The plugin asks them to leave the booking widget's script alone; if the widget does not appear, exclude booking-widget.js from delaying and combining in their settings."
+msgstr ""
+
+#: includes/class-admin.php:394
+msgid "Do not run session recording (replay) in your analytics on the booking page: it would record what guests type."
+msgstr ""
+
+#: includes/class-admin.php:399
+msgid "Check again"
+msgstr ""
+
+#: includes/class-admin.php:401
+msgid "Open Anybook online booking settings"
+msgstr ""
+
+#: includes/class-admin.php:407
+#: includes/class-admin.php:409
+msgid "Set your guest page"
+msgstr ""
+
+#: includes/class-admin.php:408
+msgid "Guests' email links (to see, change or pay for a booking) open on your guest page. To use a page on this website, the Owner clicks below and, on Anybook, ticks the guest page choice before clicking Allow."
+msgstr ""
+
+#: includes/class-admin.php:411
+#: includes/class-admin.php:413
+msgid "Connect again"
+msgstr ""
+
+#: includes/class-admin.php:412
+msgid "If a line above needs the Owner on Anybook, the Owner can connect again here."
+msgstr ""
+
+#: includes/class-admin.php:418
+msgid "Booking page"
+msgstr ""
+
+#: includes/class-admin.php:422
+msgid "Edit"
+msgstr ""
+
+#: includes/class-admin.php:426
+#: includes/class-admin.php:431
+msgid "Disconnect"
+msgstr ""
+
+#: includes/class-admin.php:427
+msgid "The widget stops showing on this site. Your booking page and your Anybook account are not changed; remove this website from allowed websites in Anybook as well if you no longer use it."
+msgstr ""
+
+#: includes/class-admin.php:443
+msgid "Widget colours"
+msgstr ""
+
+#: includes/class-admin.php:449
+msgid "Main colour"
+msgstr ""
+
+#: includes/class-admin.php:453
+msgid "Text colour"
+msgstr ""
+
+#: includes/class-admin.php:458
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-admin.php:461
+msgid "Booking site address"
+msgstr ""
+
+#: includes/class-admin.php:464
+msgid "Leave as https://app.anybookapp.com unless Anybook gave you a test address."
+msgstr ""
+
+#: includes/class-admin.php:469
+msgid "Save settings"
+msgstr ""
+
+#: includes/class-admin.php:485
+msgid "OK:"
+msgstr ""
+
+#: includes/class-admin.php:485
+msgid "To fix:"
+msgstr ""
+
+#: includes/class-booking-page.php:57
+msgid "Book online"
+msgstr ""
+
+#: includes/class-client.php:42
+msgid "That is not a business code."
+msgstr ""
+
+#: includes/class-client.php:124
+msgid "Anybook does not show this business yet: it is waiting for Anybook's approval, or the business code is wrong."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-client.php:128
+#, php-format
+msgid "Anybook answered with an error (%d). Please try again in a minute."
+msgstr ""
+
+#: includes/class-client.php:132
+msgid "Anybook sent an answer the plugin could not read."
+msgstr ""
+
+#: includes/class-plugin.php:38
+msgid "Our booking pages use the Anybook booking widget. When you book, what you type in the booking form (such as your name, email address, phone number and booking details) is sent from your browser to Anybook (anybookapp.com), which takes the booking for us. Card payments are made through Stripe; card details go to Stripe, not to this website or to Anybook."
+msgstr ""
+
+#: includes/class-plugin.php:39
+msgid "This website itself stores no booking or payment details."
+msgstr ""
+
+#: includes/class-renderer.php:42
+msgid "The Anybook booking widget will show here once this site is connected to Anybook (Anybook in the WordPress admin menu)."
+msgstr ""
