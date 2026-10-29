@@ -25,12 +25,43 @@ class AssetsTest extends TestCase {
 		$this->assertArrayHasKey( 'anybook-widget', $this->scripts['enqueued'] );
 	}
 
-	public function test_registered_for_the_footer_otherwise() {
+	public function test_nothing_on_a_view_without_the_widget() {
 		$this->connect();
 		$this->viewing( 'No widget here, [anybooking]' );
 		Assets::register();
-		$this->assertTrue( $this->scripts['registered']['anybook-widget']['args']['in_footer'] );
+		$this->assertEmpty( $this->scripts['registered'], 'enqueue() registers it if a widget renders later' );
 		$this->assertEmpty( $this->scripts['enqueued'] );
+	}
+
+	public function test_a_site_not_connected_reads_only_the_autoloaded_flag() {
+		$this->options['anybook_connected'] = '0';
+		$asked                              = 0;
+		Functions\when( 'is_singular' )->alias(
+			function () use ( &$asked ) {
+				++$asked;
+				return true;
+			}
+		);
+		Assets::register();
+		$this->assertSame( 0, $asked );
+		$this->assertEmpty( $this->scripts['registered'] );
+	}
+
+	public function test_elementor_content_counts_as_the_widget() {
+		$this->connect();
+		Functions\when( 'is_singular' )->justReturn( true );
+		$this->meta[5]['_elementor_data'] = '[{"elType":"widget","widgetType":"shortcode","settings":{"shortcode":"[anybook unit=\\"belle\\"]"}}]';
+		Functions\when( 'get_queried_object' )->justReturn(
+			new \WP_Post(
+				array(
+					'ID'           => 5,
+					'post_content' => '<p>Built with Elementor</p>',
+				)
+			)
+		);
+		Assets::register();
+		$this->assertFalse( $this->scripts['registered']['anybook-widget']['args']['in_footer'] );
+		$this->assertArrayHasKey( 'anybook-widget', $this->scripts['enqueued'] );
 	}
 
 	public function test_rendered_before_the_head_goes_in_the_head() {

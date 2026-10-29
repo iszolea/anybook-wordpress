@@ -53,27 +53,16 @@ class Assets {
 	}
 
 	/**
-	 * Registers the script on every front-end view of a connected site, and enqueues it in the head when the
-	 * viewed post holds the widget. Other views enqueue it when the widget renders (in the footer).
+	 * On a front-end view of a connected site whose post holds the widget, enqueues the script in the head. Other
+	 * views get it from enqueue() when the widget renders. A site that is not connected reads only the small
+	 * autoloaded flag here (review S-I5), and a view without the widget reads nothing more.
 	 */
 	public static function register() {
-		if ( ! Settings::is_connected() ) {
+		if ( ! Settings::maybe_connected() || ! self::view_has_widget() || ! Settings::is_connected() ) {
 			return;
 		}
-		$in_head = self::view_has_widget();
-		wp_register_script(
-			self::HANDLE,
-			self::script_url(),
-			array(),
-			null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- no ?ver=: Anybook serves the plain address fresh, so releases arrive at once.
-			array(
-				'strategy'  => 'defer',
-				'in_footer' => ! $in_head,
-			)
-		);
-		if ( $in_head ) {
-			wp_enqueue_script( self::HANDLE );
-		}
+		self::register_script( false );
+		wp_enqueue_script( self::HANDLE );
 	}
 
 	/**
@@ -82,27 +71,35 @@ class Assets {
 	 */
 	public static function enqueue() {
 		if ( ! wp_script_is( self::HANDLE, 'registered' ) ) {
-			wp_register_script(
-				self::HANDLE,
-				self::script_url(),
-				array(),
-				null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- as in register().
-				array(
-					'strategy'  => 'defer',
-					'in_footer' => did_action( 'wp_head' ) > 0,
-				)
-			);
+			self::register_script( did_action( 'wp_head' ) > 0 );
 		}
 		wp_enqueue_script( self::HANDLE );
 	}
 
-	/** Whether the queried post or page holds the block or the shortcode. */
+	/**
+	 * Registers the widget script, deferred and with no version.
+	 *
+	 * @param bool $in_footer Whether it goes in the footer.
+	 */
+	private static function register_script( $in_footer ) {
+		wp_register_script(
+			self::HANDLE,
+			self::script_url(),
+			array(),
+			null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- no ?ver=: Anybook serves the plain address fresh, so releases arrive at once.
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => (bool) $in_footer,
+			)
+		);
+	}
+
+	/** Whether the queried post or page shows the widget (in its content or a page builder's, see Booking_Page). */
 	public static function view_has_widget() {
 		if ( ! is_singular() ) {
 			return false;
 		}
-		$post = get_queried_object();
-		return $post instanceof \WP_Post && Booking_Page::has_widget( $post->post_content );
+		return Booking_Page::post_has_widget( get_queried_object() );
 	}
 
 	/**

@@ -25,6 +25,12 @@ class Admin {
 	/** Who may use the page and its actions. */
 	const CAPABILITY = 'manage_options';
 
+	/**
+	 * Who may change the booking site address (review S-M1): only someone WordPress already trusts to post scripts.
+	 * On a network that is the super admin; site admins have manage_options but not this.
+	 */
+	const SITE_CAPABILITY = 'unfiltered_html';
+
 	/** The admin-post actions and their handlers. */
 	const ACTIONS = array(
 		'anybook_connect'       => 'handle_connect',
@@ -41,6 +47,8 @@ class Admin {
 			add_action( 'admin_post_' . $action, array( __CLASS__, $method ) );
 		}
 		add_filter( 'plugin_action_links_' . plugin_basename( ANYBOOK_FILE ), array( __CLASS__, 'action_links' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'connect_notice' ) );
+		add_action( 'admin_init', array( Plugin::class, 'privacy_policy_content' ) );
 	}
 
 	/** Adds the Anybook menu item. */
@@ -68,6 +76,26 @@ class Admin {
 		$links   = is_array( $links ) ? $links : array();
 		$links[] = '<a href="' . esc_url( self::page_url() ) . '">' . esc_html__( 'Settings', 'anybook' ) . '</a>';
 		return $links;
+	}
+
+	/**
+	 * After activation, on the Plugins screen and the Dashboard only: a pointer to Connect, until the site is
+	 * connected (review Q10a). Never on other admin screens.
+	 */
+	public static function connect_notice() {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || ! in_array( $screen->id, array( 'plugins', 'dashboard' ), true ) ) {
+			return;
+		}
+		if ( ! current_user_can( self::CAPABILITY ) || Settings::is_connected() ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-info is-dismissible"><p>%1$s</p><p><a class="button button-primary" href="%2$s">%3$s</a></p></div>',
+			esc_html__( 'Anybook Online Booking is ready. Connect it to your Anybook business to show your booking widget on this website.', 'anybook' ),
+			esc_url( self::page_url() ),
+			esc_html__( 'Connect to Anybook', 'anybook' )
+		);
 	}
 
 	/**
@@ -104,20 +132,29 @@ class Admin {
 		self::redirect( self::page_url( $notice ) );
 	}
 
-	/** Connect to Anybook: make the booking page if asked, then send the browser to Anybook. */
+	/**
+	 * Connect to Anybook: draft the booking page if asked, then send the browser to Anybook. The page is published
+	 * only when the Owner agrees there (review Q1).
+	 */
 	public static function handle_connect() {
 		self::check( 'anybook_connect' );
+		if ( Settings::admin_origin() !== Settings::site_origin() ) {
+			// Anybook would allow the admin's address, where the widget never shows (review S-I1).
+			self::redirect( self::page_url( 'origin-mismatch' ) );
+		}
 		$guest_page = '';
 		$page_made  = false;
 		if ( ! empty( $_POST['anybook_make_page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
-			$existing   = Booking_Page::current_id();
-			$was_public = $existing && 'publish' === get_post_status( $existing );
-			$page_id    = Booking_Page::ensure_published();
-			if ( is_wp_error( $page_id ) ) {
-				self::redirect( self::page_url( 'page-failed' ) );
+			if ( Booking_Page::is_published() ) {
+				$guest_page = (string) get_permalink( Booking_Page::current_id() );
+			} else {
+				$page_id = Booking_Page::ensure_draft();
+				if ( is_wp_error( $page_id ) ) {
+					self::redirect( self::page_url( 'page-failed' ) );
+				}
+				$guest_page = Booking_Page::future_permalink( $page_id );
+				$page_made  = true;
 			}
-			$guest_page = (string) get_permalink( $page_id );
-			$page_made  = ! $was_public;
 		}
 		$url = Connection::start( get_current_user_id(), $guest_page, $page_made );
 
@@ -142,27 +179,49 @@ class Admin {
 	/** Default colours, and the booking site address under Advanced. */
 	public static function handle_save_settings() {
 		self::check( 'anybook_save_settings' );
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked in check().
-		$accent = isset( $_POST['anybook_accent'] ) ? sanitize_text_field( wp_unslash( $_POST['anybook_accent'] ) ) : '';
-		$text   = isset( $_POST['anybook_text'] ) ? sanitize_text_field( wp_unslash( $_POST['anybook_text'] ) ) : '';
-		$site   = isset( $_POST['anybook_site'] ) ? sanitize_text_field( wp_unslash( $_POST['anybook_site'] ) ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-		$changes = array(
-			'accent' => Settings::clean_colour( $accent ),
-			'text'   => Settings::clean_colour( $text ),
-		);
 		$notice  = 'saved';
-		if ( '' !== $site ) {
-			$clean_site = Settings::clean_site( $site );
-			if ( '' === $clean_site ) {
+		$changes = array();
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked in check().
+		foreach ( array(
+			'accent' => 'anybook_accent',
+			'text'   => 'anybook_text',
+		) as $key => $field ) {
+			if ( ! isset( $_POST[ $field ] ) ) {
+				continue;
+			}
+			$raw   = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+			$clean = Settings::clean_colour( $raw );
+			if ( '' !== $raw && '' === $clean ) {
+				$notice = 'bad-colour'; // The colour saved before stays.
+				continue;
+			}
+			$changes[ $key ] = $clean;
+		}
+		$site = isset( $_POST['anybook_site'] ) ? sanitize_text_field( wp_unslash( $_POST['anybook_site'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+		if ( '' !== $site && Settings::clean_site( $site ) !== Settings::site() ) {
+			$clean_site = Settings::form_site( $site );
+			if ( ! self::may_change_site() ) {
+				$notice = 'site-not-allowed';
+			} elseif ( '' === $clean_site ) {
 				$notice = 'bad-site';
-			} elseif ( Settings::site() !== $clean_site ) {
+			} else {
 				$changes['site'] = $clean_site;
 				Settings::clear_cache();
 			}
 		}
-		Settings::update( $changes );
+		if ( $changes ) {
+			Settings::update( $changes );
+		}
 		self::redirect( self::page_url( $notice ) );
+	}
+
+	/**
+	 * Whether this user may change the booking site on the settings page: never when wp-config.php sets it, and
+	 * only with unfiltered_html (review S-M1).
+	 */
+	public static function may_change_site() {
+		return '' === Settings::site_from_constant() && current_user_can( self::SITE_CAPABILITY );
 	}
 
 	/** Disconnect from the business. */
@@ -172,9 +231,12 @@ class Admin {
 		self::redirect( self::page_url( 'disconnected' ) );
 	}
 
-	/** Ask Anybook again for the status. */
+	/** Ask Anybook again for the status, at most once every 30 seconds per person (reviews S-L2, Q15). */
 	public static function handle_refresh() {
 		self::check( 'anybook_refresh' );
+		if ( ! Client::may_refresh( get_current_user_id() ) ) {
+			self::redirect( self::page_url( 'checked-recently' ) );
+		}
 		Settings::clear_cache();
 		self::redirect( self::page_url() );
 	}
@@ -209,11 +271,11 @@ class Admin {
 	public static function notice( $code ) {
 		$fallback = __( 'You can also enter your business code below: Anybook shows it to every staff member under Settings, Online booking.', 'anybook' );
 		$notices  = array(
-			'connected'          => array( 'success', __( 'Connected to Anybook.', 'anybook' ) ),
+			'connected'          => array( 'success', __( 'Connected to Anybook. Next, add the Anybook booking block to a page, or use your Book online page if you asked for one: it is now published.', 'anybook' ) ),
 			'connected-pending'  => array( 'warning', __( 'Connected. Anybook has not approved your business yet, so the booking widget will not show until it does.', 'anybook' ) ),
-			'disconnected'       => array( 'success', __( 'Disconnected. To stop this website showing your booking widget, remove it from allowed websites in Anybook too.', 'anybook' ) ),
+			'disconnected'       => array( 'success', __( 'Disconnected. The booking widget no longer shows on this website, and your Book online page shows visitors nothing until you connect again. To stop this website showing your widget for good, remove it from allowed websites in Anybook too.', 'anybook' ) ),
 			'saved'              => array( 'success', __( 'Settings saved.', 'anybook' ) ),
-			'error-cancelled'    => array( 'warning', __( 'Connecting was cancelled on Anybook. Nothing was changed there.', 'anybook' ) ),
+			'error-cancelled'    => array( 'warning', __( 'Connecting was cancelled on Anybook. Nothing was changed there, and the booking page stays a draft.', 'anybook' ) ),
 			'error-not-owner'    => array( 'warning', __( 'Only your business\'s Owner can connect a website on Anybook. Ask the Owner to click Connect here, or enter your business code below.', 'anybook' ) ),
 			'error-not-approved' => array( 'warning', __( 'Your business is not approved on Anybook yet. Connect again once Anybook has approved it.', 'anybook' ) . ' ' . $fallback ),
 			'error-other'        => array( 'error', __( 'Anybook could not connect this site.', 'anybook' ) . ' ' . $fallback ),
@@ -222,7 +284,11 @@ class Admin {
 			'bad-code'           => array( 'error', __( 'That is not a business code. Codes are letters, numbers and dashes, like bribie.', 'anybook' ) ),
 			'unknown-business'   => array( 'error', __( 'Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business.', 'anybook' ) ),
 			'unreachable'        => array( 'error', __( 'Anybook could not be reached. Please try again in a minute.', 'anybook' ) ),
-			'bad-site'           => array( 'error', __( 'The booking site address must be https, with no path, like https://app.anybookapp.com. Other settings were saved.', 'anybook' ) ),
+			'bad-colour'         => array( 'error', __( 'A colour was not saved: colours are written like #0b6e4f. The colour saved before is kept.', 'anybook' ) ),
+			'bad-site'           => array( 'error', __( 'The booking site must be an Anybook address, like https://app.anybookapp.com, or a test address on this computer (localhost). For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
+			'site-not-allowed'   => array( 'error', __( 'Only an administrator who may add scripts to this site can change the booking site address. Other settings were saved.', 'anybook' ) ),
+			'origin-mismatch'    => array( 'error', __( 'Your WordPress admin and your website have different addresses, so Connect would allow the wrong one. Enter your business code below instead.', 'anybook' ) ),
+			'checked-recently'   => array( 'info', __( 'Anybook was asked less than 30 seconds ago. The status below is its answer.', 'anybook' ) ),
 			'page-failed'        => array( 'error', __( 'The booking page could not be made. Untick "Make a booking page for me" to connect without it.', 'anybook' ) ),
 		);
 		return isset( $notices[ $code ] ) ? $notices[ $code ] : null;
@@ -243,6 +309,14 @@ class Admin {
 			<?php if ( $notice ) : ?>
 				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible"><p><?php echo esc_html( $notice[1] ); ?></p></div>
 			<?php endif; ?>
+			<?php if ( Settings::shares_origin() ) : ?>
+				<div class="notice notice-warning inline"><p>
+					<?php
+					/* translators: %s: this website's address, like https://example.com. */
+					echo esc_html( sprintf( __( 'Other websites share this website\'s address (%s), for example the other sites of a network that uses folders. Whatever your business allows for this address, it allows for them too: they could show your booking widget and read what guests type in it. Give your booking website its own domain or subdomain before you connect.', 'anybook' ), Settings::site_origin() ) );
+					?>
+				</p></div>
+			<?php endif; ?>
 
 			<?php
 			if ( Settings::is_connected() ) {
@@ -260,10 +334,17 @@ class Admin {
 	private static function render_connect() {
 		?>
 		<h2><?php esc_html_e( 'Connect to Anybook', 'anybook' ); ?></h2>
-		<p><?php esc_html_e( 'Anybook opens in this window. Sign in as your business\'s Owner and click Allow: Anybook lets this website show your booking widget and, if you like, uses the booking page below for your guests\' email links. No keys or passwords are copied.', 'anybook' ); ?></p>
-		<?php
-		self::render_connect_form( __( 'Connect to Anybook', 'anybook' ) );
-		?>
+		<?php if ( Settings::admin_origin() !== Settings::site_origin() ) : ?>
+			<p>
+				<?php
+				/* translators: 1: the WordPress admin's address, 2: the website's address. */
+				echo esc_html( sprintf( __( 'Your WordPress admin (%1$s) and your website (%2$s) have different addresses. Connect would allow the admin\'s address on Anybook, where your widget never shows, so use your business code below. Then, in Anybook, add %2$s to allowed websites.', 'anybook' ), Settings::admin_origin(), Settings::site_origin() ) );
+				?>
+			</p>
+		<?php else : ?>
+			<p><?php esc_html_e( 'Anybook opens in this window. Sign in as your business\'s Owner and click Allow. Anybook then adds this website to your allowed websites (Anybook shows your booking widget only on websites on that list) and, if you tick it there, makes the booking page below your guest page (the page where guests\' email links open). No keys or passwords are copied.', 'anybook' ); ?></p>
+			<?php self::render_connect_form( __( 'Connect to Anybook', 'anybook' ) ); ?>
+		<?php endif; ?>
 
 		<h2><?php esc_html_e( 'Or enter your business code', 'anybook' ); ?></h2>
 		<p><?php esc_html_e( 'For staff who are not the Owner. This only connects the plugin: add this website to allowed websites and set your guest page in Anybook yourself (Settings, Online booking).', 'anybook' ); ?></p>
@@ -300,6 +381,7 @@ class Admin {
 					?>
 				</label>
 			</p>
+			<p class="description"><?php esc_html_e( 'A new booking page is kept as a draft and published only when the Owner clicks Allow on Anybook.', 'anybook' ); ?></p>
 			<?php submit_button( $label, 'primary', 'submit', false ); ?>
 		</form>
 		<p class="description">
@@ -328,7 +410,11 @@ class Admin {
 			self::line( true, sprintf( __( 'Connected to %1$s (business code %2$s).', 'anybook' ), $settings['name'], $settings['slug'] ) );
 
 			if ( is_wp_error( $status ) ) {
-				self::line( false, $status->get_error_message() );
+				$why = $status->get_error_message();
+				if ( 'anybook_unreachable' === $status->get_error_code() ) {
+					$why .= ' ' . __( 'Only this page is affected: your visitors\' booking widget loads straight from Anybook and does not depend on this check.', 'anybook' );
+				}
+				self::line( false, $why );
 			} else {
 				self::line(
 					$status['approved'],
@@ -342,14 +428,14 @@ class Admin {
 					$status['originAllowed'],
 					$status['originAllowed']
 						/* translators: %s: this website's address. */
-						? sprintf( __( 'This website (%s) is allowed to show your booking widget.', 'anybook' ), $origin )
+						? sprintf( __( 'This website (%s) is on your allowed websites, so it can show your booking widget.', 'anybook' ), $origin )
 						/* translators: %s: this website's address. */
-						: sprintf( __( 'This website (%s) is not on your allowed websites in Anybook: the widget will not load here. Connect again as the Owner, or add it in Anybook (Settings, Online booking).', 'anybook' ), $origin )
+						: sprintf( __( 'This website (%s) is not on your allowed websites in Anybook, so the widget will not load here. Connect again as the Owner, or add it in Anybook (Settings, Online booking).', 'anybook' ), $origin )
 				);
 				$guest_messages = array(
-					'this-site' => __( 'Your guest page is on this website.', 'anybook' ),
-					'elsewhere' => __( 'Your guest page is on another website. Guests\' email links open there.', 'anybook' ),
-					'none'      => __( 'You have no guest page yet: guests\' email links need one (see Set your guest page below).', 'anybook' ),
+					'this-site' => __( 'Your guest page (where guests\' email links open) is on this website.', 'anybook' ),
+					'elsewhere' => __( 'Your guest page (where guests\' email links open) is on another website.', 'anybook' ),
+					'none'      => __( 'You have no guest page yet. Guests\' email links (to see, change or pay for a booking) need one: see Set your guest page below.', 'anybook' ),
 				);
 				self::line( 'this-site' === $status['guestPage'], $guest_messages[ $status['guestPage'] ] );
 			}
@@ -369,7 +455,7 @@ class Admin {
 		<?php if ( ! is_wp_error( $status ) && $status['cspSources'] ) : ?>
 			<details>
 				<summary><?php esc_html_e( 'If your site sends a content security policy', 'anybook' ); ?></summary>
-				<p><?php esc_html_e( 'Give these lines to whoever manages your site\'s security headers. The plugin sets no policy itself.', 'anybook' ); ?></p>
+				<p><?php esc_html_e( 'A content security policy is a list, sent by some websites, of the places a page may load code from. Most sites have none; if yours has one, give these lines to whoever manages your site\'s security headers. The plugin sets no policy itself.', 'anybook' ); ?></p>
 				<?php
 				$csp_text = '';
 				foreach ( $status['cspSources'] as $csp_line ) {
@@ -402,15 +488,22 @@ class Admin {
 
 		<?php
 		// Connect sets the guest page only if the Owner ticks it on Anybook (ADR-19), so it may still be missing.
-		if ( ! is_wp_error( $status ) && 'this-site' !== $status['guestPage'] ) :
-			?>
-			<h2><?php esc_html_e( 'Set your guest page', 'anybook' ); ?></h2>
-			<p><?php esc_html_e( 'Guests\' email links (to see, change or pay for a booking) open on your guest page. To use a page on this website, the Owner clicks below and, on Anybook, ticks the guest page choice before clicking Allow.', 'anybook' ); ?></p>
-			<?php self::render_connect_form( __( 'Set your guest page', 'anybook' ) ); ?>
+		$needs_guest_page = ! is_wp_error( $status ) && 'this-site' !== $status['guestPage'];
+		?>
+		<h2><?php echo esc_html( $needs_guest_page ? __( 'Set your guest page', 'anybook' ) : __( 'Connect again', 'anybook' ) ); ?></h2>
+		<?php if ( Settings::admin_origin() !== Settings::site_origin() ) : ?>
+			<p><?php esc_html_e( 'Your WordPress admin and your website have different addresses, so set the guest page and allowed websites in Anybook (Settings, Online booking).', 'anybook' ); ?></p>
 		<?php else : ?>
-			<h2><?php esc_html_e( 'Connect again', 'anybook' ); ?></h2>
-			<p><?php esc_html_e( 'If a line above needs the Owner on Anybook, the Owner can connect again here.', 'anybook' ); ?></p>
-			<?php self::render_connect_form( __( 'Connect again', 'anybook' ) ); ?>
+			<p>
+				<?php
+				echo esc_html(
+					$needs_guest_page
+						? __( 'To use a page on this website as your guest page, the Owner clicks below and, on Anybook, ticks the guest page choice before clicking Allow.', 'anybook' )
+						: __( 'If a line above needs the Owner on Anybook, the Owner can connect again here.', 'anybook' )
+				);
+				?>
+			</p>
+			<?php self::render_connect_form( __( 'Connect to Anybook again', 'anybook' ) ); ?>
 		<?php endif; ?>
 
 		<?php $page_id = Booking_Page::current_id(); ?>
@@ -424,8 +517,9 @@ class Admin {
 		<?php endif; ?>
 
 		<h2><?php esc_html_e( 'Disconnect', 'anybook' ); ?></h2>
-		<p><?php esc_html_e( 'The widget stops showing on this site. Your booking page and your Anybook account are not changed; remove this website from allowed websites in Anybook as well if you no longer use it.', 'anybook' ); ?></p>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+		<p><?php esc_html_e( 'The widget stops showing on this site. Your booking page stays published but shows visitors nothing until you connect again, and your Anybook account is not changed; remove this website from allowed websites in Anybook as well if you no longer use it.', 'anybook' ); ?></p>
+		<?php $confirm = __( 'Disconnect from Anybook? The booking widget stops showing on this website.', 'anybook' ); ?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return window.confirm(<?php echo esc_attr( wp_json_encode( $confirm ) ); ?>);">
 			<input type="hidden" name="action" value="anybook_disconnect" />
 			<?php wp_nonce_field( 'anybook_disconnect' ); ?>
 			<?php submit_button( __( 'Disconnect', 'anybook' ), 'delete', 'submit', false ); ?>
@@ -434,39 +528,60 @@ class Admin {
 	}
 
 	/**
-	 * Default colours and the booking site address.
+	 * Default colours (once connected) and the booking site address (for those who may change it).
 	 *
 	 * @param array $settings Stored settings.
 	 */
 	private static function render_settings( array $settings ) {
+		$connected = Settings::is_connected();
+		$constant  = Settings::site_from_constant();
+		$site_form = self::may_change_site();
+		if ( ! $connected && ! $site_form && '' === $constant ) {
+			return;
+		}
 		?>
-		<h2><?php esc_html_e( 'Widget colours', 'anybook' ); ?></h2>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="anybook_save_settings" />
 			<?php wp_nonce_field( 'anybook_save_settings' ); ?>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="anybook_accent"><?php esc_html_e( 'Main colour', 'anybook' ); ?></label></th>
-					<td><input type="text" id="anybook_accent" name="anybook_accent" value="<?php echo esc_attr( $settings['accent'] ); ?>" placeholder="#0b6e4f" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="anybook_text"><?php esc_html_e( 'Text colour', 'anybook' ); ?></label></th>
-					<td><input type="text" id="anybook_text" name="anybook_text" value="<?php echo esc_attr( $settings['text'] ); ?>" placeholder="#1f2933" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
-				</tr>
-			</table>
+			<?php if ( $connected ) : ?>
+				<h2><?php esc_html_e( 'Widget colours', 'anybook' ); ?></h2>
+				<p><?php esc_html_e( 'Used by every booking widget on this site unless its block or shortcode sets its own.', 'anybook' ); ?></p>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="anybook_accent"><?php esc_html_e( 'Main colour', 'anybook' ); ?></label></th>
+						<td><input type="text" id="anybook_accent" name="anybook_accent" value="<?php echo esc_attr( $settings['accent'] ); ?>" placeholder="#0b6e4f" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="anybook_text"><?php esc_html_e( 'Text colour', 'anybook' ); ?></label></th>
+						<td><input type="text" id="anybook_text" name="anybook_text" value="<?php echo esc_attr( $settings['text'] ); ?>" placeholder="#1f2933" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
+					</tr>
+				</table>
+			<?php endif; ?>
 			<details>
 				<summary><?php esc_html_e( 'Advanced', 'anybook' ); ?></summary>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="anybook_site"><?php esc_html_e( 'Booking site address', 'anybook' ); ?></label></th>
+						<th scope="row"><?php esc_html_e( 'Booking site address', 'anybook' ); ?></th>
 						<td>
-							<input type="url" id="anybook_site" name="anybook_site" class="regular-text" value="<?php echo esc_attr( Settings::site() ); ?>" />
-							<p class="description"><?php esc_html_e( 'Leave as https://app.anybookapp.com unless Anybook gave you a test address.', 'anybook' ); ?></p>
+							<?php if ( '' !== $constant ) : ?>
+								<code><?php echo esc_html( $constant ); ?></code>
+								<p class="description"><?php esc_html_e( 'Set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
+							<?php elseif ( $site_form ) : ?>
+								<label for="anybook_site" class="screen-reader-text"><?php esc_html_e( 'Booking site address', 'anybook' ); ?></label>
+								<input type="url" id="anybook_site" name="anybook_site" class="regular-text" value="<?php echo esc_attr( Settings::site() ); ?>" />
+								<p class="description"><?php esc_html_e( 'Leave as https://app.anybookapp.com unless Anybook gave you another anybookapp.com address. Any other address can only be set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
+							<?php else : ?>
+								<code><?php echo esc_html( Settings::site() ); ?></code>
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
 			</details>
-			<?php submit_button( __( 'Save settings', 'anybook' ) ); ?>
+			<?php
+			if ( $connected || $site_form ) {
+				submit_button( __( 'Save settings', 'anybook' ) );
+			}
+			?>
 		</form>
 		<?php
 	}

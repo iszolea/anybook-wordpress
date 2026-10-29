@@ -32,7 +32,7 @@ class Connection {
 	 *
 	 * @param int    $user_id    The WordPress user connecting.
 	 * @param string $guest_page Address of the booking page to offer as the guest page, or ''.
-	 * @param bool   $page_made  Whether that page was published for this connect (then a cancel unpublishes it).
+	 * @param bool   $page_made  Whether that page is a draft made for this connect (published once the Owner agrees).
 	 */
 	public static function start( $user_id, $guest_page = '', $page_made = false ) {
 		$state = wp_generate_password( 32, false );
@@ -88,10 +88,7 @@ class Connection {
 		}
 
 		if ( isset( $query['anybook_error'] ) ) {
-			// A page published for this connect and not allowed on Anybook goes back to draft (ADR-7).
-			if ( $record['page_made'] ) {
-				Booking_Page::unpublish( Booking_Page::current_id() );
-			}
+			// A page drafted for this connect stays a draft: the Owner did not agree (ADR-7, review Q1).
 			$reason = (string) $query['anybook_error'];
 			return in_array( $reason, self::ERRORS, true ) ? 'error-' . $reason : 'error-other';
 		}
@@ -104,7 +101,12 @@ class Connection {
 		// A business waiting for approval may connect, but the site-status route answers 404 until it is approved
 		// (ADR-19). The state shows this return closes a connect this user started, and a business code is public,
 		// so it is saved and the settings page says the widget waits for approval.
-		return self::save_business( $slug, $fallback_name, true );
+		$notice = self::save_business( $slug, $fallback_name, true );
+		// The Owner agreed on Anybook: only now is the page drafted for this connect published (review Q1).
+		if ( $record['page_made'] && in_array( $notice, array( 'connected', 'connected-pending' ), true ) ) {
+			Booking_Page::publish( Booking_Page::current_id() );
+		}
+		return $notice;
 	}
 
 	/**

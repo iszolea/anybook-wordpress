@@ -1,0 +1,1 @@
+{"name":"E2E Houseboats","onlineBooking":true,"approved":true,"originAllowed":true,"guestPage":"this-site","hasUnits":true,"hasServices":false,"cspSources":[{"directive":"script-src","sources":"https://app.anybookapp.com https://js.stripe.com"}]}

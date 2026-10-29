@@ -20,7 +20,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	protected $transients = array();
 	/** @var \WP_Post[] Posts by id. */
 	protected $posts = array();
-	/** @var array Requests made with wp_remote_get. */
+	/** @var array Requests made: url, arguments and which function (wp_safe_remote_get or wp_remote_get). */
 	protected $requests = array();
 	/** @var callable Answers wp_remote_get: url => response array or WP_Error. */
 	protected $http;
@@ -33,6 +33,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	);
 	/** @var string This site's home address. */
 	protected $home = 'https://example.com';
+	/** @var string|null The admin's address, when it differs from home. */
+	protected $admin = null;
+	/** @var array Post meta by post id and key. */
+	protected $meta = array();
+	/** @var bool Whether this is a network. */
+	protected $multisite = false;
+	/** @var bool Whether the network uses subdomains. */
+	protected $subdomains = true;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -90,7 +98,52 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 		);
 		Functions\when( 'admin_url' )->alias(
 			function ( $path = '' ) use ( $t ) {
-				return $t->home . '/wp-admin/' . $path;
+				return ( null === $t->admin ? $t->home : $t->admin ) . '/wp-admin/' . $path;
+			}
+		);
+		Functions\when( 'is_multisite' )->alias(
+			function () use ( $t ) {
+				return $t->multisite;
+			}
+		);
+		Functions\when( 'is_subdomain_install' )->alias(
+			function () use ( $t ) {
+				return $t->subdomains;
+			}
+		);
+		Functions\when( 'get_current_user_id' )->justReturn( 7 );
+		Functions\when( 'rest_sanitize_boolean' )->alias(
+			function ( $value ) {
+				return in_array( $value, array( true, 1, '1', 'true' ), true );
+			}
+		);
+		Functions\when( 'get_post_meta' )->alias(
+			function ( $id, $key ) use ( $t ) {
+				return isset( $t->meta[ $id ][ $key ] ) ? $t->meta[ $id ][ $key ] : '';
+			}
+		);
+		Functions\when( 'sanitize_title' )->alias(
+			function ( $s ) {
+				return strtolower( preg_replace( '/[^A-Za-z0-9]+/', '-', trim( (string) $s ) ) );
+			}
+		);
+		Functions\when( 'wp_unique_post_slug' )->alias(
+			function ( $slug, $id ) use ( $t ) {
+				foreach ( $t->posts as $post ) {
+					if ( $post->ID !== $id && 'publish' === $post->post_status && $post->post_name === $slug ) {
+						return $slug . '-2';
+					}
+				}
+				return $slug;
+			}
+		);
+		Functions\when( 'get_permalink' )->alias(
+			function ( $post ) use ( $t ) {
+				$post = is_object( $post ) ? $post : ( isset( $t->posts[ $post ] ) ? $t->posts[ $post ] : null );
+				if ( ! $post ) {
+					return false;
+				}
+				return 'publish' === $post->post_status ? $t->home . '/' . $post->post_name . '/' : $t->home . '/?page_id=' . $post->ID;
 			}
 		);
 		Functions\when( 'did_action' )->justReturn( 1 );
@@ -123,7 +176,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 		};
 		Functions\when( 'wp_remote_get' )->alias(
 			function ( $url, $args = array() ) use ( $t ) {
-				$t->requests[] = array( $url, $args );
+				$t->requests[] = array( $url, $args, 'wp_remote_get' );
+				return call_user_func( $t->http, $url );
+			}
+		);
+		Functions\when( 'wp_safe_remote_get' )->alias(
+			function ( $url, $args = array() ) use ( $t ) {
+				$t->requests[] = array( $url, $args, 'wp_safe_remote_get' );
 				return call_user_func( $t->http, $url );
 			}
 		);

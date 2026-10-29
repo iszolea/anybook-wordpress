@@ -41,10 +41,22 @@ class WP_Post {
 	public $post_content = '';
 	public $post_title   = '';
 	public $post_name    = '';
+	public $post_parent  = 0;
+	public $filter       = 'raw';
 	public function __construct( array $fields ) {
 		foreach ( $fields as $key => $value ) {
 			$this->$key = $value;
 		}
+	}
+}
+
+class WP_REST_Request {
+	private $params;
+	public function __construct( array $params = array() ) {
+		$this->params = $params;
+	}
+	public function get_param( $key ) {
+		return isset( $this->params[ $key ] ) ? $this->params[ $key ] : null;
 	}
 }
 

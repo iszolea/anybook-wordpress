@@ -102,11 +102,48 @@ class ConnectionTest extends TestCase {
 		$this->assertSame( 'bad-return', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => '<x>' ), 7 ) );
 	}
 
-	public function test_cancel_unpublishes_the_page_made_for_this_connect() {
-		$this->posts[42]                   = new \WP_Post( array( 'ID' => 42 ) );
+	/** A booking page drafted for this connect, as Admin::handle_connect() leaves it. */
+	private function drafted_page() {
+		$this->posts[42]                   = new \WP_Post(
+			array(
+				'ID'          => 42,
+				'post_status' => 'draft',
+				'post_name'   => 'book',
+			)
+		);
 		$this->options['anybook_settings'] = array( 'page_id' => 42 );
-		list( , $query )                   = $this->start_connect( 'https://example.com/book/', true );
+	}
+
+	public function test_a_refused_connect_leaves_the_page_a_draft() {
+		$this->drafted_page();
+		list( , $query ) = $this->start_connect( 'https://example.com/book/', true );
 		$this->assertSame( 'error-not-owner', Connection::handle_return( array( 'state' => $query['state'], 'anybook_error' => 'not-owner' ), 7 ) );
+		$this->assertSame( 'draft', $this->posts[42]->post_status );
+	}
+
+	public function test_the_page_is_published_only_when_the_owner_agrees() {
+		$this->anybook_knows_bribie();
+		$this->drafted_page();
+		list( , $query ) = $this->start_connect( 'https://example.com/book/', true );
+		$this->assertSame( 'draft', $this->posts[42]->post_status, 'nothing public while the Owner is on Anybook' );
+		$this->assertSame( 'connected', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => 'bribie' ), 7 ) );
+		$this->assertSame( 'publish', $this->posts[42]->post_status );
+	}
+
+	public function test_an_expired_or_abandoned_connect_leaves_the_page_a_draft() {
+		$this->anybook_knows_bribie();
+		$this->drafted_page();
+		list( , $query ) = $this->start_connect( 'https://example.com/book/', true );
+		unset( $this->transients['anybook_state_7'] ); // The 15 minutes are up (or the tab was closed).
+		$this->assertSame( 'bad-state', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => 'bribie' ), 7 ) );
+		$this->assertSame( 'draft', $this->posts[42]->post_status );
+		$this->assertFalse( Settings::is_connected() );
+	}
+
+	public function test_a_failed_check_after_the_return_leaves_the_page_a_draft() {
+		$this->drafted_page();
+		list( , $query ) = $this->start_connect( 'https://example.com/book/', true );
+		$this->assertSame( 'unreachable', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => 'bribie' ), 7 ) );
 		$this->assertSame( 'draft', $this->posts[42]->post_status );
 	}
 

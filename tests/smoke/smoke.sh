@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # A smoke test in a real WordPress (latest official Docker image, MariaDB) with Anybook faked by a must-use plugin:
-#   activation makes no call to Anybook; connect return; settings page renders; the booking page is made and its
-#   head loads the widget script deferred, unversioned and with the speed-plugin attributes; a page without the
-#   widget loads nothing; Plugin Check; then multisite: uninstall clears every site and keeps the booking page.
+#   activation makes no call to Anybook; connect return; the booking page stays a draft until the Owner agrees;
+#   settings page renders; the booking page's head loads the widget script deferred, unversioned and with the
+#   speed-plugin attributes; a page without the widget loads nothing; a classic theme (head on the booking page,
+#   footer elsewhere); Elementor-style content; Autoptimize and LiteSpeed Cache with their script optimisations on
+#   leave the widget's tag alone; Plugin Check (must run, no errors, only allowed warnings); readme "Tested up to"
+#   is this WordPress; then multisite: the shared-address warning, and uninstall clears every site and keeps the page.
 #
 #   bash tests/smoke/smoke.sh            (the committed tree, as git archive packs it for release)
 #
@@ -24,8 +27,11 @@ cleanup
 
 wp() { docker run --rm -i --network $NET -v $P-html:/var/www/html --user 33:33 "${DBENV[@]}" wordpress:cli wp --quiet "$@"; }
 page() { docker exec $P-wp curl -fsS "http://localhost$1"; }
+status_of() { docker exec $P-wp curl -s -o /dev/null -w '%{http_code}' "http://localhost$1"; }
 fail() { echo "FAIL: $*"; exit 1; }
 pass() { echo "ok - $*"; }
+# The widget's script tag in a page's head, or ''.
+head_tag() { local body; body=$(page "$1"); grep -o '<script[^>]*booking-widget\.js[^>]*>' <<<"${body%%</head>*}" || true; }
 
 docker network create $NET >/dev/null
 docker run -d --name $P-db --network $NET -e MARIADB_DATABASE=wp -e MARIADB_USER=wp -e MARIADB_PASSWORD=wp \
@@ -42,6 +48,8 @@ docker exec $P-wp mkdir -p /var/www/html/wp-content/plugins/anybook /var/www/htm
 git archive --format=tar HEAD | docker exec -i $P-wp tar -x -C /var/www/html/wp-content/plugins/anybook
 docker cp tests/smoke/fake-anybook.php $P-wp:/var/www/html/wp-content/mu-plugins/fake-anybook.php
 docker exec $P-wp chown -R www-data:www-data /var/www/html/wp-content
+docker exec $P-wp test -f /var/www/html/wp-content/plugins/anybook/package.json || fail "package.json (build steps) not in the release"
+docker exec $P-wp test ! -e /var/www/html/wp-content/plugins/anybook/blocks/booking/test || fail "JS tests in the release"
 
 wp plugin activate anybook
 [ "$(wp option get fake_anybook_calls 2>/dev/null || echo 0)" = "0" ] || fail "Anybook was called on activation"
@@ -56,18 +64,35 @@ out=$(wp eval '
 [ "$out" = "connected|http://localhost/wp-admin/admin.php?page=anybook|bad-state" ] || fail "connect return: $out"
 pass "connect return saved the business; the state works once"
 
+# The booking page: a draft, invisible to visitors, while the Owner is on Anybook; a refusal leaves it so; agreeing publishes it.
+id=$(wp eval 'echo Anybook\Booking_Page::ensure_draft();')
+[ "$(wp post get "$id" --field=post_status)" = "draft" ] || fail "booking page not made as a draft"
+[ "$(status_of "/?page_id=$id")" = "404" ] || fail "draft booking page is visible to visitors"
+future=$(wp eval "echo Anybook\\Booking_Page::future_permalink( $id );")
+[ "$future" = "http://localhost/?page_id=$id" ] || [ "$future" = "http://localhost/book/" ] || fail "future address: $future"
+out=$(wp eval '
+	$url = Anybook\Connection::start( 1, "x", true );
+	parse_str( parse_url( $url, PHP_URL_QUERY ), $q );
+	echo Anybook\Connection::handle_return( array( "state" => $q["state"], "anybook_error" => "cancelled" ), 1 );')
+[ "$out" = "error-cancelled" ] && [ "$(wp post get "$id" --field=post_status)" = "draft" ] || fail "cancel: $out, $(wp post get "$id" --field=post_status)"
+out=$(wp eval '
+	$url = Anybook\Connection::start( 1, "x", true );
+	parse_str( parse_url( $url, PHP_URL_QUERY ), $q );
+	echo Anybook\Connection::handle_return( array( "state" => $q["state"], "anybook_slug" => "bribie" ), 1 );')
+[ "$out" = "connected" ] && [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "allow: $out, $(wp post get "$id" --field=post_status)"
+pass "booking page: a draft until the Owner agrees, then published"
+
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
 grep -q 'Connected to Bribie Houseboat Holidays' <<<"$html" || fail "settings page has no connected line"
 grep -q 'Set your guest page' <<<"$html" || fail "settings page does not offer to set the guest page"
 grep -q 'script-src https://app.anybookapp.com' <<<"$html" || fail "settings page has no CSP lines"
+grep -q 'Other websites share' <<<"$html" && fail "shared-address warning on a single site"
 pass "settings page renders the status, guest page offer and CSP lines"
 
-id=$(wp eval 'echo Anybook\Booking_Page::ensure_published();')
 body=$(page "/?page_id=$id")
-head=${body%%</head>*}
 grep -q '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links></booking-widget>' <<<"$body" \
 	|| fail "booking page has no widget element"
-tag=$(grep -o '<script[^>]*booking-widget\.js[^>]*>' <<<"$head" || true)
+tag=$(head_tag "/?page_id=$id")
 [ -n "$tag" ] || fail "widget script not in the head of the booking page"
 for want in 'src="https://app.anybookapp.com/widget/booking-widget.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
 	grep -qF "$want" <<<"$tag" || fail "script tag lacks $want: $tag"
@@ -94,25 +119,98 @@ anon=$(wp eval 'wp_set_current_user( 0 ); echo rest_do_request( new WP_REST_Requ
 [ "$anon" = "401" ] || fail "catalog route open to visitors: $anon"
 pass "block registered; catalogue route answers editors only"
 
+# A contributor's refresh is served from the cache (S-L2).
+contrib=$(wp user create helper helper@example.test --role=contributor --porcelain)
+before=$(wp option get fake_anybook_calls)
+wp eval "wp_set_current_user( $contrib ); \$q = new WP_REST_Request( 'GET', '/anybook/v1/catalog' ); \$q->set_param( 'refresh', true ); rest_do_request( \$q ); rest_do_request( \$q );"
+[ "$(wp option get fake_anybook_calls)" = "$before" ] || fail "a contributor's refresh reached Anybook"
+pass "catalogue refresh: contributors get the cache"
+
 other=$(wp post create --post_type=post --post_status=publish --post_title=Hello --post_content='No widget' --porcelain)
 page "/?p=$other" | grep -q 'booking-widget' && fail "page without the widget loads it"
 pass "a page without the widget loads no script"
 
-# Plugin Check (from wordpress.org) on the shipped tree.
-wp plugin install plugin-check --activate
-pc=$(wp plugin check anybook --format=csv 2>&1 || true)
-echo "$pc" | sed 's/^/  plugin-check: /'
-grep -qi ',ERROR,' <<<"$pc" && fail "Plugin Check found errors"
-pass "Plugin Check: no errors"
+# Elementor keeps a page's content in _elementor_data (Q9): the script still goes in the head.
+el=$(wp post create --post_type=page --post_status=publish --post_title=Elementor --post_content='<p>Built with a page builder</p>' --porcelain)
+wp post meta update "$el" _elementor_data '[{"elType":"widget","widgetType":"shortcode","settings":{"shortcode":"[anybook unit=\"belle\"]"}}]'
+[ -n "$(head_tag "/?page_id=$el")" ] || fail "Elementor-style page: script not in the head"
+pass "Elementor-style content counts as the widget"
 
-# Multisite: two sites each with settings; uninstall clears both and keeps the booking page.
+# A classic theme (Q6): the booking page made there holds the shortcode block; its head has the script; a list of
+# posts that renders the shortcode gets it in the footer.
+wp theme install twentytwentyone --activate
+wp theme mod set display_excerpt_or_full_post full
+classic=$(wp eval 'echo Anybook\Booking_Page::content();')
+[ "$classic" = "$(printf '<!-- wp:shortcode -->\n[anybook guest_links="yes"]\n<!-- /wp:shortcode -->')" ] || fail "classic booking page content: $classic"
+cpage=$(wp post create --post_type=page --post_status=publish --post_title="Classic booking" --post_content="$classic" --porcelain)
+[ -n "$(head_tag "/?page_id=$cpage")" ] || fail "classic theme: script not in the head of the booking page"
+page "/?page_id=$cpage" | grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links>' || fail "classic theme: no element"
+wp post create --post_type=post --post_status=publish --post_title="Listed" --post_content='[anybook]' >/dev/null
+home=$(page "/")
+grep -q '<booking-widget' <<<"$home" || fail "classic theme: the post list does not render the shortcode"
+[ -z "$(head_tag "/")" ] || fail "classic theme: script in the head of a post list"
+grep -q '<script[^>]*booking-widget\.js' <<<"${home#*</head>}" || fail "classic theme: script missing from the footer of a post list"
+pass "classic theme (Twenty Twenty-One): head on the booking page, footer on a post list"
+
+# Speed plugins (Q3): with their script optimisations on, the widget's tag stays as it is, in the head, while the
+# plugin is seen optimising the page's other scripts.
+docker cp tests/smoke/other-script.php $P-wp:/var/www/html/wp-content/mu-plugins/other-script.php
+check_speed() { # name, evidence pattern
+	local tag body
+	body=$(page "/?page_id=$cpage")
+	grep -q "$2" <<<"$body" || fail "$1 did not optimise the page (no $2)"
+	tag=$(head_tag "/?page_id=$cpage")
+	[ -n "$tag" ] || fail "$1: widget script not in the head"
+	for want in 'src="https://app.anybookapp.com/widget/booking-widget.js"' 'defer'; do
+		grep -qF "$want" <<<"$tag" || fail "$1 changed the widget tag: $tag"
+	done
+	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the widget: $tag"
+	[ "$(grep -o 'booking-widget\.js' <<<"$body" | wc -l)" = "1" ] || fail "$1 copied the widget script"
+	page "/?page_id=$cpage" | grep -q '<booking-widget business="bribie"' || fail "$1 lost the element"
+	pass "$1 ($(wp plugin get "$1" --field=version)) with script optimisations on leaves the widget alone"
+}
+wp plugin install autoptimize --activate
+for o in autoptimize_js=on autoptimize_js_aggregate=on autoptimize_js_defer_not_aggregate=on autoptimize_js_defer_inline=on; do
+	wp option update "${o%%=*}" "${o#*=}"
+done
+check_speed autoptimize 'wp-content/cache/autoptimize/js/'
+wp plugin deactivate autoptimize
+wp plugin install litespeed-cache --activate
+for o in optm-js_min=1 optm-js_comb=1 optm-js_comb_ext_inl=1 optm-js_defer=2; do
+	wp litespeed-option set "${o%%=*}" "${o#*=}" >/dev/null
+done
+check_speed litespeed-cache 'litespeed/javascript\|wp-content/litespeed/js/'
+wp plugin deactivate litespeed-cache
+wp theme activate twentytwentyfive
+
+# Plugin Check (from wordpress.org) on the shipped tree (Q5): it must run, find no errors, and warn only about
+# what is listed here with its reason.
+ALLOWED_WARNINGS='^$'
+wp plugin install plugin-check --activate
+pc=$(wp plugin check anybook --format=csv --fields=file,line,type,code,message 2>&1 || true)
+echo "$pc" | sed 's/^/  plugin-check: /'
+grep -qE 'Success: Checks complete|^FILE: |^file,line,type' <<<"$pc" || fail "Plugin Check did not run"
+grep -q ',ERROR,' <<<"$pc" && fail "Plugin Check found errors"
+warnings=$(grep ',WARNING,' <<<"$pc" | cut -d, -f4 | sort -u | grep -vE "$ALLOWED_WARNINGS" || true)
+[ -z "$warnings" ] || fail "Plugin Check warnings not on the allowed list: $warnings"
+pass "Plugin Check ran: no errors, no warnings beyond the allowed list"
+
+wpv=$(wp core version | cut -d. -f1,2)
+[ "$(docker exec $P-wp grep -m1 '^Tested up to:' /var/www/html/wp-content/plugins/anybook/readme.txt)" = "Tested up to: $wpv" ] \
+	|| fail "readme Tested up to is not this WordPress ($wpv)"
+pass "readme Tested up to: $wpv"
+
+# Multisite: a subdirectory network warns about the shared address; uninstall clears every site and keeps the page.
 wp core multisite-convert --title="Smoke network"
 wp site create --slug=two
-wp eval 'switch_to_blog( 2 ); update_option( "anybook_settings", array( "slug" => "other" ) ); set_transient( "anybook_status", 1, 600 ); restore_current_blog();'
+html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
+grep -q 'Other websites share' <<<"$html" || fail "no shared-address warning on a subdirectory network"
+pass "subdirectory network: the settings page warns about the shared address"
+wp eval 'switch_to_blog( 2 ); update_option( "anybook_settings", array( "slug" => "other" ) ); update_option( "anybook_connected", "1" ); set_transient( "anybook_status", 1, 600 ); set_transient( "anybook_refresh_1", 1, 30 ); restore_current_blog();'
 wp plugin deactivate anybook
 wp plugin uninstall anybook --skip-delete
-left=$(wp eval 'echo (int) (bool) get_option( "anybook_settings" ); switch_to_blog( 2 ); echo (int) (bool) get_option( "anybook_settings" ), (int) (bool) get_transient( "anybook_status" ); restore_current_blog();')
-[ "$left" = "000" ] || fail "uninstall left data behind: $left"
+left=$(wp eval 'echo (int) (bool) get_option( "anybook_settings" ), (int) (bool) get_option( "anybook_connected" ); switch_to_blog( 2 ); echo (int) (bool) get_option( "anybook_settings" ), (int) (bool) get_option( "anybook_connected" ), (int) (bool) get_transient( "anybook_status" ), (int) (bool) get_transient( "anybook_refresh_1" ); restore_current_blog();')
+[ "$left" = "000000" ] || fail "uninstall left data behind: $left"
 [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "uninstall touched the booking page"
 pass "uninstall cleared both sites and kept the booking page"
 

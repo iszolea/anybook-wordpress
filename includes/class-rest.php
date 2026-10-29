@@ -56,6 +56,8 @@ class Rest {
 	 */
 	public static function catalog( $request ) {
 		$refresh = $request instanceof \WP_REST_Request && rest_sanitize_boolean( $request->get_param( 'refresh' ) );
+		// Skipping the cache costs Anybook two requests: administrators only, once every 30 seconds (S-L2, Q15).
+		$refresh = $refresh && Client::may_refresh( get_current_user_id() );
 		$data    = Client::catalog( ! $refresh );
 		if ( is_wp_error( $data ) ) {
 			$status = 'anybook_not_connected' === $data->get_error_code() ? 409 : 502;

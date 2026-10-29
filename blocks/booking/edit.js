@@ -10,7 +10,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
-	ExternalLink,
 	Notice,
 	PanelBody,
 	Placeholder,
@@ -105,7 +104,7 @@ function useCatalog( enabled ) {
  * @param {string}   props.empty    Words when the business has none.
  * @param {Function} props.onChange Called with the new code.
  */
-function CodeChooser( {
+export function CodeChooser( {
 	label,
 	value,
 	items,
@@ -179,7 +178,12 @@ function NotConnected( { blockProps } ) {
 				) }
 			>
 				{ site.settingsUrl ? (
-					<Button variant="primary" href={ site.settingsUrl }>
+					<Button
+						variant="primary"
+						href={ site.settingsUrl }
+						target="_blank"
+						rel="noopener noreferrer"
+					>
 						{ __( 'Connect to Anybook', 'anybook' ) }
 					</Button>
 				) : (
@@ -201,7 +205,7 @@ function NotConnected( { blockProps } ) {
  * @param {Object} attributes Block attributes.
  * @param {Object} catalog    Units and services.
  */
-function describe( attributes, catalog ) {
+export function describe( attributes, catalog ) {
 	const nameOf = ( list, code ) =>
 		list.find( ( item ) => item.code === code )?.name || code;
 	switch ( attributes.show ) {
@@ -274,14 +278,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						onChange={ ( show ) => setAttributes( { show } ) }
 					/>
-					{ failed && (
-						<Notice status="warning" isDismissible={ false }>
-							{ catalog.error }{ ' ' }
-							<Button variant="link" onClick={ catalog.reload }>
-								{ __( 'Try again', 'anybook' ) }
-							</Button>
-						</Notice>
-					) }
+					{ failed &&
+						[ 'unit', 'service' ].includes( attributes.show ) && (
+							<Notice status="warning" isDismissible={ false }>
+								{ catalog.error }{ ' ' }
+								<Button
+									variant="link"
+									onClick={ catalog.reload }
+								>
+									{ __( 'Try again', 'anybook' ) }
+								</Button>
+							</Notice>
+						) }
 					{ 'unit' === attributes.show && (
 						<CodeChooser
 							label={ __( 'Unit', 'anybook' ) }
@@ -423,9 +431,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							'anybook'
 						) }{ ' ' }
 						{ site.settingsUrl && (
-							<ExternalLink href={ site.settingsUrl }>
+							<a href={ site.settingsUrl }>
 								{ __( 'Anybook settings', 'anybook' ) }
-							</ExternalLink>
+							</a>
 						) }
 					</p>
 				</div>

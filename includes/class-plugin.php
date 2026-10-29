@@ -23,21 +23,29 @@ class Plugin {
 		Block::init();
 		Rest::init();
 		if ( is_admin() ) {
-			Admin::init();
+			Admin::init(); // Also hooks privacy_policy_content() on admin_init.
 		}
-		add_action( 'admin_init', array( __CLASS__, 'privacy_policy_content' ) );
 	}
 
 	/**
 	 * Suggested words for the site's privacy policy (Settings, Privacy), as WordPress asks plugins to offer
-	 * (ADR-15).
+	 * (ADR-15). They cover page views as well as bookings (review S-L4): opening a page with the widget already
+	 * sends the visitor's IP address and browser details to Anybook. The widget keeps nothing in the browser.
 	 */
 	public static function privacy_policy_content() {
 		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
 			return;
 		}
-		$text = '<p>' . esc_html__( 'Our booking pages use the Anybook booking widget. When you book, what you type in the booking form (such as your name, email address, phone number and booking details) is sent from your browser to Anybook (anybookapp.com), which takes the booking for us. Card payments are made through Stripe; card details go to Stripe, not to this website or to Anybook.', 'anybook' ) . '</p>'
-			. '<p>' . esc_html__( 'This website itself stores no booking or payment details.', 'anybook' ) . '</p>';
-		wp_add_privacy_policy_content( __( 'Anybook Online Booking', 'anybook' ), wp_kses_post( $text ) );
+		$paragraphs = array(
+			__( 'Our booking pages use the Anybook booking widget, which Anybook (anybookapp.com) provides. Pages with the widget load it from Anybook, so when you open them your browser sends Anybook your IP address, your browser\'s details and the address of the page, even if you do not book.', 'anybook' ),
+			__( 'When you book, what you type in the booking form (such as your name, email address, phone number and booking details) is sent from your browser to Anybook, which takes the booking for us. The widget stores nothing in your browser.', 'anybook' ),
+			__( 'Card payments are made through Stripe. At the payment step the widget loads Stripe, which receives your card details (not this website or Anybook) and may set its own cookies to prevent fraud.', 'anybook' ),
+			__( 'This website itself stores no booking or payment details.', 'anybook' ),
+		);
+		$text       = '';
+		foreach ( $paragraphs as $paragraph ) {
+			$text .= '<p>' . esc_html( $paragraph ) . '</p>';
+		}
+		wp_add_privacy_policy_content( __( 'Anybook Online Booking', 'anybook' ), $text );
 	}
 }

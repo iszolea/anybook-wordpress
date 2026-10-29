@@ -135,7 +135,8 @@ class BlockTest extends TestCase {
 	public function test_booking_page_uses_the_block_on_block_themes() {
 		$this->assertSame( Booking_Page::SHORTCODE_CONTENT, Booking_Page::content() );
 		Functions\when( 'wp_is_block_theme' )->justReturn( true );
-		$id = Booking_Page::ensure_published();
+		$id = Booking_Page::ensure_draft();
+		Booking_Page::publish( $id );
 		$this->assertSame( '<!-- wp:anybook/booking {"guestLinks":true} /-->', $this->posts[ $id ]->post_content );
 		$this->assertSame( '', Booking_Page::problem() );
 	}
@@ -241,7 +242,11 @@ class BlockTest extends TestCase {
 		$this->connect();
 		$this->answer_catalog( 500 );
 		$this->assertSame( 'anybook_unreachable', Client::catalog()->get_error_code() );
-		$this->assertArrayNotHasKey( 'anybook_catalog', $this->transients );
+		$asked = count( $this->requests );
+		// A failure is kept for a minute (review Q2), so the next editor load does not wait on Anybook again.
+		$this->assertSame( 'anybook_unreachable', Client::catalog()->get_error_code() );
+		$this->assertCount( $asked, $this->requests );
+		$this->assertArrayHasKey( 'error', $this->transients['anybook_catalog'] );
 	}
 
 	public function test_rest_route() {
@@ -262,7 +267,32 @@ class BlockTest extends TestCase {
 		$this->connect();
 		$this->answer_catalog( 500 );
 		$this->assertSame( array( 'status' => 502 ), Rest::catalog( null )->get_error_data() );
+		$this->transients = array();
 		$this->answer_catalog();
 		$this->assertSame( 'belle', Rest::catalog( null )['units'][0]['code'] );
+	}
+
+	public function test_refresh_is_for_administrators_once_every_30_seconds() {
+		$this->connect();
+		$this->answer_catalog();
+		$refresh = new \WP_REST_Request( array( 'refresh' => true ) );
+		Rest::catalog( new \WP_REST_Request() );
+		$this->assertCount( 2, $this->requests );
+
+		// An editor or contributor asking to refresh gets the cached answer (review S-L2).
+		$this->caps = array( 'edit_posts' );
+		Rest::catalog( $refresh );
+		Rest::catalog( $refresh );
+		$this->assertCount( 2, $this->requests );
+
+		// An administrator may refresh, but not twice within 30 seconds.
+		$this->caps = array( 'manage_options', 'edit_posts' );
+		Rest::catalog( $refresh );
+		$this->assertCount( 4, $this->requests );
+		Rest::catalog( $refresh );
+		$this->assertCount( 4, $this->requests, 'throttled' );
+		unset( $this->transients['anybook_refresh_7'] ); // 30 seconds later.
+		Rest::catalog( $refresh );
+		$this->assertCount( 6, $this->requests );
 	}
 }

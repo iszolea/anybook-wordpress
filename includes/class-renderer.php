@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Turns clean options into the `<booking-widget>` element (contracts.md, "Block and shortcode").
  *
- * The shortcode uses it now and the block (Step 4) will too, so the element is written in one place only and
+ * The block and the shortcode both use it, so the element is written in one place only and
  * every value is checked and escaped here, whatever way it came in.
  */
 class Renderer {
