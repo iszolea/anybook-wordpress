@@ -5,3 +5,6 @@
 .phpcs-cache
 *.zip
 .wp-env.override.json
+/tests/e2e/artifacts/
+/tests/e2e/.state.json
+/dist/
