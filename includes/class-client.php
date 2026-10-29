@@ -101,6 +101,88 @@ class Client {
 	}
 
 	/**
+	 * The units and services the block's chooser offers (ADR-6), from the public business and services lists.
+	 *
+	 * Asked only from the editor, by someone who can edit posts, and kept for ten minutes.
+	 *
+	 * @param bool $use_cache False to ask Anybook again.
+	 * @return array|\WP_Error `{ units: [{id, code, name}], services: [{id, code, name}] }`.
+	 */
+	public static function catalog( $use_cache = true ) {
+		$slug = Settings::clean_code( Settings::get( 'slug' ) );
+		$site = Settings::site();
+		if ( '' === $slug ) {
+			return new \WP_Error( 'anybook_not_connected', __( 'This site is not connected to Anybook yet.', 'anybook' ) );
+		}
+
+		$key = $site . '|' . $slug;
+		if ( $use_cache ) {
+			$cached = get_transient( 'anybook_catalog' );
+			if ( is_array( $cached ) && isset( $cached['key'], $cached['data'] ) && $cached['key'] === $key ) {
+				return $cached['data'];
+			}
+		}
+
+		$base     = $site . '/api/public/v1/' . rawurlencode( $slug );
+		$business = self::get_json( $base );
+		if ( is_wp_error( $business ) ) {
+			return $business;
+		}
+		$units = isset( $business['units'] ) && is_array( $business['units'] ) ? $business['units'] : array();
+
+		// A business without appointments (or with online booking off) may answer 404 here: no services then.
+		$services = self::get_json( $base . '/services' );
+		if ( is_wp_error( $services ) ) {
+			if ( 'anybook_unknown_business' !== $services->get_error_code() ) {
+				return $services;
+			}
+			$services = array();
+		}
+
+		$data = array(
+			'units'    => self::normalise_choices( $units ),
+			'services' => self::normalise_choices( $services ),
+		);
+		set_transient(
+			'anybook_catalog',
+			array(
+				'key'  => $key,
+				'data' => $data,
+			),
+			self::CACHE_TTL
+		);
+		return $data;
+	}
+
+	/**
+	 * Units or services as `{id, code, name}`, keeping only ones with a usable code (a service without a code is
+	 * chosen by its id, which the widget also accepts).
+	 *
+	 * @param array $items Decoded JSON list.
+	 */
+	public static function normalise_choices( array $items ) {
+		$clean = array();
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			$id   = isset( $item['id'] ) ? Settings::clean_code( $item['id'] ) : '';
+			$code = isset( $item['code'] ) ? Settings::clean_code( $item['code'] ) : '';
+			$code = '' !== $code ? $code : $id;
+			if ( '' === $code ) {
+				continue;
+			}
+			$name    = isset( $item['name'] ) ? sanitize_text_field( (string) $item['name'] ) : '';
+			$clean[] = array(
+				'id'   => $id,
+				'code' => $code,
+				'name' => '' !== $name ? $name : $code,
+			);
+		}
+		return $clean;
+	}
+
+	/**
 	 * GET a JSON object from Anybook.
 	 *
 	 * @param string $url Full https address on the booking site.

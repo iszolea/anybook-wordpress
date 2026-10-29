@@ -20,7 +20,8 @@ class Plugin {
 	public static function init() {
 		Assets::init();
 		Shortcode::init();
-		// Step 4 adds the Anybook booking block (blocks/booking) and its catalogue REST route here.
+		Block::init();
+		Rest::init();
 		if ( is_admin() ) {
 			Admin::init();
 		}

@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Anybook Online Booking 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/anybook\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/w\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-29T18:23:17+00:00\n"
+"POT-Creation-Date: 2026-10-29T18:53:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: anybook\n"
@@ -18,7 +18,7 @@ msgstr ""
 #: anybook.php
 #: includes/class-admin.php:49
 #: includes/class-admin.php:242
-#: includes/class-plugin.php:40
+#: includes/class-plugin.php:41
 msgid "Anybook Online Booking"
 msgstr ""
 
@@ -103,7 +103,7 @@ msgid "Anybook has no approved business with that code. Check the code, or try a
 msgstr ""
 
 #: includes/class-admin.php:224
-#: includes/class-client.php:119
+#: includes/class-client.php:201
 msgid "Anybook could not be reached. Please try again in a minute."
 msgstr ""
 
@@ -117,6 +117,7 @@ msgstr ""
 
 #: includes/class-admin.php:262
 #: includes/class-admin.php:265
+#: blocks/booking/edit.js:183
 msgid "Connect to Anybook"
 msgstr ""
 
@@ -286,10 +287,12 @@ msgid "Widget colours"
 msgstr ""
 
 #: includes/class-admin.php:449
+#: blocks/booking/edit.js:321
 msgid "Main colour"
 msgstr ""
 
 #: includes/class-admin.php:453
+#: blocks/booking/edit.js:327
 msgid "Text colour"
 msgstr ""
 
@@ -317,7 +320,7 @@ msgstr ""
 msgid "To fix:"
 msgstr ""
 
-#: includes/class-booking-page.php:57
+#: includes/class-booking-page.php:65
 msgid "Book online"
 msgstr ""
 
@@ -325,28 +328,224 @@ msgstr ""
 msgid "That is not a business code."
 msgstr ""
 
-#: includes/class-client.php:124
+#: includes/class-client.php:115
+msgid "This site is not connected to Anybook yet."
+msgstr ""
+
+#: includes/class-client.php:206
 msgid "Anybook does not show this business yet: it is waiting for Anybook's approval, or the business code is wrong."
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: includes/class-client.php:128
+#: includes/class-client.php:210
 #, php-format
 msgid "Anybook answered with an error (%d). Please try again in a minute."
 msgstr ""
 
-#: includes/class-client.php:132
+#: includes/class-client.php:214
 msgid "Anybook sent an answer the plugin could not read."
 msgstr ""
 
-#: includes/class-plugin.php:38
+#: includes/class-plugin.php:39
 msgid "Our booking pages use the Anybook booking widget. When you book, what you type in the booking form (such as your name, email address, phone number and booking details) is sent from your browser to Anybook (anybookapp.com), which takes the booking for us. Card payments are made through Stripe; card details go to Stripe, not to this website or to Anybook."
 msgstr ""
 
-#: includes/class-plugin.php:39
+#: includes/class-plugin.php:40
 msgid "This website itself stores no booking or payment details."
 msgstr ""
 
-#: includes/class-renderer.php:42
+#: includes/class-renderer.php:52
 msgid "The Anybook booking widget will show here once this site is connected to Anybook (Anybook in the WordPress admin menu)."
+msgstr ""
+
+#: blocks/booking/edit.js:30
+msgid "Book and go to payment"
+msgstr ""
+
+#: blocks/booking/edit.js:31
+msgid "Your details"
+msgstr ""
+
+#: blocks/booking/edit.js:32
+msgid "Choose your arrival date, then your departure date."
+msgstr ""
+
+#: blocks/booking/edit.js:79
+msgid "Your units and services could not be loaded."
+msgstr ""
+
+#: blocks/booking/edit.js:126
+msgid "Type its code as Anybook shows it (letters, digits, - and _)."
+msgstr ""
+
+#: blocks/booking/edit.js:142
+msgid "Choose…"
+msgstr ""
+
+#. translators: %s: a unit or service code no longer offered.
+#: blocks/booking/edit.js:148
+#, js-format
+msgid "%s (no longer offered)"
+msgstr ""
+
+#: blocks/booking/edit.js:175
+#: blocks/booking/edit.js:406
+msgid "Anybook booking"
+msgstr ""
+
+#: blocks/booking/edit.js:176
+msgid "Connect this site to Anybook and your booking widget will show here."
+msgstr ""
+
+#: blocks/booking/edit.js:187
+msgid "Ask the site’s administrator to connect it (Anybook in the WordPress admin menu)."
+msgstr ""
+
+#. translators: %s: unit name.
+#: blocks/booking/edit.js:212
+#, js-format
+msgid "Booking for %s"
+msgstr ""
+
+#: blocks/booking/edit.js:215
+msgid "All units (choose a unit in the sidebar)"
+msgstr ""
+
+#: blocks/booking/edit.js:217
+#: blocks/booking/edit.js:267
+msgid "Appointments"
+msgstr ""
+
+#. translators: %s: service name.
+#: blocks/booking/edit.js:222
+#, js-format
+msgid "Appointments for %s"
+msgstr ""
+
+#: blocks/booking/edit.js:225
+msgid "Appointments (choose a service in the sidebar)"
+msgstr ""
+
+#: blocks/booking/edit.js:230
+#: blocks/booking/edit.js:259
+msgid "All units"
+msgstr ""
+
+#: blocks/booking/edit.js:251
+msgid "What to show"
+msgstr ""
+
+#: blocks/booking/edit.js:255
+msgid "Show"
+msgstr ""
+
+#: blocks/booking/edit.js:263
+msgid "One unit"
+msgstr ""
+
+#: blocks/booking/edit.js:271
+msgid "One service"
+msgstr ""
+
+#: blocks/booking/edit.js:281
+msgid "Try again"
+msgstr ""
+
+#: blocks/booking/edit.js:287
+msgid "Unit"
+msgstr ""
+
+#: blocks/booking/edit.js:292
+msgid "Your business has no units guests can book online."
+msgstr ""
+
+#: blocks/booking/edit.js:301
+msgid "Service"
+msgstr ""
+
+#: blocks/booking/edit.js:306
+msgid "Your business has no services guests can book online."
+msgstr ""
+
+#: blocks/booking/edit.js:317
+msgid "Colours"
+msgstr ""
+
+#: blocks/booking/edit.js:335
+msgid "Left empty, the colours on the Anybook settings page are used."
+msgstr ""
+
+#: blocks/booking/edit.js:342
+msgid "Wording"
+msgstr ""
+
+#: blocks/booking/edit.js:348
+msgid "Booking button"
+msgstr ""
+
+#: blocks/booking/edit.js:358
+msgid "Details heading"
+msgstr ""
+
+#: blocks/booking/edit.js:368
+msgid "Dates line"
+msgstr ""
+
+#: blocks/booking/edit.js:377
+msgid "Guest links"
+msgstr ""
+
+#: blocks/booking/edit.js:382
+msgid "Use this widget for guests’ email links"
+msgstr ""
+
+#: blocks/booking/edit.js:386
+msgid "Turn on for the widget on your guest page, so links in guests’ emails (manage, pay, extras) open here."
+msgstr ""
+
+#: blocks/booking/edit.js:417
+msgid "Opens guests’ email links."
+msgstr ""
+
+#: blocks/booking/edit.js:421
+msgid "The live booking widget shows on the published page."
+msgstr ""
+
+#: blocks/booking/edit.js:427
+msgid "Anybook settings"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block title"
+msgid "Anybook booking"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block description"
+msgid "Your Anybook booking widget: all your units, one unit, your appointments or one service."
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block keyword"
+msgid "booking"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block keyword"
+msgid "reservation"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block keyword"
+msgid "appointments"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block keyword"
+msgid "calendar"
+msgstr ""
+
+#: blocks/booking/block.json
+msgctxt "block keyword"
+msgid "anybook"
 msgstr ""

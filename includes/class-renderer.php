@@ -19,6 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Renderer {
 
+	/** What a block or shortcode can show. */
+	const SHOW = array( 'all', 'unit', 'appointments', 'service' );
+
+	/** The wording a block or shortcode can change, to the widget's text names (DEFAULT_TEXTS in the widget). */
+	const TEXT_KEYS = array(
+		'button_text'     => 'toPayment',
+		'details_heading' => 'yourDetails',
+		'dates_text'      => 'chooseDates',
+	);
+
 	/**
 	 * The widget element, and asks for the widget script on this page.
 	 *
@@ -46,6 +56,59 @@ class Renderer {
 
 		Assets::enqueue();
 		return '<booking-widget' . self::attributes( $options ) . '></booking-widget>';
+	}
+
+	/**
+	 * What to show, as the block and the shortcode both describe it, turned into the renderer's options. Both go
+	 * through here, so the same choices always give the same element.
+	 *
+	 * @param array $choice {
+	 *     Optional.
+	 *
+	 *     @type string $show            all, unit, appointments or service ('' to work it out from the rest).
+	 *     @type string $unit            Unit code, for show=unit.
+	 *     @type string $service         Service code, for show=service.
+	 *     @type string $accent          Main colour.
+	 *     @type string $text            Text colour.
+	 *     @type bool   $guest_links     Use this widget for guests' email links.
+	 *     @type string $button_text     Words on the "Book and go to payment" button.
+	 *     @type string $details_heading The "Your details" heading.
+	 *     @type string $dates_text      The "Choose your arrival date..." line.
+	 * }
+	 * @return array Options for render().
+	 */
+	public static function options_for( array $choice ) {
+		$get     = function ( $key ) use ( $choice ) {
+			return isset( $choice[ $key ] ) && is_scalar( $choice[ $key ] ) ? trim( (string) $choice[ $key ] ) : '';
+		};
+		$show    = $get( 'show' );
+		$unit    = Settings::clean_code( $get( 'unit' ) );
+		$service = Settings::clean_code( $get( 'service' ) );
+		if ( ! in_array( $show, self::SHOW, true ) ) {
+			// The shortcode may give just unit= or service=: the code says what to show.
+			$show = '' !== $service ? 'service' : ( '' !== $unit ? 'unit' : 'all' );
+		}
+
+		$options = array(
+			'accent'      => $get( 'accent' ),
+			'text'        => $get( 'text' ),
+			'guest_links' => ! empty( $choice['guest_links'] ),
+			'texts'       => array(),
+		);
+		if ( 'unit' === $show && '' !== $unit ) {
+			$options['unit'] = $unit;
+		} elseif ( 'service' === $show && '' !== $service ) {
+			$options['service'] = $service;
+		} elseif ( 'appointments' === $show || 'service' === $show ) {
+			// A service not chosen yet still shows the appointments.
+			$options['services'] = true;
+		}
+		foreach ( self::TEXT_KEYS as $key => $widget_key ) {
+			if ( '' !== $get( $key ) ) {
+				$options['texts'][ $widget_key ] = $get( $key );
+			}
+		}
+		return $options;
 	}
 
 	/**

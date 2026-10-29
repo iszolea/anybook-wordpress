@@ -94,6 +94,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 			}
 		);
 		Functions\when( 'did_action' )->justReturn( 1 );
+		Functions\when( 'wp_is_block_theme' )->justReturn( false );
+		Functions\when( 'shortcode_atts' )->alias(
+			function ( $defaults, $atts ) {
+				return array_merge( $defaults, array_intersect_key( $atts, $defaults ) );
+			}
+		);
 		Functions\when( 'get_bloginfo' )->justReturn( 'Example & Co' );
 		Functions\when( 'current_user_can' )->alias(
 			function ( $cap ) use ( $t ) {

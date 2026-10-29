@@ -1,0 +1,38 @@
+/* The block's preview card in the editor. */
+.anybook-booking-preview__card {
+	border: 2px solid #0b6e4f;
+	border-radius: 8px;
+	padding: 1.25em 1.5em;
+	background: #fff;
+	color: #1e1e1e;
+	font-size: 15px;
+	line-height: 1.5;
+
+	p {
+		margin: 0 0 0.75em;
+	}
+}
+
+.anybook-booking-preview__title {
+	font-weight: 600;
+	font-size: 1.15em;
+}
+
+.anybook-booking-preview__button {
+	display: inline-block;
+	margin: 0 0 0.75em;
+	padding: 0.5em 1.1em;
+	border-radius: 6px;
+	background: #0b6e4f;
+	color: #fff;
+}
+
+.anybook-booking-preview__note {
+	font-size: 13px;
+	opacity: 0.8;
+}
+
+.anybook-booking-help {
+	font-size: 12px;
+	color: #757575;
+}

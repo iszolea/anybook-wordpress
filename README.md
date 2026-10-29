@@ -19,4 +19,4 @@ Docker Desktop is all the PC needs (no PHP):
   containers for a look; otherwise they are removed.
 - Translations template: `wp i18n make-pot . languages/anybook.pot --exclude=vendor,node_modules,tests,tools`.
 
-`package.json` (`@wordpress/scripts`, `@wordpress/env`) is ready for the block, which comes in PBI 30564 Step 4.
+The block's source is `blocks/booking/`; `npm install` then `npm run build` writes `build/booking/`, which is committed so the release tree (`git archive`) holds the built block. `npm run lint:js` and `npm run lint:style` check it. TypeScript is pinned to 5.x (`overrides`) because the lint tools do not run with TypeScript 7.

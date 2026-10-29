@@ -39,6 +39,8 @@ require_once ANYBOOK_DIR . 'includes/class-booking-page.php';
 require_once ANYBOOK_DIR . 'includes/class-assets.php';
 require_once ANYBOOK_DIR . 'includes/class-renderer.php';
 require_once ANYBOOK_DIR . 'includes/class-shortcode.php';
+require_once ANYBOOK_DIR . 'includes/class-block.php';
+require_once ANYBOOK_DIR . 'includes/class-rest.php';
 require_once ANYBOOK_DIR . 'includes/class-admin.php';
 require_once ANYBOOK_DIR . 'includes/class-plugin.php';
 

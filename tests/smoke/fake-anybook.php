@@ -13,6 +13,36 @@ add_filter(
 			return $pre;
 		}
 		update_option( 'fake_anybook_calls', (int) get_option( 'fake_anybook_calls', 0 ) + 1 );
+		$lists = array(
+			'https://app.anybookapp.com/api/public/v1/bribie'          => array(
+				'name'  => 'Bribie Houseboat Holidays',
+				'units' => array(
+					array(
+						'id'   => 'u1',
+						'code' => 'belle',
+						'name' => 'The Belle',
+					),
+				),
+			),
+			'https://app.anybookapp.com/api/public/v1/bribie/services' => array(
+				array(
+					'id'   => 's1',
+					'code' => 'cut',
+					'name' => 'Haircut',
+				),
+			),
+		);
+		if ( isset( $lists[ $url ] ) ) {
+			return array(
+				'headers'  => array(),
+				'body'     => wp_json_encode( $lists[ $url ] ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'cookies'  => array(),
+			);
+		}
 		if ( 0 === strpos( $url, 'https://app.anybookapp.com/api/public/v1/bribie/site?origin=' ) ) {
 			$body = array(
 				'name'          => 'Bribie Houseboat Holidays',

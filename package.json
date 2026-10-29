@@ -2,7 +2,7 @@
 	"name": "anybook-wordpress",
 	"version": "0.1.0",
 	"private": true,
-	"description": "Build tools for the Anybook Online Booking plugin (the block arrives in PBI 30564 Step 4).",
+	"description": "Build tools for the Anybook Online Booking plugin: the Anybook booking block (blocks/booking, built to build/).",
 	"license": "GPL-2.0-or-later",
 	"scripts": {
 		"build": "wp-scripts build --webpack-src-dir=blocks --output-path=build",
@@ -10,10 +10,15 @@
 		"lint:js": "wp-scripts lint-js blocks",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
-		"plugin-zip": "wp-scripts plugin-zip"
+		"plugin-zip": "wp-scripts plugin-zip",
+		"lint:style": "wp-scripts lint-style \"blocks/**/*.scss\""
 	},
 	"devDependencies": {
 		"@wordpress/env": "^10.0.0",
-		"@wordpress/scripts": "^30.0.0"
+		"@wordpress/scripts": "^30.0.0",
+		"typescript": "~5.9.3"
+	},
+	"overrides": {
+		"typescript": "~5.9.3"
 	}
 }

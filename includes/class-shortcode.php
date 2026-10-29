@@ -12,9 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * `[anybook unit="" service="" services="yes" accent="" text="" guest_links="yes" button_text=""]`.
+ * `[anybook show="all|unit|appointments|service" unit="" service="" services="yes" accent="" text=""
+ * guest_links="yes" button_text="" details_heading="" dates_text=""]`, the same choices as the block.
  *
- * It only maps its attributes to the renderer's options; checking and escaping happen in the renderer.
+ * It only maps its attributes to the renderer; checking and escaping happen there (Renderer::options_for()).
  */
 class Shortcode {
 
@@ -33,34 +34,30 @@ class Shortcode {
 	public static function render( $atts ) {
 		$atts = shortcode_atts(
 			array(
-				'unit'        => '',
-				'service'     => '',
-				'services'    => '',
-				'accent'      => '',
-				'text'        => '',
-				'guest_links' => '',
-				'button_text' => '',
+				'show'            => '',
+				'unit'            => '',
+				'service'         => '',
+				'services'        => '',
+				'accent'          => '',
+				'text'            => '',
+				'guest_links'     => '',
+				'button_text'     => '',
+				'details_heading' => '',
+				'dates_text'      => '',
 			),
 			is_array( $atts ) ? $atts : array(),
 			self::TAG
 		);
 
-		$texts = array();
-		if ( '' !== $atts['button_text'] ) {
-			$texts['toPayment'] = $atts['button_text'];
+		$show = strtolower( trim( (string) $atts['show'] ) );
+		if ( '' === $show && self::is_yes( $atts['services'] ) && '' === trim( (string) $atts['service'] ) ) {
+			// services="yes" is the older way to say show="appointments".
+			$show = 'appointments';
 		}
+		$atts['show']        = $show;
+		$atts['guest_links'] = self::is_yes( $atts['guest_links'] );
 
-		return Renderer::render(
-			array(
-				'unit'        => $atts['unit'],
-				'service'     => $atts['service'],
-				'services'    => self::is_yes( $atts['services'] ),
-				'accent'      => $atts['accent'],
-				'text'        => $atts['text'],
-				'guest_links' => self::is_yes( $atts['guest_links'] ),
-				'texts'       => $texts,
-			)
-		);
+		return Renderer::render( Renderer::options_for( $atts ) );
 	}
 
 	/**

@@ -18,11 +18,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Booking_Page {
 
+	/** What the page holds on a block theme: the Anybook booking block, used for guests' email links. */
+	const BLOCK_CONTENT = '<!-- wp:anybook/booking {"guestLinks":true} /-->';
+
 	/**
-	 * What the page holds. A shortcode block for now, so it works in every editor; the Anybook booking block
-	 * (Step 4) can replace it, and has_widget() accepts either.
+	 * What the page holds on a classic theme: the shortcode in a shortcode block, which the classic editor and
+	 * page builders also show as plain `[anybook]`. has_widget() accepts either.
 	 */
-	const CONTENT = "<!-- wp:shortcode -->\n[anybook guest_links=\"yes\"]\n<!-- /wp:shortcode -->";
+	const SHORTCODE_CONTENT = "<!-- wp:shortcode -->\n[anybook guest_links=\"yes\"]\n<!-- /wp:shortcode -->";
+
+	/** The new page's content for the active theme. */
+	public static function content() {
+		return function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ? self::BLOCK_CONTENT : self::SHORTCODE_CONTENT;
+	}
 
 	/**
 	 * The page id the plugin remembers, if that page still exists.
@@ -57,7 +65,7 @@ class Booking_Page {
 				'post_title'   => __( 'Book online', 'anybook' ),
 				// WordPress makes it book-2 and so on if "book" is taken.
 				'post_name'    => 'book',
-				'post_content' => self::CONTENT,
+				'post_content' => self::content(),
 			),
 			true
 		);
