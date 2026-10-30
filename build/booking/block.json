@@ -6,7 +6,7 @@
   "title": "Anybook booking",
   "category": "widgets",
   "icon": "calendar-alt",
-  "description": "Your Anybook booking widget: all your units, one unit, your appointments or one service.",
+  "description": "Your Anybook booking widget: all your units, one unit, your appointments or one service, or an availability overview.",
   "keywords": [
     "booking",
     "reservation",
@@ -22,7 +22,8 @@
         "all",
         "unit",
         "appointments",
-        "service"
+        "service",
+        "overview"
       ],
       "default": "all"
     },
@@ -57,6 +58,26 @@
     "datesText": {
       "type": "string",
       "default": ""
+    },
+    "weeks": {
+      "type": "integer",
+      "default": 12
+    },
+    "prices": {
+      "type": "boolean",
+      "default": false
+    },
+    "units": {
+      "type": "string",
+      "default": ""
+    },
+    "rows": {
+      "type": "string",
+      "enum": [
+        "services",
+        "people"
+      ],
+      "default": "services"
     }
   },
   "supports": {

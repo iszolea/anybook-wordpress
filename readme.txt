@@ -18,15 +18,15 @@ The plugin is a small connector. Prices, the calendar, bookings, payments and em
 
 * **Connect in two clicks.** Click Connect to Anybook, sign in as your business's Owner and click Allow. Anybook lets your website show the widget. No keys or passwords are copied.
 * **A booking page made for you.** The plugin can make a "Book online" page, which Anybook uses for your guests' email links. It stays a draft until the Owner clicks Allow on Anybook.
-* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colours and with your own button wording.
+* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colours and with your own button wording, or an availability overview: a calendar of the weeks ahead where guests click a free day to book.
 * **Status at a glance.** The settings page shows whether your site is allowed, where your guest page is and whether online booking is on.
-* **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks WP Rocket, LiteSpeed Cache, Autoptimize, SiteGround Optimizer, W3 Total Cache, Jetpack Boost and Cloudflare Rocket Loader to leave it alone. Autoptimize and LiteSpeed Cache are tested with their script optimisations on; with any other speed plugin, exclude booking-widget.js from delaying and combining if the widget does not appear.
+* **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks WP Rocket, LiteSpeed Cache, Autoptimize, SiteGround Optimizer, W3 Total Cache, Jetpack Boost and Cloudflare Rocket Loader to leave it alone. Autoptimize and LiteSpeed Cache are tested with their script optimisations on; with any other speed plugin, exclude booking-widget.js and booking-overview.js from delaying and combining if the widget does not appear.
 
 You need an Anybook account: see [anybookapp.com](https://anybookapp.com).
 
 = The Anybook booking block =
 
-Add the **Anybook booking** block anywhere in the block editor. In its sidebar choose what it shows (all your units, one unit, your appointments or one service, listed from your Anybook account), its colours (your theme's palette is offered), the wording of the booking button and two headings, and whether it opens guests' email links. The editor shows a preview card; the live widget shows on the published page. A Shortcode block holding `[anybook ...]` can be turned into the block, keeping its choices.
+Add the **Anybook booking** block anywhere in the block editor. In its sidebar choose what it shows (all your units, one unit, your appointments or one service, listed from your Anybook account), its colours (your theme's palette is offered), the wording of the booking button and two headings, and whether it opens guests' email links. Choose **Availability overview** to show which days are free in the weeks ahead instead; then choose the weeks shown (2 to 26, 12 if left alone), whether prices show, which units (all of them if none is ticked) and whether appointments have one row per service or one row per team member for one service. The overview uses the colours on the plugin's settings page. A guest who clicks a free day gets the booking widget. The editor shows a preview card; the live widget shows on the published page. A Shortcode block holding `[anybook ...]` can be turned into the block, keeping its choices.
 
 = Shortcode =
 
@@ -38,6 +38,13 @@ For the classic editor and page builders, `[anybook]` shows the same widget with
 * `accent="#0b6e4f"` and `text="#1f2933"`: colours.
 * `guest_links="yes"`: this widget opens guests' email links when a page has several.
 * `button_text="Book now"`, `details_heading="About you"`, `dates_text="Pick your dates"`: wording.
+
+The availability overview: `[anybook show="overview"]`, with these choices:
+
+* `weeks="12"`: how many weeks it shows, 2 to 26 (12 if left out).
+* `prices="yes"`: show prices.
+* `units="belle,kayak"`: only these units (their codes in Anybook, separated by commas); all units if left out.
+* `rows="people" service="..."`: one row per team member for that one service (its id or code in Anybook); otherwise one row per service.
 
 = Page builders =
 
@@ -55,7 +62,7 @@ Your web server contacts Anybook only after an administrator or editor has done 
 
 Your visitors' browsers contact Anybook as well:
 
-* **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://app.anybookapp.com/widget/booking-widget.js), which sends Anybook the visitor's IP address and browser details even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
+* **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://app.anybookapp.com/widget/booking-widget.js), and on pages that show the availability overview its script (https://app.anybookapp.com/widget/booking-overview.js) and, once the overview shows, the script that opens the widget from it and the widget's own script (booking-overview-open.js and booking-widget.js, from the same address), which sends Anybook the visitor's IP address and browser details even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
 
 Anybook terms of service: https://anybookapp.com/terms
 Anybook privacy policy: https://anybookapp.com/privacy

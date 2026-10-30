@@ -10,9 +10,11 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	CheckboxControl,
 	Notice,
 	PanelBody,
 	Placeholder,
+	RangeControl,
 	SelectControl,
 	Spinner,
 	TextControl,
@@ -33,6 +35,23 @@ const DEFAULT_WORDS = {
 		'anybook'
 	),
 };
+
+/** The overview's weeks: the fewest, the most and the default (Renderer::WEEKS_* in PHP). */
+const WEEKS = { min: 2, max: 26, default: 12 };
+
+/**
+ * Weeks shown as a whole number from 2 to 26, or 12 when there is no number.
+ *
+ * @param {*} value The number chosen.
+ * @return {number} Weeks.
+ */
+export function clampWeeks( value ) {
+	const weeks = Math.round( Number( value ) );
+	if ( value === undefined || value === null || ! Number.isFinite( weeks ) ) {
+		return WEEKS.default;
+	}
+	return Math.min( WEEKS.max, Math.max( WEEKS.min, weeks ) );
+}
 
 /**
  * Loads the units and services once per editor (they are cached on the server for ten minutes as well).
@@ -161,6 +180,165 @@ export function CodeChooser( {
 }
 
 /**
+ * Which units the overview shows: a tick box per unit (none ticked is all units), or a box for their codes when
+ * the list could not be had.
+ *
+ * @param {Object}   props
+ * @param {string}   props.value    Chosen codes, comma-separated ('' for all).
+ * @param {Array}    props.items    `{code, name}` units.
+ * @param {boolean}  props.loading  Still loading.
+ * @param {boolean}  props.failed   The list could not be loaded.
+ * @param {Function} props.onChange Called with the new codes, comma-separated.
+ */
+export function UnitsChooser( { value, items, loading, failed, onChange } ) {
+	const label = __( 'Units', 'anybook' );
+	if ( loading ) {
+		return <Spinner />;
+	}
+	if ( failed ) {
+		return (
+			<TextControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ label }
+				help={ __(
+					'Type their codes as Anybook shows them, separated by commas. Leave it empty for all your units.',
+					'anybook'
+				) }
+				value={ value }
+				onChange={ ( codes ) =>
+					onChange(
+						codes.toLowerCase().replace( /[^a-z0-9,-]/g, '' )
+					)
+				}
+			/>
+		);
+	}
+	if ( ! items.length ) {
+		return (
+			<p>
+				{ __(
+					'Your business has no units guests can book online.',
+					'anybook'
+				) }
+			</p>
+		);
+	}
+	const chosen = String( value || '' )
+		.split( ',' )
+		.filter( Boolean );
+	const toggle = ( code, on ) => {
+		const next = on
+			? [ ...chosen, code ]
+			: chosen.filter( ( item ) => item !== code );
+		// In the catalogue's order; a code no longer offered stays at the end.
+		const known = items
+			.map( ( item ) => item.code )
+			.filter( ( item ) => next.includes( item ) );
+		const gone = next.filter(
+			( item ) => ! items.some( ( unit ) => unit.code === item )
+		);
+		onChange( [ ...new Set( [ ...known, ...gone ] ) ].join( ',' ) );
+	};
+	return (
+		<fieldset className="anybook-booking-units">
+			<legend>{ label }</legend>
+			<p className="anybook-booking-help">
+				{ __(
+					'Tick the units to show. None ticked shows all your units.',
+					'anybook'
+				) }
+			</p>
+			{ items.map( ( item ) => (
+				<CheckboxControl
+					key={ item.code }
+					__nextHasNoMarginBottom
+					label={ item.name }
+					checked={ chosen.includes( item.code ) }
+					onChange={ ( on ) => toggle( item.code, on ) }
+				/>
+			) ) }
+		</fieldset>
+	);
+}
+
+/**
+ * The overview's choices in the sidebar: weeks, prices, units and the appointment rows.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Sets block attributes.
+ * @param {Object}   props.catalog       Units and services.
+ */
+export function OverviewChoices( { attributes, setAttributes, catalog } ) {
+	const failed = !! catalog.error;
+	const rows = 'people' === attributes.rows ? 'people' : 'services';
+	return (
+		<>
+			<RangeControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ __( 'Weeks shown', 'anybook' ) }
+				min={ WEEKS.min }
+				max={ WEEKS.max }
+				value={ clampWeeks( attributes.weeks ) }
+				onChange={ ( weeks ) =>
+					setAttributes( { weeks: clampWeeks( weeks ) } )
+				}
+			/>
+			<ToggleControl
+				__nextHasNoMarginBottom
+				label={ __( 'Show prices', 'anybook' ) }
+				checked={ !! attributes.prices }
+				onChange={ ( prices ) => setAttributes( { prices } ) }
+			/>
+			<UnitsChooser
+				value={ attributes.units || '' }
+				items={ catalog.units }
+				loading={ catalog.loading }
+				failed={ failed }
+				onChange={ ( units ) => setAttributes( { units } ) }
+			/>
+			<SelectControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ __( 'Appointment rows', 'anybook' ) }
+				value={ rows }
+				options={ [
+					{
+						label: __( 'One row per service', 'anybook' ),
+						value: 'services',
+					},
+					{
+						label: __( 'One row per team member', 'anybook' ),
+						value: 'people',
+					},
+				] }
+				onChange={ ( value ) => setAttributes( { rows: value } ) }
+			/>
+			{ 'people' === rows && (
+				<CodeChooser
+					label={ __( 'Service', 'anybook' ) }
+					value={ attributes.service || '' }
+					// The overview takes the service's id.
+					items={ catalog.services.map( ( item ) => ( {
+						code: item.id,
+						name: item.name,
+					} ) ) }
+					loading={ catalog.loading }
+					failed={ failed }
+					empty={ __(
+						'Your business has no services guests can book online.',
+						'anybook'
+					) }
+					onChange={ ( service ) => setAttributes( { service } ) }
+				/>
+			) }
+		</>
+	);
+}
+
+/**
  * Shown in place of the widget while the site is not connected.
  *
  * @param {Object} props
@@ -209,6 +387,8 @@ export function describe( attributes, catalog ) {
 	const nameOf = ( list, code ) =>
 		list.find( ( item ) => item.code === code )?.name || code;
 	switch ( attributes.show ) {
+		case 'overview':
+			return describeOverview( attributes, catalog );
 		case 'unit':
 			return attributes.unit
 				? sprintf(
@@ -235,6 +415,144 @@ export function describe( attributes, catalog ) {
 	}
 }
 
+/**
+ * What the preview card says for the overview.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Object} catalog    Units and services.
+ */
+function describeOverview( attributes, catalog ) {
+	let words = sprintf(
+		/* translators: %d: number of weeks (2 to 26). */
+		__( 'Availability overview, %d weeks', 'anybook' ),
+		clampWeeks( attributes.weeks )
+	);
+	if ( attributes.prices ) {
+		words += __( ', with prices', 'anybook' );
+	}
+	const units = String( attributes.units || '' )
+		.split( ',' )
+		.filter( Boolean )
+		.map(
+			( code ) =>
+				catalog.units.find( ( item ) => item.code === code )?.name ||
+				code
+		);
+	if ( units.length ) {
+		words += ': ' + units.join( ', ' );
+	}
+	if ( 'people' === attributes.rows ) {
+		const service = catalog.services.find(
+			( item ) => item.id === attributes.service
+		);
+		words +=
+			': ' +
+			( attributes.service
+				? sprintf(
+						/* translators: %s: service name. */
+						__( 'team members for %s', 'anybook' ),
+						service?.name || attributes.service
+				  )
+				: __(
+						'team members (choose a service in the sidebar)',
+						'anybook'
+				  ) );
+	}
+	return words;
+}
+
+/**
+ * The widget's colours, wording and guest-link choices (not shown for the overview, which has none of them).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Sets block attributes.
+ */
+function WidgetPanels( { attributes, setAttributes } ) {
+	return (
+		<>
+			<PanelColorSettings
+				title={ __( 'Colours', 'anybook' ) }
+				initialOpen={ false }
+				colorSettings={ [
+					{
+						label: __( 'Main colour', 'anybook' ),
+						value: attributes.accent,
+						onChange: ( value ) =>
+							setAttributes( { accent: value || '' } ),
+					},
+					{
+						label: __( 'Text colour', 'anybook' ),
+						value: attributes.text,
+						onChange: ( value ) =>
+							setAttributes( { text: value || '' } ),
+					},
+				] }
+			>
+				<p className="anybook-booking-help">
+					{ __(
+						'Left empty, the colours on the Anybook settings page are used.',
+						'anybook'
+					) }
+				</p>
+			</PanelColorSettings>
+			<PanelBody
+				title={ __( 'Wording', 'anybook' ) }
+				initialOpen={ false }
+			>
+				<TextControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ __( 'Booking button', 'anybook' ) }
+					placeholder={ DEFAULT_WORDS.buttonText }
+					value={ attributes.buttonText }
+					onChange={ ( buttonText ) =>
+						setAttributes( { buttonText } )
+					}
+				/>
+				<TextControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ __( 'Details heading', 'anybook' ) }
+					placeholder={ DEFAULT_WORDS.detailsHeading }
+					value={ attributes.detailsHeading }
+					onChange={ ( detailsHeading ) =>
+						setAttributes( { detailsHeading } )
+					}
+				/>
+				<TextControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ __( 'Dates line', 'anybook' ) }
+					placeholder={ DEFAULT_WORDS.datesText }
+					value={ attributes.datesText }
+					onChange={ ( datesText ) => setAttributes( { datesText } ) }
+				/>
+			</PanelBody>
+			<PanelBody
+				title={ __( 'Guest links', 'anybook' ) }
+				initialOpen={ false }
+			>
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ __(
+						'Use this widget for guests’ email links',
+						'anybook'
+					) }
+					help={ __(
+						'Turn on for the widget on your guest page, so links in guests’ emails (manage, pay, extras) open here.',
+						'anybook'
+					) }
+					checked={ !! attributes.guestLinks }
+					onChange={ ( guestLinks ) =>
+						setAttributes( { guestLinks } )
+					}
+				/>
+			</PanelBody>
+		</>
+	);
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className: 'anybook-booking-preview',
@@ -248,6 +566,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const accent = attributes.accent || site.accent || '';
 	const textColour = attributes.text || site.text || '';
 	const failed = !! catalog.error;
+	const overview = 'overview' === attributes.show;
 
 	return (
 		<>
@@ -275,11 +594,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'One service', 'anybook' ),
 								value: 'service',
 							},
+							{
+								label: __( 'Availability overview', 'anybook' ),
+								value: 'overview',
+							},
 						] }
 						onChange={ ( show ) => setAttributes( { show } ) }
 					/>
 					{ failed &&
-						[ 'unit', 'service' ].includes( attributes.show ) && (
+						[ 'unit', 'service', 'overview' ].includes(
+							attributes.show
+						) && (
 							<Notice status="warning" isDismissible={ false }>
 								{ catalog.error }{ ' ' }
 								<Button
@@ -320,87 +645,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						/>
 					) }
+					{ overview && (
+						<OverviewChoices
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							catalog={ catalog }
+						/>
+					) }
 				</PanelBody>
-				<PanelColorSettings
-					title={ __( 'Colours', 'anybook' ) }
-					initialOpen={ false }
-					colorSettings={ [
-						{
-							label: __( 'Main colour', 'anybook' ),
-							value: attributes.accent,
-							onChange: ( value ) =>
-								setAttributes( { accent: value || '' } ),
-						},
-						{
-							label: __( 'Text colour', 'anybook' ),
-							value: attributes.text,
-							onChange: ( value ) =>
-								setAttributes( { text: value || '' } ),
-						},
-					] }
-				>
-					<p className="anybook-booking-help">
-						{ __(
-							'Left empty, the colours on the Anybook settings page are used.',
-							'anybook'
-						) }
-					</p>
-				</PanelColorSettings>
-				<PanelBody
-					title={ __( 'Wording', 'anybook' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __( 'Booking button', 'anybook' ) }
-						placeholder={ DEFAULT_WORDS.buttonText }
-						value={ attributes.buttonText }
-						onChange={ ( buttonText ) =>
-							setAttributes( { buttonText } )
-						}
+				{ ! overview && (
+					<WidgetPanels
+						attributes={ attributes }
+						setAttributes={ setAttributes }
 					/>
-					<TextControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __( 'Details heading', 'anybook' ) }
-						placeholder={ DEFAULT_WORDS.detailsHeading }
-						value={ attributes.detailsHeading }
-						onChange={ ( detailsHeading ) =>
-							setAttributes( { detailsHeading } )
-						}
-					/>
-					<TextControl
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-						label={ __( 'Dates line', 'anybook' ) }
-						placeholder={ DEFAULT_WORDS.datesText }
-						value={ attributes.datesText }
-						onChange={ ( datesText ) =>
-							setAttributes( { datesText } )
-						}
-					/>
-				</PanelBody>
-				<PanelBody
-					title={ __( 'Guest links', 'anybook' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __(
-							'Use this widget for guests’ email links',
-							'anybook'
-						) }
-						help={ __(
-							'Turn on for the widget on your guest page, so links in guests’ emails (manage, pay, extras) open here.',
-							'anybook'
-						) }
-						checked={ !! attributes.guestLinks }
-						onChange={ ( guestLinks ) =>
-							setAttributes( { guestLinks } )
-						}
-					/>
-				</PanelBody>
+				) }
 			</InspectorControls>
 			<div { ...blockProps }>
 				<div
@@ -414,13 +672,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ site.name || __( 'Anybook booking', 'anybook' ) }
 					</p>
 					<p>{ describe( attributes, catalog ) }</p>
-					<span
-						className="anybook-booking-preview__button"
-						style={ { background: accent || undefined } }
-					>
-						{ attributes.buttonText || DEFAULT_WORDS.buttonText }
-					</span>
-					{ attributes.guestLinks && (
+					{ ! overview && (
+						<span
+							className="anybook-booking-preview__button"
+							style={ { background: accent || undefined } }
+						>
+							{ attributes.buttonText ||
+								DEFAULT_WORDS.buttonText }
+						</span>
+					) }
+					{ ! overview && attributes.guestLinks && (
 						<p className="anybook-booking-preview__note">
 							{ __( 'Opens guests’ email links.', 'anybook' ) }
 						</p>

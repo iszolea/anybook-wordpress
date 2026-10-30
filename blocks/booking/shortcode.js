@@ -15,7 +15,46 @@ const NAMES = {
 	dates_text: 'datesText',
 };
 
-const SHOW = [ 'all', 'unit', 'appointments', 'service' ];
+const SHOW = [ 'all', 'unit', 'appointments', 'service', 'overview' ];
+
+/**
+ * The overview's own choices, checked as Renderer::overview_attributes() checks them in PHP: weeks a whole number
+ * from 2 to 26, prices only for "yes", unit codes of lower-case letters, digits and -, rows only "people".
+ *
+ * @param {Object} words The shortcode's attributes as written.
+ * @return {Object} Block attributes (defaults left out).
+ */
+function overviewAttributes( words ) {
+	const attributes = {};
+	const weeks = String( words.weeks || '' ).trim();
+	if ( /^\d{1,6}$/.test( weeks ) ) {
+		attributes.weeks = Math.min( 26, Math.max( 2, Number( weeks ) ) );
+	}
+	if (
+		'yes' ===
+		String( words.prices || '' )
+			.trim()
+			.toLowerCase()
+	) {
+		attributes.prices = true;
+	}
+	const units = String( words.units || '' )
+		.split( ',' )
+		.map( ( code ) => code.trim() )
+		.filter( ( code ) => /^[a-z0-9-]{1,40}$/.test( code ) );
+	if ( units.length ) {
+		attributes.units = [ ...new Set( units ) ].join( ',' );
+	}
+	if (
+		'people' ===
+		String( words.rows || '' )
+			.trim()
+			.toLowerCase()
+	) {
+		attributes.rows = 'people';
+	}
+	return attributes;
+}
 
 /**
  * Whether some text is one `[anybook]` shortcode and nothing else.
@@ -86,6 +125,14 @@ export function attributesFromShortcode( text ) {
 		}
 	}
 	attributes.show = show;
+	if ( 'overview' === show ) {
+		// Only the overview's choices, and the service for its team-member rows.
+		return {
+			show,
+			...overviewAttributes( words ),
+			...( words.service ? { service: words.service } : {} ),
+		};
+	}
 	if ( yes( words.guest_links ) ) {
 		attributes.guestLinks = true;
 	}

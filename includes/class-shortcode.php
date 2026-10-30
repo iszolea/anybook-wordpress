@@ -15,6 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * `[anybook show="all|unit|appointments|service" unit="" service="" services="yes" accent="" text=""
  * guest_links="yes" button_text="" details_heading="" dates_text=""]`, the same choices as the block.
  *
+ * The availability overview: `[anybook show="overview" weeks="12" prices="yes" units="belle,kayak" rows="people"
+ * service="<service id>"]`.
+ *
  * It only maps its attributes to the renderer; checking and escaping happen there (Renderer::options_for()).
  */
 class Shortcode {
@@ -44,6 +47,10 @@ class Shortcode {
 				'button_text'     => '',
 				'details_heading' => '',
 				'dates_text'      => '',
+				'weeks'           => '',
+				'prices'          => '',
+				'units'           => '',
+				'rows'            => '',
 			),
 			is_array( $atts ) ? $atts : array(),
 			self::TAG
@@ -56,6 +63,8 @@ class Shortcode {
 		}
 		$atts['show']        = $show;
 		$atts['guest_links'] = self::is_yes( $atts['guest_links'] );
+		// Only prices="yes" shows the overview's prices.
+		$atts['prices'] = 'yes' === strtolower( trim( (string) $atts['prices'] ) );
 
 		return Renderer::render( Renderer::options_for( $atts ) );
 	}

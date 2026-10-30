@@ -3,7 +3,8 @@
 #   activation makes no call to Anybook; connect return; the booking page stays a draft until the Owner agrees;
 #   settings page renders; the booking page's head loads the widget script deferred, unversioned and with the
 #   speed-plugin attributes; a page without the widget loads nothing; a classic theme (head on the booking page,
-#   footer elsewhere); Elementor-style content; Autoptimize and LiteSpeed Cache with their script optimisations on
+#   footer elsewhere); Elementor-style content; the availability overview (its own script, both scripts on a page with
+#   both); Autoptimize and LiteSpeed Cache with their script optimisations on
 #   leave the widget's tag alone; Plugin Check (must run, no errors, only allowed warnings); readme "Tested up to"
 #   is this WordPress; then multisite: the shared-address warning, and uninstall clears every site and keeps the page.
 #
@@ -32,6 +33,8 @@ fail() { echo "FAIL: $*"; exit 1; }
 pass() { echo "ok - $*"; }
 # The widget's script tag in a page's head, or ''.
 head_tag() { local body; body=$(page "$1"); grep -o '<script[^>]*booking-widget\.js[^>]*>' <<<"${body%%</head>*}" || true; }
+# The availability overview's script tag in a page's head, or ''.
+overview_tag() { local body; body=$(page "$1"); grep -o '<script[^>]*booking-overview\.js[^>]*>' <<<"${body%%</head>*}" || true; }
 
 docker network create $NET >/dev/null
 docker run -d --name $P-db --network $NET -e MARIADB_DATABASE=wp -e MARIADB_USER=wp -e MARIADB_PASSWORD=wp \
@@ -126,8 +129,30 @@ wp eval "wp_set_current_user( $contrib ); \$q = new WP_REST_Request( 'GET', '/an
 [ "$(wp option get fake_anybook_calls)" = "$before" ] || fail "a contributor's refresh reached Anybook"
 pass "catalogue refresh: contributors get the cache"
 
+# The availability overview (PBI 30581): its element, its own script in the head with the same attributes, not the
+# widget's; a page with an overview and a widget gets both scripts.
+ov=$(wp post create --post_type=page --post_status=publish --post_title=Overview --porcelain \
+	--post_content='[anybook show="overview" weeks="8" prices="yes" units="belle,Bad_code" rows="staff"]')
+body=$(page "/?page_id=$ov")
+grep -qF '<booking-overview business="bribie" api="https://app.anybookapp.com" weeks="8" prices units="belle"></booking-overview>' <<<"$body" \
+	|| fail "overview element: $(grep -o '<booking-overview[^>]*>' <<<"$body")"
+tag=$(overview_tag "/?page_id=$ov")
+for want in 'src="https://app.anybookapp.com/widget/booking-overview.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
+	grep -qF "$want" <<<"$tag" || fail "overview script tag lacks $want: $tag"
+done
+grep -q 'booking-widget\.js' <<<"$body" && fail "overview page loads the widget script"
+[ "$(grep -o 'booking-overview\.js' <<<"$body" | wc -l)" = "1" ] || fail "overview script loaded more than once"
+both=$(wp post create --post_type=page --post_status=publish --post_title=Both --porcelain \
+	--post_content='<!-- wp:anybook/booking {"show":"overview","rows":"people","service":"cut"} /--><!-- wp:anybook/booking {"show":"unit","unit":"belle"} /-->')
+body=$(page "/?page_id=$both")
+grep -qF '<booking-overview business="bribie" api="https://app.anybookapp.com" rows="people" service="cut"></booking-overview>' <<<"$body" \
+	|| fail "overview block element: $(grep -o '<booking-overview[^>]*>' <<<"$body")"
+grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" unit="belle">' <<<"$body" || fail "widget beside the overview"
+[ -n "$(overview_tag "/?page_id=$both")" ] && [ -n "$(head_tag "/?page_id=$both")" ] || fail "page with both: scripts not both in the head"
+pass "availability overview: element, its own script in the head (defer, speed-plugin attributes); both scripts beside a widget"
+
 other=$(wp post create --post_type=post --post_status=publish --post_title=Hello --post_content='No widget' --porcelain)
-grep -q 'booking-widget' <<<"$(page "/?p=$other")" && fail "page without the widget loads it"
+grep -q 'booking-widget\|booking-overview' <<<"$(page "/?p=$other")" && fail "page without the widget loads it"
 pass "a page without the widget loads no script"
 
 # Elementor keeps a page's content in _elementor_data (Q9): the script still goes in the head.
@@ -151,6 +176,9 @@ grep -q '<booking-widget' <<<"$home" || fail "classic theme: the post list does 
 [ -z "$(head_tag "/")" ] || fail "classic theme: script in the head of a post list"
 grep -q '<script[^>]*booking-widget\.js' <<<"${home#*</head>}" || fail "classic theme: script missing from the footer of a post list"
 pass "classic theme (Twenty Twenty-One): head on the booking page, footer on a post list"
+cov=$(wp post create --post_type=page --post_status=publish --post_title="Classic overview" --porcelain \
+	--post_content="$(printf '<!-- wp:shortcode -->\n[anybook show="overview"]\n<!-- /wp:shortcode -->')")
+[ -n "$(overview_tag "/?page_id=$cov")" ] || fail "classic theme: overview script not in the head"
 
 # Speed plugins (Q3): with their script optimisations on, the widget's tag stays as it is, in the head, while the
 # plugin is seen optimising the page's other scripts.
@@ -167,6 +195,16 @@ check_speed() { # name, evidence pattern
 	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the widget: $tag"
 	[ "$(grep -o 'booking-widget\.js' <<<"$body" | wc -l)" = "1" ] || fail "$1 copied the widget script"
 	grep -q '<booking-widget business="bribie"' <<<"$(page "/?page_id=$cpage")" || fail "$1 lost the element"
+	# The overview's script, likewise.
+	body=$(page "/?page_id=$cov")
+	tag=$(overview_tag "/?page_id=$cov")
+	[ -n "$tag" ] || fail "$1: overview script not in the head"
+	for want in 'src="https://app.anybookapp.com/widget/booking-overview.js"' 'defer'; do
+		grep -qF "$want" <<<"$tag" || fail "$1 changed the overview tag: $tag"
+	done
+	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the overview: $tag"
+	[ "$(grep -o 'booking-overview\.js' <<<"$body" | wc -l)" = "1" ] || fail "$1 copied the overview script"
+	grep -q '<booking-overview business="bribie"' <<<"$body" || fail "$1 lost the overview element"
 	pass "$1 ($(wp plugin get "$1" --field=version)) with script optimisations on leaves the widget alone"
 }
 wp plugin install autoptimize --activate

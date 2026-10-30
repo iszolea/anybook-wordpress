@@ -84,6 +84,8 @@ class Block {
 			'buttonText'     => 'button_text',
 			'detailsHeading' => 'details_heading',
 			'datesText'      => 'dates_text',
+			'units'          => 'units',
+			'rows'           => 'rows',
 		);
 		$choice = array( 'show' => 'all' );
 		foreach ( $map as $from => $to ) {
@@ -92,6 +94,11 @@ class Block {
 			}
 		}
 		$choice['guest_links'] = isset( $attributes['guestLinks'] ) && true === $attributes['guestLinks'];
+		// The overview's weeks (a number) and prices (on or off).
+		if ( isset( $attributes['weeks'] ) && is_int( $attributes['weeks'] ) ) {
+			$choice['weeks'] = $attributes['weeks'];
+		}
+		$choice['prices'] = isset( $attributes['prices'] ) && true === $attributes['prices'];
 		return $choice;
 	}
 }
