@@ -16,7 +16,7 @@ class ClientTest extends TestCase {
 		$status = Client::site_status( 'bribie' );
 		$this->assertTrue( $status['originAllowed'] );
 		$this->assertSame( 'this-site', $status['guestPage'] );
-		$this->assertSame( 'https://app.anybookapp.com/api/public/v1/bribie/site?origin=https%3A%2F%2Fexample.com', $this->requests[0][0] );
+		$this->assertSame( 'https://site.anybookapp.com/api/public/v1/bribie/site?origin=https%3A%2F%2Fexample.com', $this->requests[0][0] );
 		$this->assertSame( 3, $this->requests[0][1]['timeout'], 'a page load waits 3 seconds at most' );
 		$this->assertSame( 524288, $this->requests[0][1]['limit_response_size'] );
 		$this->assertSame( 'wp_safe_remote_get', $this->requests[0][2] );

@@ -14,7 +14,7 @@ use Brain\Monkey\Functions;
  */
 class OverviewTest extends TestCase {
 
-	const BARE = '<booking-overview business="bribie" api="https://app.anybookapp.com"></booking-overview>';
+	const BARE = '<booking-overview business="bribie" api="https://site.anybookapp.com"></booking-overview>';
 
 	const GUID = '0f8fad5b-d9cb-469f-a165-70867728950e';
 
@@ -24,7 +24,7 @@ class OverviewTest extends TestCase {
 		$this->assertArrayHasKey( 'anybook-overview', $this->scripts['enqueued'] );
 		$this->assertArrayNotHasKey( 'anybook-widget', $this->scripts['enqueued'] );
 		$registered = $this->scripts['registered']['anybook-overview'];
-		$this->assertSame( 'https://app.anybookapp.com/widget/booking-overview.js', $registered['src'] );
+		$this->assertSame( 'https://site.anybookapp.com/widget/booking-overview.js', $registered['src'] );
 		$this->assertNull( $registered['ver'] );
 		$this->assertSame( 'defer', $registered['args']['strategy'] );
 	}
@@ -69,7 +69,7 @@ class OverviewTest extends TestCase {
 			)
 		);
 		$this->assertSame(
-			'<booking-overview business="bribie" api="https://app.anybookapp.com" weeks="8" prices units="belle,kayak" rows="people" service="' . self::GUID . '"></booking-overview>',
+			'<booking-overview business="bribie" api="https://site.anybookapp.com" weeks="8" prices units="belle,kayak" rows="people" service="' . self::GUID . '"></booking-overview>',
 			$html
 		);
 	}
@@ -99,7 +99,7 @@ class OverviewTest extends TestCase {
 				'weeks' => $typed,
 			)
 		);
-		$this->assertSame( '<booking-overview business="bribie" api="https://app.anybookapp.com"' . $attribute . '></booking-overview>', $html );
+		$this->assertSame( '<booking-overview business="bribie" api="https://site.anybookapp.com"' . $attribute . '></booking-overview>', $html );
 	}
 
 	public function test_only_yes_shows_prices() {
@@ -127,7 +127,7 @@ class OverviewTest extends TestCase {
 				'units' => 'belle,"><script>alert(1)</script>,kayak_2,' . str_repeat( 'a', 41 ) . ',belle,,Kayak, kayak ',
 			)
 		);
-		$this->assertSame( '<booking-overview business="bribie" api="https://app.anybookapp.com" units="belle,kayak"></booking-overview>', $html );
+		$this->assertSame( '<booking-overview business="bribie" api="https://site.anybookapp.com" units="belle,kayak"></booking-overview>', $html );
 		$this->assertSame(
 			self::BARE,
 			Shortcode::render(
@@ -360,6 +360,6 @@ class OverviewTest extends TestCase {
 		$this->assertContains( '/widget/booking-overview.js', Assets::add_script_path( array() ) );
 		$this->assertContains( 'anybook-overview', Assets::add_handle( array() ) );
 		$this->assertStringContainsString( 'widget/booking-overview.js', Assets::add_to_list( 'a.js' ) );
-		$this->assertFalse( Assets::w3tc_skip( true, '<script src="https://app.anybookapp.com/widget/booking-overview.js">' ) );
+		$this->assertFalse( Assets::w3tc_skip( true, '<script src="https://site.anybookapp.com/widget/booking-overview.js">' ) );
 	}
 }

@@ -166,10 +166,10 @@ class AdminTest extends TestCase {
 		foreach ( array( 'https://evil.example', 'https://test.anybookapp.com' ) as $site ) {
 			$_POST = array( 'anybook_site' => $site );
 			$this->assertSame( 'site-not-allowed', $this->notice_of( $this->stop( 'handle_save_settings' ) ), $site );
-			$this->assertSame( 'https://app.anybookapp.com', Settings::site() );
+			$this->assertSame( 'https://site.anybookapp.com', Settings::site() );
 		}
 		// Sending the address unchanged is fine.
-		$_POST = array( 'anybook_site' => 'https://app.anybookapp.com/' );
+		$_POST = array( 'anybook_site' => 'https://site.anybookapp.com/' );
 		$this->assertSame( 'saved', $this->notice_of( $this->stop( 'handle_save_settings' ) ) );
 		$this->assertStringNotContainsString( 'name="anybook_site"', $this->page(), 'the field is not shown' );
 	}
@@ -177,11 +177,11 @@ class AdminTest extends TestCase {
 	public function test_only_anybook_hosts_or_local_ones_from_the_form() {
 		$this->connect();
 		$this->caps = array( 'manage_options', 'edit_posts', 'unfiltered_html' );
-		$refused    = array( 'https://evil.example', 'https://app.anybook-app.com', 'https://anybookapp.com.evil.example', 'https://xanybookapp.com', 'http://app.anybookapp.com', 'http://anybook.test' );
+		$refused    = array( 'https://evil.example', 'https://app.anybook-app.com', 'https://anybookapp.com.evil.example', 'https://xanybookapp.com', 'http://site.anybookapp.com', 'http://anybook.test' );
 		foreach ( $refused as $site ) {
 			$_POST = array( 'anybook_site' => $site );
 			$this->assertSame( 'bad-site', $this->notice_of( $this->stop( 'handle_save_settings' ) ), $site );
-			$this->assertSame( 'https://app.anybookapp.com', Settings::site(), $site );
+			$this->assertSame( 'https://site.anybookapp.com', Settings::site(), $site );
 		}
 		foreach ( array( 'https://test.anybookapp.com', 'https://anybookapp.com', 'http://anybook.localhost:8092' ) as $site ) {
 			$_POST = array( 'anybook_site' => $site );
@@ -193,7 +193,7 @@ class AdminTest extends TestCase {
 
 	public function test_a_saved_site_that_is_no_longer_accepted_is_ignored() {
 		$this->connect( array( 'site' => 'https://evil.example' ) );
-		$this->assertSame( 'https://app.anybookapp.com', Settings::site() );
+		$this->assertSame( 'https://site.anybookapp.com', Settings::site() );
 	}
 
 	public function test_the_return_is_ignored_without_its_state_and_refused_without_the_capability() {
@@ -216,7 +216,7 @@ class AdminTest extends TestCase {
 	public function test_connect_drafts_the_page_and_sends_its_future_address() {
 		$_POST = array( 'anybook_make_page' => '1' );
 		$e     = $this->stop( 'handle_connect' );
-		$this->assertStringStartsWith( 'https://app.anybookapp.com/connect/wordpress?', $e->url );
+		$this->assertStringStartsWith( 'https://site.anybookapp.com/connect/wordpress?', $e->url );
 		parse_str( (string) parse_url( $e->url, PHP_URL_QUERY ), $query );
 		$this->assertSame( 'https://example.com/book/', $query['guest_page'] );
 		$id = Settings::get( 'page_id' );
@@ -310,7 +310,7 @@ class AdminTest extends TestCase {
 		$this->assertStringContainsString( 'waiting for Anybook', $html );
 		$this->assertStringContainsString( 'You have no guest page yet', $html );
 		$this->assertStringContainsString( 'Set your guest page', $html );
-		$this->assertStringContainsString( 'script-src https://app.anybookapp.com https://js.stripe.com', $html );
+		$this->assertStringContainsString( 'script-src https://site.anybookapp.com https://js.stripe.com', $html );
 		$this->assertStringContainsString( 'data-anybook-confirm="', $html, 'Disconnect asks first' );
 		$this->assertStringContainsString( 'Widget colours', $html );
 	}
@@ -371,10 +371,12 @@ class AdminTest extends TestCase {
 		Admin::connect_notice();
 		$this->assertStringContainsString( 'admin.php?page=anybook', ob_get_clean() );
 
-		$screen = (object) array( 'id' => 'edit-post' );
-		ob_start();
-		Admin::connect_notice();
-		$this->assertSame( '', ob_get_clean(), 'not on other screens' );
+		foreach ( array( 'edit-post', 'dashboard' ) as $other ) {
+			$screen = (object) array( 'id' => $other );
+			ob_start();
+			Admin::connect_notice();
+			$this->assertSame( '', ob_get_clean(), 'not on other screens' );
+		}
 
 		$screen = (object) array( 'id' => 'plugins' );
 		$this->connect();

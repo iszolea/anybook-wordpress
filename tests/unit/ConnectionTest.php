@@ -21,7 +21,7 @@ class ConnectionTest extends TestCase {
 
 	public function test_connect_url_carries_return_state_and_site_name() {
 		list( $url, $query ) = $this->start_connect( 'https://example.com/book/' );
-		$this->assertStringStartsWith( 'https://app.anybookapp.com/connect/wordpress?', $url );
+		$this->assertStringStartsWith( 'https://site.anybookapp.com/connect/wordpress?', $url );
 		$this->assertSame( 'https://example.com/wp-admin/admin.php?page=anybook', $query['return'] );
 		$this->assertSame( 'https://example.com/book/', $query['guest_page'] );
 		$this->assertSame( 'Example & Co', $query['site_name'] );

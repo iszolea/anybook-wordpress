@@ -11,11 +11,11 @@ use Brain\Monkey\Functions;
 
 class BlockTest extends TestCase {
 
-	const API = 'https://app.anybookapp.com/api/public/v1/bribie';
+	const API = 'https://site.anybookapp.com/api/public/v1/bribie';
 
 	/** Each block choice and the shortcode that means the same, with the element both must give. */
 	public function same_choices() {
-		$base = '<booking-widget business="bribie" api="https://app.anybookapp.com"';
+		$base = '<booking-widget business="bribie" api="https://site.anybookapp.com"';
 		return array(
 			'all'                 => array( array(), array(), $base . '></booking-widget>' ),
 			'one unit'            => array(
@@ -98,7 +98,7 @@ class BlockTest extends TestCase {
 			)
 		);
 		$this->assertSame(
-			'<booking-widget business="bribie" api="https://app.anybookapp.com" texts="{&quot;toPayment&quot;:&quot;Go&quot;}"></booking-widget>',
+			'<booking-widget business="bribie" api="https://site.anybookapp.com" texts="{&quot;toPayment&quot;:&quot;Go&quot;}"></booking-widget>',
 			$html
 		);
 		$this->assertSame( Renderer::render(), Block::render( 'not an array' ) );

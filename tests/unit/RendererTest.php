@@ -7,7 +7,7 @@ use Brain\Monkey\Functions;
 
 class RendererTest extends TestCase {
 
-	const BARE = '<booking-widget business="bribie" api="https://app.anybookapp.com"></booking-widget>';
+	const BARE = '<booking-widget business="bribie" api="https://site.anybookapp.com"></booking-widget>';
 
 	public function test_nothing_for_visitors_when_not_connected() {
 		$this->caps = array();
@@ -24,7 +24,7 @@ class RendererTest extends TestCase {
 		$this->assertSame( self::BARE, Renderer::render() );
 		$this->assertArrayHasKey( 'anybook-widget', $this->scripts['enqueued'] );
 		$registered = $this->scripts['registered']['anybook-widget'];
-		$this->assertSame( 'https://app.anybookapp.com/widget/booking-widget.js', $registered['src'] );
+		$this->assertSame( 'https://site.anybookapp.com/widget/booking-widget.js', $registered['src'] );
 		$this->assertNull( $registered['ver'] );
 		$this->assertSame( 'defer', $registered['args']['strategy'] );
 	}
@@ -86,7 +86,7 @@ class RendererTest extends TestCase {
 			)
 		);
 		$this->assertSame(
-			'<booking-widget business="bribie" api="https://app.anybookapp.com" unit="belle" guest-links texts="{&quot;toPayment&quot;:&quot;Go&quot;}"></booking-widget>',
+			'<booking-widget business="bribie" api="https://site.anybookapp.com" unit="belle" guest-links texts="{&quot;toPayment&quot;:&quot;Go&quot;}"></booking-widget>',
 			$html
 		);
 		$this->assertSame( self::BARE, Shortcode::render( '' ) );
