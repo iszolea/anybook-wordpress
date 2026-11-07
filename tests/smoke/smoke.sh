@@ -51,7 +51,9 @@ docker exec $P-wp mkdir -p /var/www/html/wp-content/plugins/anybook /var/www/htm
 git archive --format=tar HEAD | docker exec -i $P-wp tar -x -C /var/www/html/wp-content/plugins/anybook
 docker cp tests/smoke/fake-anybook.php $P-wp:/var/www/html/wp-content/mu-plugins/fake-anybook.php
 docker exec $P-wp chown -R www-data:www-data /var/www/html/wp-content
-docker exec $P-wp test -f /var/www/html/wp-content/plugins/anybook/package.json || fail "package.json (build steps) not in the release"
+for shipped in package.json package-lock.json blocks/booking/index.js blocks/booking/edit.js; do
+	docker exec $P-wp test -f "/var/www/html/wp-content/plugins/anybook/$shipped" || fail "$shipped (source and build steps) not in the release"
+done
 docker exec $P-wp test ! -e /var/www/html/wp-content/plugins/anybook/blocks/booking/test || fail "JS tests in the release"
 
 wp plugin activate anybook

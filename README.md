@@ -29,8 +29,8 @@ Docker Desktop is all the PC needs for these (no PHP or Node):
 - Translations template: `wp i18n make-pot . languages/anybook.pot --slug=anybook --exclude=vendor,node_modules,tests,tools,blocks/booking/test`.
 
 The block's source is `blocks/booking/`; `npm install` then `npm run build` writes `build/booking/`, which is
-committed so the release tree (`git archive`) holds the built block. `package.json` ships in the release so the
-build steps are with the source. TypeScript is pinned to 5.x (`overrides`) because the lint tools do not run with
+committed so the release tree (`git archive`) holds the built block. `package.json` and `package-lock.json` ship in
+the release so the build can be repeated from the zip (readme.txt, Source code and build). TypeScript is pinned to 5.x (`overrides`) because the lint tools do not run with
 TypeScript 7.
 
 Another booking site (a test install of Anybook): `define( 'ANYBOOK_SITE', 'https://...' );` in wp-config.php. The

@@ -311,7 +311,7 @@ class AdminTest extends TestCase {
 		$this->assertStringContainsString( 'You have no guest page yet', $html );
 		$this->assertStringContainsString( 'Set your guest page', $html );
 		$this->assertStringContainsString( 'script-src https://app.anybookapp.com https://js.stripe.com', $html );
-		$this->assertStringContainsString( 'window.confirm(', $html, 'Disconnect asks first' );
+		$this->assertStringContainsString( 'data-anybook-confirm="', $html, 'Disconnect asks first' );
 		$this->assertStringContainsString( 'Widget colours', $html );
 	}
 
@@ -339,6 +339,25 @@ class AdminTest extends TestCase {
 		$this->multisite = false;
 		$this->home      = 'https://example.com/shop';
 		$this->assertStringContainsString( 'Other websites share', $this->page() );
+	}
+
+	public function test_the_page_style_and_disconnect_check_load_on_this_page_only() {
+		$added = array();
+		$keep  = function ( $handle, $code ) use ( &$added ) {
+			$added[] = $code;
+			return true;
+		};
+		Functions\when( 'wp_register_style' )->justReturn( true );
+		Functions\when( 'wp_enqueue_style' )->justReturn( true );
+		Functions\when( 'wp_add_inline_style' )->alias( $keep );
+		Functions\when( 'wp_add_inline_script' )->alias( $keep );
+
+		Admin::enqueue_page_assets( 'index.php' );
+		$this->assertSame( array(), $added );
+
+		Admin::enqueue_page_assets( 'toplevel_page_anybook' );
+		$this->assertCount( 2, $added );
+		$this->assertStringContainsString( 'data-anybook-confirm', $added[1] );
 	}
 
 	public function test_connect_notice_on_the_plugins_screen_until_connected() {

@@ -22,6 +22,9 @@ class Admin {
 
 	const PAGE = 'anybook';
 
+	/** The handle of the settings page's style and script. */
+	const ASSET_HANDLE = 'anybook-admin';
+
 	/** Who may use the page and its actions. */
 	const CAPABILITY = 'manage_options';
 
@@ -44,6 +47,7 @@ class Admin {
 	/** Hooks the page and its actions. */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_page_assets' ) );
 		foreach ( self::ACTIONS as $action => $method ) {
 			add_action( 'admin_post_' . $action, array( __CLASS__, $method ) );
 		}
@@ -66,6 +70,23 @@ class Admin {
 		if ( $hook ) {
 			add_action( 'load-' . $hook, array( __CLASS__, 'maybe_handle_return' ) );
 		}
+	}
+
+	/**
+	 * The settings page's small style and its "are you sure" for Disconnect, on this page only.
+	 *
+	 * @param string $hook The admin page being loaded.
+	 */
+	public static function enqueue_page_assets( $hook ) {
+		if ( 'toplevel_page_' . self::PAGE !== $hook ) {
+			return;
+		}
+		wp_register_style( self::ASSET_HANDLE, false, array(), ANYBOOK_VERSION );
+		wp_enqueue_style( self::ASSET_HANDLE );
+		wp_add_inline_style( self::ASSET_HANDLE, '.anybook-inline-form{display:inline}.anybook-status .anybook-ok{color:#00a32a}.anybook-status .anybook-warn{color:#d63638}' );
+		wp_register_script( self::ASSET_HANDLE, false, array(), ANYBOOK_VERSION, true );
+		wp_enqueue_script( self::ASSET_HANDLE );
+		wp_add_inline_script( self::ASSET_HANDLE, 'document.addEventListener("submit",function(e){var m=e.target.getAttribute("data-anybook-confirm");if(m&&!window.confirm(m)){e.preventDefault();}});' );
 	}
 
 	/**
@@ -502,7 +523,7 @@ class Admin {
 		<?php endif; ?>
 		<p><?php esc_html_e( 'Do not run session recording (replay) in your analytics on the booking page: it would record what guests type.', 'anybook' ); ?></p>
 
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline">
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="anybook-inline-form">
 			<input type="hidden" name="action" value="anybook_refresh" />
 			<?php wp_nonce_field( 'anybook_refresh' ); ?>
 			<?php submit_button( __( 'Check again', 'anybook' ), 'secondary', 'submit', false ); ?>
@@ -542,7 +563,7 @@ class Admin {
 		<h2><?php esc_html_e( 'Disconnect', 'anybook' ); ?></h2>
 		<p><?php esc_html_e( 'The widget stops showing on this site. Your booking page stays published but shows visitors nothing until you connect again, and your Anybook account is not changed; remove this website from allowed websites in Anybook as well if you no longer use it.', 'anybook' ); ?></p>
 		<?php $confirm = __( 'Disconnect from Anybook? The booking widget stops showing on this website.', 'anybook' ); ?>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return window.confirm(<?php echo esc_attr( wp_json_encode( $confirm ) ); ?>);">
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-anybook-confirm="<?php echo esc_attr( $confirm ); ?>">
 			<input type="hidden" name="action" value="anybook_disconnect" />
 			<?php wp_nonce_field( 'anybook_disconnect' ); ?>
 			<?php submit_button( __( 'Disconnect', 'anybook' ), 'delete', 'submit', false ); ?>
@@ -617,9 +638,8 @@ class Admin {
 	 */
 	private static function line( $ok, $text ) {
 		printf(
-			'<li><span class="dashicons %1$s" style="color:%2$s" aria-hidden="true"></span> <span class="screen-reader-text">%3$s</span>%4$s</li>',
-			esc_attr( $ok ? 'dashicons-yes-alt' : 'dashicons-warning' ),
-			esc_attr( $ok ? '#00a32a' : '#d63638' ),
+			'<li><span class="dashicons %1$s" aria-hidden="true"></span> <span class="screen-reader-text">%2$s</span>%3$s</li>',
+			esc_attr( $ok ? 'dashicons-yes-alt anybook-ok' : 'dashicons-warning anybook-warn' ),
 			esc_html( $ok ? __( 'OK:', 'anybook' ) : __( 'To fix:', 'anybook' ) ),
 			esc_html( $text )
 		);
