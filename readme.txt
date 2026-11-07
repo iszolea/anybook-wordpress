@@ -1,10 +1,10 @@
 === Anybook Online Booking ===
 Contributors: anybookapp
 Tags: booking, booking calendar, appointments, reservations, online booking
-Requires at least: 6.5
+Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ The plugin is a small connector. Prices, the calendar, bookings, payments and em
 * **Status at a glance.** The settings page shows whether your site is allowed, where your guest page is and whether online booking is on.
 * **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks WP Rocket, LiteSpeed Cache, Autoptimize, SiteGround Optimizer, W3 Total Cache, Jetpack Boost and Cloudflare Rocket Loader to leave it alone. Autoptimize and LiteSpeed Cache are tested with their script optimisations on; with any other speed plugin, exclude booking-widget.js and booking-overview.js from delaying and combining if the widget does not appear.
 
-You need an Anybook account: see [anybookapp.com](https://anybookapp.com).
+You need an Anybook account. Anybook is a paid service; the plugin itself is free and has no locked features. See [anybookapp.com](https://anybookapp.com) for plans and prices.
 
 = The Anybook booking block =
 
@@ -62,6 +62,8 @@ Your web server contacts Anybook only after an administrator or editor has done 
 
 Your visitors' browsers contact Anybook as well:
 
+The plugin loads remote scripts only on pages that show the widget or the availability overview, never in the WordPress admin, and only once a business is connected. They are part of the Anybook service and are the widget itself, so they are not in the plugin. They load over https from the booking site's plain address, so changes to the widget reach your site without a plugin update.
+
 * **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://app.anybookapp.com/widget/booking-widget.js), and on pages that show the availability overview its script (https://app.anybookapp.com/widget/booking-overview.js) and, once the overview shows, the script that opens the widget from it and the widget's own script (booking-overview-open.js and booking-widget.js, from the same address), which sends Anybook the visitor's IP address and browser details even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
 
 Anybook terms of service: https://anybookapp.com/terms
@@ -69,6 +71,21 @@ Anybook privacy policy: https://anybookapp.com/privacy
 Stripe terms: https://stripe.com/legal and privacy policy: https://stripe.com/privacy
 
 The plugin adds no tracking and stores no booking, guest or payment details on your website. It suggests words for your privacy policy under Settings, Privacy.
+
+== Source code and build ==
+
+The folder `build/booking/` holds generated files, made from human-readable source that ships in this plugin.
+
+* **Source:** `blocks/booking/` is the source of everything in `build/booking/`, including the minified `build/booking/index.js`. Start with `blocks/booking/index.js`, `edit.js`, `shortcode.js`, `editor.scss` and `block.json`.
+* **Build set-up:** `package.json` and `package-lock.json`, in the plugin's main folder, list the exact tools and versions.
+* **Tools:** Node.js 20 with npm, and `@wordpress/scripts` 30.27.0 (webpack and Sass), which `npm ci` installs.
+
+To rebuild the block, run these two commands in the plugin's main folder:
+
+    npm ci
+    npm run build
+
+`npm run build` runs `wp-scripts build --webpack-src-dir=blocks --output-path=build` and writes `build/booking/`. All the plugin's other files are plain PHP and need no build. The Anybook widget scripts are not part of this plugin: see External services.
 
 == Installation ==
 
@@ -103,7 +120,7 @@ The settings page accepts only Anybook's own addresses (anybookapp.com and its s
 
 = Where is the source code of the block? =
 
-It ships with the plugin: the block's source is in the `blocks/` folder and its build set-up in `package.json`. To build it, run `npm install`, then `npm run build`, which writes the `build/` folder the plugin loads.
+It ships with the plugin, in `blocks/booking/`. See Source code and build, above, for how `build/booking/` is made from it.
 
 == Screenshots ==
 
@@ -112,6 +129,12 @@ It ships with the plugin: the block's source is in the `blocks/` folder and its 
 3. The booking widget on the "Book online" page.
 
 == Changelog ==
+
+= 0.1.1 =
+* New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
+* The readme now explains where the block's source is and how to build it, and `package-lock.json` ships with the plugin.
+* The settings page loads its small style and script the WordPress way instead of inline.
+* Now needs WordPress 6.6, which the block's editor script depends on.
 
 = 0.1.0 =
 * First version: Connect to Anybook, settings and status, the Anybook booking block, the `[anybook]` shortcode, the "Book online" page, privacy policy text, multisite uninstall.

@@ -35,8 +35,10 @@ class Rest {
 				'permission_callback' => array( __CLASS__, 'can_edit' ),
 				'args'                => array(
 					'refresh' => array(
-						'type'    => 'boolean',
-						'default' => false,
+						'type'              => 'boolean',
+						'default'           => false,
+						'sanitize_callback' => 'rest_sanitize_boolean',
+						'validate_callback' => 'rest_validate_request_arg',
 					),
 				),
 			)

@@ -1,6 +1,6 @@
 {
 	"name": "anybook-wordpress",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"private": true,
 	"description": "Build tools for the Anybook Online Booking plugin: the Anybook booking block (blocks/booking, built to build/).",
 	"license": "GPL-2.0-or-later",
