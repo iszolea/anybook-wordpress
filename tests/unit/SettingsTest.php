@@ -111,8 +111,10 @@ class SettingsTest extends TestCase {
 	}
 
 	public function test_the_dev_address_is_not_used_from_the_settings() {
-		$this->assertSame( '', Settings::form_site( Settings::DEV_SITE ) );
-		$this->connect( array( 'site' => Settings::DEV_SITE ) );
+		$dev = 'https://' . Settings::DEV_HOST;
+		$this->assertSame( '', Settings::form_site( $dev ) );
+		$this->assertSame( '', Settings::form_site( $dev . ':8443' ) );
+		$this->connect( array( 'site' => $dev . ':443' ) );
 		$this->assertSame( Settings::DEFAULT_SITE, Settings::site() );
 	}
 

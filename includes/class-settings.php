@@ -26,10 +26,10 @@ class Settings {
 	const DEFAULT_SITE = 'https://site.anybookapp.com';
 
 	/**
-	 * The Dev install's address, the default of early builds, which saved it. It is never used from the settings:
+	 * The Dev install's host, the default of early builds, which saved it. It is never used from the settings:
 	 * a site that saved it moves to DEFAULT_SITE, and only ANYBOOK_SITE in wp-config.php can reach it.
 	 */
-	const DEV_SITE = 'https://app.anybookapp.com';
+	const DEV_HOST = 'app.anybookapp.com';
 
 	/** Anybook's own domain: the settings page accepts a booking site on it or its subdomains only (review S-M1). */
 	const ANYBOOK_DOMAIN = 'anybookapp.com';
@@ -124,10 +124,13 @@ class Settings {
 	 */
 	public static function form_site( $value ) {
 		$clean = self::clean_site( $value );
-		if ( '' === $clean || self::DEV_SITE === $clean ) {
+		if ( '' === $clean ) {
 			return '';
 		}
 		$host = (string) wp_parse_url( $clean, PHP_URL_HOST );
+		if ( self::DEV_HOST === $host ) {
+			return '';
+		}
 		if ( self::is_local_host( $host ) ) {
 			return $clean;
 		}
