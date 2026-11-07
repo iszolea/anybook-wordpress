@@ -20,7 +20,7 @@ The plugin is a small connector. Prices, the calendar, bookings, payments and em
 * **A booking page made for you.** The plugin can make a "Book online" page, which Anybook uses for your guests' email links. It stays a draft until the Owner clicks Allow on Anybook.
 * **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colours and with your own button wording, or an availability overview: a calendar of the weeks ahead where guests click a free day to book.
 * **Status at a glance.** The settings page shows whether your site is allowed, where your guest page is and whether online booking is on.
-* **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks WP Rocket, LiteSpeed Cache, Autoptimize, SiteGround Optimizer, W3 Total Cache, Jetpack Boost and Cloudflare Rocket Loader to leave it alone. Autoptimize and LiteSpeed Cache are tested with their script optimisations on; with any other speed plugin, exclude booking-widget.js and booking-overview.js from delaying and combining if the widget does not appear.
+* **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks common speed plugins to leave it alone. If the widget does not appear, exclude booking-widget.js and booking-overview.js from delaying and combining in your speed plugin.
 
 You need an Anybook account. Anybook is a paid service; the plugin itself is free and has no locked features. See [anybookapp.com](https://anybookapp.com) for plans and prices.
 
@@ -62,7 +62,7 @@ Your website contacts Anybook only after an administrator or editor has done one
 
 Your visitors' browsers contact Anybook as well:
 
-* **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://app.anybookapp.com/widget/booking-widget.js), and on pages that show the availability overview its script (https://app.anybookapp.com/widget/booking-overview.js) and, once the overview shows, the script that opens the widget from it and the widget's own script (booking-overview-open.js and booking-widget.js, from the same address). The widget loads further parts of itself, named booking-*.js, from the same address as a guest moves through it. Each of these requests sends Anybook the visitor's IP address, browser details and the address of the page, even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
+* **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://site.anybookapp.com/widget/booking-widget.js), and on pages that show the availability overview its script (https://site.anybookapp.com/widget/booking-overview.js) and, once the overview shows, the script that opens the widget from it and the widget's own script (booking-overview-open.js and booking-widget.js, from the same address). The widget loads further parts of itself, named booking-*.js, from the same address as a guest moves through it. Each of these requests sends Anybook the visitor's IP address, browser details and the address of the page, even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
 
 The plugin loads remote scripts only on pages that show the widget or the availability overview, never in the WordPress admin, and only once a business is connected. They are part of the Anybook service and are the widget itself, so they are not in the plugin. They load over https from the booking site's plain address, so changes to the widget reach your site without a plugin update.
 
@@ -114,7 +114,7 @@ The settings page lists the lines your policy needs. Give them to whoever manage
 
 Every site of such a network has the same address (example.com) as far as browsers are concerned, so whatever your business allows for one site, it allows for all of them: another site of the network could show your booking widget and read what guests type in it. The settings page warns about this. Give your booking website its own domain or subdomain (a network that uses subdomains is fine).
 
-= Can I use a booking site other than app.anybookapp.com? =
+= Can I use a booking site other than site.anybookapp.com? =
 
 The settings page accepts only Anybook's own addresses (anybookapp.com and its subdomains), and only from an administrator who may add scripts to the site (on a network, the super admin). For any other address, for example your own test install of Anybook, add `define( 'ANYBOOK_SITE', 'https://your-address' );` to wp-config.php.
 
@@ -135,6 +135,8 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 * The readme now explains where the block's source is and how to build it, and `package-lock.json` ships with the plugin.
 * The settings page loads its small style and script the WordPress way instead of inline.
 * Now needs WordPress 6.6, which the block's editor script depends on.
+* Connects to Anybook's live booking site, site.anybookapp.com.
+* The Connect reminder shows on the Plugins screen only.
 
 = 0.1.0 =
 * First version: Connect to Anybook, settings and status, the Anybook booking block, the `[anybook]` shortcode, the "Book online" page, privacy policy text, multisite uninstall.

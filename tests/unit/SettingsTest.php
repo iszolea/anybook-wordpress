@@ -6,7 +6,7 @@ use Anybook\Settings;
 class SettingsTest extends TestCase {
 
 	public function test_defaults_when_nothing_stored() {
-		$this->assertSame( 'https://app.anybookapp.com', Settings::site() );
+		$this->assertSame( 'https://site.anybookapp.com', Settings::site() );
 		$this->assertFalse( Settings::is_connected() );
 		$this->assertSame( '', Settings::get( 'slug' ) );
 	}
@@ -45,18 +45,18 @@ class SettingsTest extends TestCase {
 
 	public function sites() {
 		return array(
-			'https'           => array( 'https://app.anybookapp.com/', 'https://app.anybookapp.com' ),
+			'https'           => array( 'https://site.anybookapp.com/', 'https://site.anybookapp.com' ),
 			'https with port' => array( 'https://test.anybookapp.com:8443', 'https://test.anybookapp.com:8443' ),
-			'upper case'      => array( 'HTTPS://App.AnybookApp.com', 'https://app.anybookapp.com' ),
+			'upper case'      => array( 'HTTPS://Site.AnybookApp.com', 'https://site.anybookapp.com' ),
 			'http local'      => array( 'http://localhost:5000', 'http://localhost:5000' ),
 			'http .test'      => array( 'http://anybook.test', '' ),
 			'http .localhost' => array( 'http://anybook.localhost:8092', 'http://anybook.localhost:8092' ),
-			'http public'     => array( 'http://app.anybookapp.com', '' ),
-			'path'            => array( 'https://app.anybookapp.com/widget', '' ),
-			'user info'       => array( 'https://me@app.anybookapp.com', '' ),
-			'query'           => array( 'https://app.anybookapp.com?x=1', '' ),
+			'http public'     => array( 'http://site.anybookapp.com', '' ),
+			'path'            => array( 'https://site.anybookapp.com/widget', '' ),
+			'user info'       => array( 'https://me@site.anybookapp.com', '' ),
+			'query'           => array( 'https://site.anybookapp.com?x=1', '' ),
 			'javascript'      => array( 'javascript:alert(1)', '' ),
-			'not a url'       => array( 'app.anybookapp.com', '' ),
+			'not a url'       => array( 'site.anybookapp.com', '' ),
 		);
 	}
 
@@ -72,8 +72,8 @@ class SettingsTest extends TestCase {
 
 	public function test_anybook_hosts() {
 		$this->assertTrue( Settings::is_anybook_host( 'anybookapp.com' ) );
-		$this->assertTrue( Settings::is_anybook_host( 'app.anybookapp.com' ) );
-		$this->assertTrue( Settings::is_anybook_host( 'test.app.anybookapp.com' ) );
+		$this->assertTrue( Settings::is_anybook_host( 'site.anybookapp.com' ) );
+		$this->assertTrue( Settings::is_anybook_host( 'test.site.anybookapp.com' ) );
 		$this->assertFalse( Settings::is_anybook_host( 'xanybookapp.com' ) );
 		$this->assertFalse( Settings::is_anybook_host( 'anybookapp.com.evil.example' ) );
 		$this->assertFalse( Settings::is_anybook_host( 'app.anybook-app.com' ) );
@@ -85,7 +85,7 @@ class SettingsTest extends TestCase {
 		$this->assertSame( 'http://localhost:5000', Settings::form_site( 'http://localhost:5000' ) );
 		$this->assertSame( 'https://anybook.localhost', Settings::form_site( 'https://anybook.localhost' ) );
 		$this->assertSame( '', Settings::form_site( 'https://evil.example' ) );
-		$this->assertSame( '', Settings::form_site( 'http://app.anybookapp.com' ) );
+		$this->assertSame( '', Settings::form_site( 'http://site.anybookapp.com' ) );
 	}
 
 	/**
@@ -107,7 +107,15 @@ class SettingsTest extends TestCase {
 	 */
 	public function test_a_bad_constant_is_ignored() {
 		define( 'ANYBOOK_SITE', 'javascript:alert(1)' );
-		$this->assertSame( 'https://app.anybookapp.com', Settings::site() );
+		$this->assertSame( 'https://site.anybookapp.com', Settings::site() );
+	}
+
+	public function test_the_dev_address_is_not_used_from_the_settings() {
+		$dev = 'https://' . Settings::DEV_HOST;
+		$this->assertSame( '', Settings::form_site( $dev ) );
+		$this->assertSame( '', Settings::form_site( $dev . ':8443' ) );
+		$this->connect( array( 'site' => $dev . ':443' ) );
+		$this->assertSame( Settings::DEFAULT_SITE, Settings::site() );
 	}
 
 	public function test_shared_origins() {

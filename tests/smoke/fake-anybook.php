@@ -9,12 +9,12 @@
 add_filter(
 	'pre_http_request',
 	function ( $pre, $args, $url ) {
-		if ( 0 !== strpos( $url, 'https://app.anybookapp.com/' ) ) {
+		if ( 0 !== strpos( $url, 'https://site.anybookapp.com/' ) ) {
 			return $pre;
 		}
 		update_option( 'fake_anybook_calls', (int) get_option( 'fake_anybook_calls', 0 ) + 1 );
 		$lists = array(
-			'https://app.anybookapp.com/api/public/v1/bribie'          => array(
+			'https://site.anybookapp.com/api/public/v1/bribie'          => array(
 				'name'  => 'Bribie Houseboat Holidays',
 				'units' => array(
 					array(
@@ -24,7 +24,7 @@ add_filter(
 					),
 				),
 			),
-			'https://app.anybookapp.com/api/public/v1/bribie/services' => array(
+			'https://site.anybookapp.com/api/public/v1/bribie/services' => array(
 				array(
 					'id'   => 's1',
 					'code' => 'cut',
@@ -43,7 +43,7 @@ add_filter(
 				'cookies'  => array(),
 			);
 		}
-		if ( 0 === strpos( $url, 'https://app.anybookapp.com/api/public/v1/bribie/site?origin=' ) ) {
+		if ( 0 === strpos( $url, 'https://site.anybookapp.com/api/public/v1/bribie/site?origin=' ) ) {
 			$body = array(
 				'name'          => 'Bribie Houseboat Holidays',
 				'onlineBooking' => true,
@@ -55,7 +55,7 @@ add_filter(
 				'cspSources'    => array(
 					array(
 						'directive' => 'script-src',
-						'sources'   => array( 'https://app.anybookapp.com', 'https://js.stripe.com' ),
+						'sources'   => array( 'https://site.anybookapp.com', 'https://js.stripe.com' ),
 					),
 				),
 			);

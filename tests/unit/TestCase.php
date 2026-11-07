@@ -267,7 +267,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	protected function connect( array $extra = array() ) {
 		$this->options['anybook_settings'] = array_merge(
 			array(
-				'site' => 'https://app.anybookapp.com',
+				'site' => 'https://site.anybookapp.com',
 				'slug' => 'bribie',
 				'name' => 'Bribie Houseboat Holidays',
 			),
@@ -302,7 +302,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 				'cspSources'    => array(
 					array(
 						'directive' => 'script-src',
-						'sources'   => array( 'https://app.anybookapp.com', 'https://js.stripe.com' ),
+						'sources'   => array( 'https://site.anybookapp.com', 'https://js.stripe.com' ),
 					),
 				),
 			),

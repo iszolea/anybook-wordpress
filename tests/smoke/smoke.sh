@@ -90,16 +90,16 @@ pass "booking page: a draft until the Owner agrees, then published"
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
 grep -q 'Connected to Bribie Houseboat Holidays' <<<"$html" || fail "settings page has no connected line"
 grep -q 'Set your guest page' <<<"$html" || fail "settings page does not offer to set the guest page"
-grep -q 'script-src https://app.anybookapp.com' <<<"$html" || fail "settings page has no CSP lines"
+grep -q 'script-src https://site.anybookapp.com' <<<"$html" || fail "settings page has no CSP lines"
 grep -q 'Other websites share' <<<"$html" && fail "shared-address warning on a single site"
 pass "settings page renders the status, guest page offer and CSP lines"
 
 body=$(page "/?page_id=$id")
-grep -q '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links></booking-widget>' <<<"$body" \
+grep -q '<booking-widget business="bribie" api="https://site.anybookapp.com" guest-links></booking-widget>' <<<"$body" \
 	|| fail "booking page has no widget element"
 tag=$(head_tag "/?page_id=$id")
 [ -n "$tag" ] || fail "widget script not in the head of the booking page"
-for want in 'src="https://app.anybookapp.com/widget/booking-widget.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
+for want in 'src="https://site.anybookapp.com/widget/booking-widget.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
 	grep -qF "$want" <<<"$tag" || fail "script tag lacks $want: $tag"
 done
 grep -q 'booking-widget\.js?ver' <<<"$tag" && fail "script has a version: $tag"
@@ -112,7 +112,7 @@ pass "booking page holds the Anybook booking block (block theme)"
 # The block and the shortcode with the same choices give the same element.
 blk=$(wp post create --post_type=page --post_status=publish --post_title=Block --porcelain 	--post_content='<!-- wp:anybook/booking {"show":"service","service":"cut","accent":"#0B6E4F","buttonText":"Book now"} /-->')
 sc=$(wp post create --post_type=page --post_status=publish --post_title=Short --porcelain 	--post_content='[anybook service="cut" accent="#0B6E4F" button_text="Book now"]')
-want='<booking-widget business="bribie" api="https://app.anybookapp.com" service="cut" services texts="{&quot;toPayment&quot;:&quot;Book now&quot;}" style="--bw-accent:#0b6e4f;"></booking-widget>'
+want='<booking-widget business="bribie" api="https://site.anybookapp.com" service="cut" services texts="{&quot;toPayment&quot;:&quot;Book now&quot;}" style="--bw-accent:#0b6e4f;"></booking-widget>'
 grep -qF "$want" <<<"$(page "/?page_id=$blk")" || fail "block output: $(page "/?page_id=$blk" | grep -o '<booking-widget[^>]*>')"
 grep -qF "$want" <<<"$(page "/?page_id=$sc")" || fail "shortcode output: $(page "/?page_id=$sc" | grep -o '<booking-widget[^>]*>')"
 pass "block and shortcode give the same element"
@@ -136,10 +136,10 @@ pass "catalogue refresh: contributors get the cache"
 ov=$(wp post create --post_type=page --post_status=publish --post_title=Overview --porcelain \
 	--post_content='[anybook show="overview" weeks="8" prices="yes" units="belle,Bad_code" rows="staff"]')
 body=$(page "/?page_id=$ov")
-grep -qF '<booking-overview business="bribie" api="https://app.anybookapp.com" weeks="8" prices units="belle"></booking-overview>' <<<"$body" \
+grep -qF '<booking-overview business="bribie" api="https://site.anybookapp.com" weeks="8" prices units="belle"></booking-overview>' <<<"$body" \
 	|| fail "overview element: $(grep -o '<booking-overview[^>]*>' <<<"$body")"
 tag=$(overview_tag "/?page_id=$ov")
-for want in 'src="https://app.anybookapp.com/widget/booking-overview.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
+for want in 'src="https://site.anybookapp.com/widget/booking-overview.js"' 'defer' 'data-cfasync="false"' 'data-no-optimize="1"' 'nowprocket'; do
 	grep -qF "$want" <<<"$tag" || fail "overview script tag lacks $want: $tag"
 done
 grep -q 'booking-widget\.js' <<<"$body" && fail "overview page loads the widget script"
@@ -147,9 +147,9 @@ grep -q 'booking-widget\.js' <<<"$body" && fail "overview page loads the widget 
 both=$(wp post create --post_type=page --post_status=publish --post_title=Both --porcelain \
 	--post_content='<!-- wp:anybook/booking {"show":"overview","rows":"people","service":"cut"} /--><!-- wp:anybook/booking {"show":"unit","unit":"belle"} /-->')
 body=$(page "/?page_id=$both")
-grep -qF '<booking-overview business="bribie" api="https://app.anybookapp.com" rows="people" service="cut"></booking-overview>' <<<"$body" \
+grep -qF '<booking-overview business="bribie" api="https://site.anybookapp.com" rows="people" service="cut"></booking-overview>' <<<"$body" \
 	|| fail "overview block element: $(grep -o '<booking-overview[^>]*>' <<<"$body")"
-grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" unit="belle">' <<<"$body" || fail "widget beside the overview"
+grep -qF '<booking-widget business="bribie" api="https://site.anybookapp.com" unit="belle">' <<<"$body" || fail "widget beside the overview"
 [ -n "$(overview_tag "/?page_id=$both")" ] && [ -n "$(head_tag "/?page_id=$both")" ] || fail "page with both: scripts not both in the head"
 pass "availability overview: element, its own script in the head (defer, speed-plugin attributes); both scripts beside a widget"
 
@@ -171,7 +171,7 @@ classic=$(wp eval 'echo Anybook\Booking_Page::content();')
 [ "$classic" = "$(printf '<!-- wp:shortcode -->\n[anybook guest_links="yes"]\n<!-- /wp:shortcode -->')" ] || fail "classic booking page content: $classic"
 cpage=$(wp post create --post_type=page --post_status=publish --post_title="Classic booking" --post_content="$classic" --porcelain)
 [ -n "$(head_tag "/?page_id=$cpage")" ] || fail "classic theme: script not in the head of the booking page"
-grep -qF '<booking-widget business="bribie" api="https://app.anybookapp.com" guest-links>' <<<"$(page "/?page_id=$cpage")" || fail "classic theme: no element"
+grep -qF '<booking-widget business="bribie" api="https://site.anybookapp.com" guest-links>' <<<"$(page "/?page_id=$cpage")" || fail "classic theme: no element"
 wp post create --post_type=post --post_status=publish --post_title="Listed" --post_content='[anybook]' >/dev/null
 home=$(page "/")
 grep -q '<booking-widget' <<<"$home" || fail "classic theme: the post list does not render the shortcode"
@@ -191,7 +191,7 @@ check_speed() { # name, evidence pattern
 	grep -q "$2" <<<"$body" || fail "$1 did not optimise the page (no $2)"
 	tag=$(head_tag "/?page_id=$cpage")
 	[ -n "$tag" ] || fail "$1: widget script not in the head"
-	for want in 'src="https://app.anybookapp.com/widget/booking-widget.js"' 'defer'; do
+	for want in 'src="https://site.anybookapp.com/widget/booking-widget.js"' 'defer'; do
 		grep -qF "$want" <<<"$tag" || fail "$1 changed the widget tag: $tag"
 	done
 	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the widget: $tag"
@@ -201,7 +201,7 @@ check_speed() { # name, evidence pattern
 	body=$(page "/?page_id=$cov")
 	tag=$(overview_tag "/?page_id=$cov")
 	[ -n "$tag" ] || fail "$1: overview script not in the head"
-	for want in 'src="https://app.anybookapp.com/widget/booking-overview.js"' 'defer'; do
+	for want in 'src="https://site.anybookapp.com/widget/booking-overview.js"' 'defer'; do
 		grep -qF "$want" <<<"$tag" || fail "$1 changed the overview tag: $tag"
 	done
 	grep -qiE 'type="(rocketlazyloadscript|litespeed/javascript|text/plain)"|data-src=' <<<"$tag" && fail "$1 delayed the overview: $tag"

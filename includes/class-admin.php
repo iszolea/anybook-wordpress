@@ -101,12 +101,12 @@ class Admin {
 	}
 
 	/**
-	 * After activation, on the Plugins screen and the Dashboard only: a pointer to Connect, until the site is
-	 * connected (review Q10a). Never on other admin screens.
+	 * After activation, on the Plugins screen only: a pointer to Connect, until the site is connected. The plugin's
+	 * own page has Connect itself, and no other admin screen shows this.
 	 */
 	public static function connect_notice() {
 		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( ! $screen || ! in_array( $screen->id, array( 'plugins', 'dashboard' ), true ) ) {
+		if ( ! $screen || 'plugins' !== $screen->id ) {
 			return;
 		}
 		if ( ! current_user_can( self::CAPABILITY ) || Settings::is_connected() ) {
@@ -320,7 +320,7 @@ class Admin {
 			'unknown-business'   => array( 'error', __( 'Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business.', 'anybook' ) ),
 			'unreachable'        => array( 'error', __( 'Anybook could not be reached. Please try again in a minute.', 'anybook' ) ),
 			'bad-colour'         => array( 'error', __( 'A colour was not saved: colours are written like #0b6e4f. The colour saved before is kept.', 'anybook' ) ),
-			'bad-site'           => array( 'error', __( 'The booking site must be an Anybook address, like https://app.anybookapp.com, or a test address on this computer (localhost). For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
+			'bad-site'           => array( 'error', __( 'The booking site must be an Anybook address, like https://site.anybookapp.com, or a test address on this computer (localhost). For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
 			'site-not-allowed'   => array( 'error', __( 'Only an administrator who may add scripts to this site can change the booking site address. Other settings were saved.', 'anybook' ) ),
 			'origin-mismatch'    => array( 'error', __( 'Your WordPress admin and your website have different addresses, so Connect would allow the wrong one. Enter your business code below instead.', 'anybook' ) ),
 			'checked-recently'   => array( 'info', __( 'Anybook was asked less than 30 seconds ago. The status below is its answer.', 'anybook' ) ),
@@ -613,7 +613,7 @@ class Admin {
 							<?php elseif ( $site_form ) : ?>
 								<label for="anybook_site" class="screen-reader-text"><?php esc_html_e( 'Booking site address', 'anybook' ); ?></label>
 								<input type="url" id="anybook_site" name="anybook_site" class="regular-text" value="<?php echo esc_attr( Settings::site() ); ?>" />
-								<p class="description"><?php esc_html_e( 'Leave as https://app.anybookapp.com unless Anybook gave you another anybookapp.com address. Any other address can only be set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Leave as https://site.anybookapp.com unless Anybook gave you another anybookapp.com address. Any other address can only be set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
 							<?php else : ?>
 								<code><?php echo esc_html( Settings::site() ); ?></code>
 							<?php endif; ?>
