@@ -29,7 +29,7 @@ class Settings {
 	 * The Dev install's host, the default of early builds, which saved it. It is never used from the settings:
 	 * a site that saved it moves to DEFAULT_SITE, and only ANYBOOK_SITE in wp-config.php can reach it.
 	 */
-	const DEV_HOST = 'app.anybookapp.com';
+	const DEV_HOST = 'dev.anybookapp.com';
 
 	/** Anybook's own domain: the settings page accepts a booking site on it or its subdomains only (review S-M1). */
 	const ANYBOOK_DOMAIN = 'anybookapp.com';
