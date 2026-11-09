@@ -88,6 +88,14 @@ class ClientTest extends TestCase {
 		$this->assertSame( 5, $this->requests[1][1]['timeout'], 'the admin has just acted: 5 seconds' );
 	}
 
+	public function test_a_local_booking_site_on_a_live_server_is_called_with_wp_safe_remote_get() {
+		$this->env = 'production';
+		$this->connect( array( 'site' => 'http://anybook.localhost:8092' ) );
+		$this->answer( 200, self::status_body() );
+		Client::site_status( 'bribie' );
+		$this->assertSame( 'wp_safe_remote_get', $this->requests[0][2] );
+	}
+
 	public function test_a_local_booking_site_is_called_with_wp_remote_get() {
 		$this->connect( array( 'site' => 'http://anybook.localhost:8092' ) );
 		$this->answer( 200, self::status_body() );

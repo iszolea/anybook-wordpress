@@ -462,7 +462,7 @@ function describeOverview( attributes, catalog ) {
 }
 
 /**
- * The widget's colours, wording and guest-link choices (not shown for the overview, which has none of them).
+ * The widget's colors, wording and guest-link choices (not shown for the overview, which has none of them).
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -472,17 +472,17 @@ function WidgetPanels( { attributes, setAttributes } ) {
 	return (
 		<>
 			<PanelColorSettings
-				title={ __( 'Colours', 'anybook' ) }
+				title={ __( 'Colors', 'anybook' ) }
 				initialOpen={ false }
 				colorSettings={ [
 					{
-						label: __( 'Main colour', 'anybook' ),
+						label: __( 'Main color', 'anybook' ),
 						value: attributes.accent,
 						onChange: ( value ) =>
 							setAttributes( { accent: value || '' } ),
 					},
 					{
-						label: __( 'Text colour', 'anybook' ),
+						label: __( 'Text color', 'anybook' ),
 						value: attributes.text,
 						onChange: ( value ) =>
 							setAttributes( { text: value || '' } ),
@@ -491,7 +491,7 @@ function WidgetPanels( { attributes, setAttributes } ) {
 			>
 				<p className="anybook-booking-help">
 					{ __(
-						'Left empty, the colours on the Anybook settings page are used.',
+						'Left empty, the colors on the Anybook settings page are used.',
 						'anybook'
 					) }
 				</p>
@@ -564,7 +564,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const accent = attributes.accent || site.accent || '';
-	const textColour = attributes.text || site.text || '';
+	const textColor = attributes.text || site.text || '';
 	const failed = !! catalog.error;
 	const overview = 'overview' === attributes.show;
 
@@ -665,7 +665,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					className="anybook-booking-preview__card"
 					style={ {
 						borderColor: accent || undefined,
-						color: textColour || undefined,
+						color: textColor || undefined,
 					} }
 				>
 					<p className="anybook-booking-preview__title">

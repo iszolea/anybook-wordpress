@@ -177,13 +177,13 @@ class AdminTest extends TestCase {
 	public function test_only_anybook_hosts_or_local_ones_from_the_form() {
 		$this->connect();
 		$this->caps = array( 'manage_options', 'edit_posts', 'unfiltered_html' );
-		$refused    = array( 'https://evil.example', 'https://app.anybook-app.com', 'https://anybookapp.com.evil.example', 'https://xanybookapp.com', 'http://site.anybookapp.com', 'http://anybook.test' );
+		$refused    = array( 'https://evil.example', 'https://app.anybook-app.com', 'https://anybookapp.com.evil.example', 'https://xanybookapp.com', 'http://site.anybookapp.com', 'http://anybook.test', 'https://dev.anybookapp.com', 'https://demo.anybookapp.com', 'https://anybookapp.com' );
 		foreach ( $refused as $site ) {
 			$_POST = array( 'anybook_site' => $site );
 			$this->assertSame( 'bad-site', $this->notice_of( $this->stop( 'handle_save_settings' ) ), $site );
 			$this->assertSame( 'https://site.anybookapp.com', Settings::site(), $site );
 		}
-		foreach ( array( 'https://test.anybookapp.com', 'https://anybookapp.com', 'http://anybook.localhost:8092' ) as $site ) {
+		foreach ( array( 'https://site.anybookapp.com', 'http://anybook.localhost:8092' ) as $site ) {
 			$_POST = array( 'anybook_site' => $site );
 			$this->assertSame( 'saved', $this->notice_of( $this->stop( 'handle_save_settings' ) ), $site );
 			$this->assertSame( $site, Settings::site() );
@@ -312,7 +312,7 @@ class AdminTest extends TestCase {
 		$this->assertStringContainsString( 'Set your guest page', $html );
 		$this->assertStringContainsString( 'script-src https://site.anybookapp.com https://js.stripe.com', $html );
 		$this->assertStringContainsString( 'data-anybook-confirm="', $html, 'Disconnect asks first' );
-		$this->assertStringContainsString( 'Widget colours', $html );
+		$this->assertStringContainsString( 'Widget colors', $html );
 	}
 
 	public function test_anybook_unreachable_is_said_once_a_minute() {
@@ -327,7 +327,7 @@ class AdminTest extends TestCase {
 	public function test_before_connecting_only_connect_shows() {
 		$html = $this->page();
 		$this->assertStringContainsString( 'value="anybook_connect"', $html );
-		$this->assertStringNotContainsString( 'Widget colours', $html, 'colours come after connecting (Q10d)' );
+		$this->assertStringNotContainsString( 'Widget colors', $html, 'colours come after connecting (Q10d)' );
 		$this->assertStringContainsString( 'draft', $html );
 	}
 

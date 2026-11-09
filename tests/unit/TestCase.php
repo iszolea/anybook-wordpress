@@ -41,6 +41,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	protected $multisite = false;
 	/** @var bool Whether the network uses subdomains. */
 	protected $subdomains = true;
+	/** @var string WordPress's environment type (local here, so localhost sites work unless a test says otherwise). */
+	protected $env = 'local';
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -167,6 +169,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 		Functions\when( 'wp_generate_password' )->alias(
 			function ( $length = 12 ) {
 				return substr( bin2hex( random_bytes( $length ) ), 0, $length );
+			}
+		);
+
+		Functions\when( 'wp_get_environment_type' )->alias(
+			function () use ( $t ) {
+				return $t->env;
 			}
 		);
 

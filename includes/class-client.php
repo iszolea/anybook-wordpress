@@ -192,8 +192,8 @@ class Client {
 	 * GET a JSON object from Anybook.
 	 *
 	 * Through wp_safe_remote_get (review S-M1), which refuses private addresses and unusual ports, unless the
-	 * booking site is a developer's own machine (localhost or *.localhost, which only ANYBOOK_SITE or an
-	 * administrator who may post scripts can set). At most 512 KB is read (review S-L3).
+	 * booking site is a developer's own machine (localhost or *.localhost) and WordPress's environment type is
+	 * 'local' or 'development'. At most 512 KB is read (review S-L3).
 	 *
 	 * @param string $url     Full address on the booking site.
 	 * @param int    $timeout Seconds to wait.
@@ -206,7 +206,7 @@ class Client {
 			'limit_response_size' => self::MAX_BYTES,
 			'headers'             => array( 'Accept' => 'application/json' ),
 		);
-		$response = Settings::is_local_host( strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) )
+		$response = Settings::local_sites_allowed() && Settings::is_local_host( strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) )
 			? wp_remote_get( $url, $args )
 			: wp_safe_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {

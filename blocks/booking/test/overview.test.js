@@ -173,8 +173,8 @@ describe( 'Edit with the availability overview', () => {
 		expect( find( 'Kayak' ).props.checked ).toBe( false );
 		// No service chooser until rows are per team member.
 		expect( find( 'Service' ) ).toBeUndefined();
-		// The widget's colours, wording and guest links are not for the overview.
-		expect( find( 'Colours' ) ).toBeUndefined();
+		// The widget's colors, wording and guest links are not for the overview.
+		expect( find( 'Colors' ) ).toBeUndefined();
 		expect( find( 'Wording' ) ).toBeUndefined();
 		expect( find( 'Guest links' ) ).toBeUndefined();
 		expect( html ).toContain( 'Availability overview, 12 weeks' );
