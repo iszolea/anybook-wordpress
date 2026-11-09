@@ -29,7 +29,7 @@ This plugin puts the Anybook booking widget on your WordPress site in two clicks
 
 **Get paid, and keep the bond**
 
-* Card payments through your own Stripe account, so the money goes straight to you. Apple Pay and Google Pay where your Stripe account has them switched on.
+* Card payments through your own Stripe account, so the money goes straight to you.
 * Deposits now, with the balance charged automatically later.
 * Security bonds held on the guest's card, or charged and refunded: your choice.
 * Gift vouchers, sold online and over the counter.
@@ -246,7 +246,7 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 == Screenshots ==
 
 1. The booking widget on a phone: guests choose their dates, with prices on the calendar.
-2. Checkout: a deposit now and the rest later, with Apple Pay and Google Pay.
+2. Checkout: a deposit now and the rest later, paid by card.
 3. The availability overview: free days for the weeks ahead, one click to book.
 4. Booking several units at once, in one checkout.
 5. The online waiver, signed before arrival.

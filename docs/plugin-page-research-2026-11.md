@@ -115,7 +115,7 @@ All four offer a trial. None gets many reviews, and SimplyBook.me has 30,000+ in
 **Screenshots.** We have 3; the leaders have about 11. Take 8 from the public demo (demo.anybookapp.com), with real-looking made-up data. The current screenshot 3 shows an almost empty calendar.
 
 1. The widget on a phone: choosing dates, with prices on the calendar.
-2. Checkout: deposit now, the rest later, with Apple Pay and Google Pay.
+2. Checkout: deposit now, the rest later, paid by card.
 3. The availability overview: free days for the weeks ahead.
 4. Booking several units at once (booking groups).
 5. The online waiver being signed.
@@ -147,7 +147,7 @@ The screenshot captions in the draft readme already match this list. Don't relea
 ## Review notes (2026-11-10, second pass)
 
 * **Two claims were removed from the readme because the product does not support them as written:** a customer-facing "upload your WP Booking System export" import (the WP Booking System importer is a command-line tool the Anybook team runs; there is no self-service import), and "waivers with several signers" (the user guide describes one signer confirmed by an emailed code). "Items counted from stock" became "places counted for each time", the user guide's wording.
-* **Still to check by a person before release:** Apple Pay and Google Pay (the website says it; the user guide does not mention them; the readme says "where your Stripe account has them switched on"), and the QR-code line (user guide, "Take a charge or the balance by QR code").
+* **Apple Pay and Google Pay are dropped from the readme (coordinator, 2026-11-10):** the widget pays with Stripe's Payment Element on the business's own site and Anybook does not register those domains with Stripe, so wallets will not reliably show. A backlog item may be raised; add the claim back only when it works. The QR-code line (user guide, "Take a charge or the balance by QR code") is still worth a check.
 * **The opening special's length disagrees:** website and this readme say 6 months, the user guide says 12 months. The owner must pick one.
 * The full table of 48 plugins, the ranking plan and the trial options (with billing effects) are in `C:\Users\jnich\Projects\Anybook\research\`: `wp-plugin-pitch-research.md`, `wp-plugin-ranking-plan.md`, `wp-plugin-free-trial-options.md`.
 
