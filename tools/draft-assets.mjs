@@ -1,5 +1,6 @@
 /**
- * Draws the plugin directory's banner and icon as plain drafts (design Step 7), for the owner to approve or replace:
+ * Draws the plugin directory's banner and icon in Anybook's brand (the same mark and colours as anybookapp.com:
+ * a mint chevron on a navy rounded square, public/favicon.svg in anybook-website):
  * .wordpress-org/banner-1544x500.png, banner-772x250.png, icon-256x256.png and icon-128x128.png. The screenshots
  * (screenshot-1 to 3) come from tests/e2e/run.sh, which takes them from the real plugin.
  *
@@ -13,35 +14,32 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const OUT = join( dirname( fileURLToPath( import.meta.url ) ), '..', '.wordpress-org' );
-const GREEN = '#0b6e4f';
-const INK = '#1f2933';
+const NAVY = '#0b1b3a'; // the website's logo square
+const MINT = '#36e2b4'; // the website's chevron
 
-/** A calendar with a tick, drawn in CSS, `size` pixels wide. */
-const calendar = ( size, colour, paper ) => `
-	<div style="position:relative;width:${ size }px;height:${ size * 0.92 }px;border-radius:${ size * 0.12 }px;background:${ paper };overflow:hidden;box-shadow:0 ${ size * 0.04 }px ${ size * 0.1 }px rgba(0,0,0,.18)">
-		<div style="height:${ size * 0.26 }px;background:${ colour };opacity:.9"></div>
-		<div style="position:absolute;left:${ size * 0.2 }px;top:${ -size * 0.06 }px;width:${ size * 0.1 }px;height:${ size * 0.2 }px;border-radius:${ size * 0.05 }px;background:${ INK }"></div>
-		<div style="position:absolute;right:${ size * 0.2 }px;top:${ -size * 0.06 }px;width:${ size * 0.1 }px;height:${ size * 0.2 }px;border-radius:${ size * 0.05 }px;background:${ INK }"></div>
-		<div style="position:absolute;left:${ size * 0.37 }px;top:${ size * 0.3 }px;width:${ size * 0.17 }px;height:${ size * 0.32 }px;border-right:${ size * 0.08 }px solid ${ colour };border-bottom:${ size * 0.08 }px solid ${ colour };transform:rotate(45deg);transform-origin:center"></div>
-	</div>`;
+/** The Anybook mark (the website's favicon.svg), `size` pixels wide. */
+const mark = ( size ) => `
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="${ size }" height="${ size }">
+		<rect width="32" height="32" rx="8" fill="${ NAVY }"/>
+		<path d="M9 22 16 8l7 14" stroke="${ MINT }" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+	</svg>`;
 
 const banner = ( w, h ) => `
-	<body style="margin:0;width:${ w }px;height:${ h }px;display:flex;align-items:center;gap:${ h * 0.12 }px;padding:0 ${ h * 0.2 }px;box-sizing:border-box;
-		background:linear-gradient(120deg, ${ GREEN } 0%, #0e8a63 100%);font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff">
-		${ calendar( h * 0.46, GREEN, '#fff' ) }
+	<body style="margin:0;width:${ w }px;height:${ h }px;display:flex;align-items:center;gap:${ h * 0.1 }px;padding:0 ${ h * 0.2 }px;box-sizing:border-box;
+		background:${ NAVY };font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff">
+		<div style="flex:none;line-height:0;border-radius:${ h * 0.1 }px;box-shadow:0 0 0 ${ Math.max( 1, h * 0.006 ) }px rgba(54,226,180,.4)">${ mark( h * 0.4 ) }</div>
 		<div>
-			<div style="font-size:${ h * 0.15 }px;font-weight:700;letter-spacing:-.01em">Anybook Online Booking</div>
-			<div style="font-size:${ h * 0.075 }px;opacity:.92;margin-top:${ h * 0.03 }px">Bookings and card payments on your WordPress site</div>
+			<div style="font-size:${ h * 0.17 }px;font-weight:800;letter-spacing:-.03em;line-height:1.05">Anybook</div>
+			<div style="font-size:${ h * 0.072 }px;margin-top:${ h * 0.035 }px;color:${ MINT };font-weight:600">Online booking and card payments for your WordPress site</div>
 		</div>
 	</body>`;
 
 const icon = ( s ) => `
-	<body style="margin:0;width:${ s }px;height:${ s }px;display:flex;align-items:center;justify-content:center;background:${ GREEN }">
-		${ calendar( s * 0.62, GREEN, '#fff' ) }
-	</body>`;
+	<body style="margin:0;width:${ s }px;height:${ s }px;line-height:0;background:${ NAVY }">${ mark( s ) }</body>`;
 
 mkdirSync( OUT, { recursive: true } );
-const browser = await chromium.launch();
+// PW_CHANNEL=chrome uses the installed Chrome when Playwright's own browser is not downloaded.
+const browser = await chromium.launch( process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {} );
 try {
 	const page = await browser.newPage();
 	const draw = async ( html, w, h, name ) => {
