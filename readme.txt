@@ -22,7 +22,7 @@ This plugin puts the Anybook booking widget on your WordPress site in two clicks
 
 **Take bookings for anything**
 
-* Nights with changeover days, whole days, hourly time slots with a set number of places, items counted from stock, and appointments with a team member, mixed in one account.
+* Nights with changeover days, whole days, hourly time slots with a set number of places, places counted for each time (for example the seats in a class or several of the same item), and appointments with a team member, mixed in one account.
 * An availability overview: a calendar of the weeks ahead where guests click a free day to book.
 * Guests can book several units in one checkout and one payment.
 * The booking widget's first load is under 12 KB, and it shows free dates straight away, even on a phone.
@@ -38,7 +38,7 @@ This plugin puts the Anybook booking widget on your WordPress site in two clicks
 
 **Paperwork that writes and signs itself**
 
-* Online waivers and rental agreements, with several signers.
+* Rental agreements and waivers signed online before arrival, confirmed with an emailed code, with a signed copy sent to the guest and to you.
 * Check-in before arrival: driver's license details, ID and an emergency contact.
 * A visual builder for your emails, invoices and contracts.
 
@@ -48,8 +48,6 @@ This plugin puts the Anybook booking widget on your WordPress site in two clicks
 * Automation rules that send emails, add notes and tasks, and call webhooks.
 * A follow-up email for unfinished bookings, and offers before arrival.
 * Staff logins with roles and two-step verification, and an API and webhooks on every plan.
-
-**Switching from WP Booking System?** Upload its export file and Anybook brings your bookings with you. It matches your calendars to your units, shows you a preview, and checks the numbers against the original.
 
 = What it costs =
 
@@ -174,9 +172,9 @@ Anything you rent out or run, by the night, the day, the hour, the seat or the i
 
 No. Booking, paying, signing the agreement, checking in and managing a booking all happen in the widget on your website. Guests' email links come back to your website too.
 
-= Can I bring my bookings from WP Booking System? =
+= Can I bring my bookings from another booking system? =
 
-Yes. Upload your WP Booking System export file in Anybook. It matches your calendars to your units, shows you a preview, imports your bookings, checks the numbers against the original and lists anything it could not bring across.
+Anybook does not have a self-service import yet. You can add your upcoming bookings by hand, or through the API, while your old system keeps running, and switch when you are ready. Ask the help assistant in Anybook if your situation is different.
 
 = Where do I get help? =
 

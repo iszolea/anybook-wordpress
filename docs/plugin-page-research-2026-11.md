@@ -99,7 +99,7 @@ All four offer a trial. None gets many reviews, and SimplyBook.me has 30,000+ in
    * Does it take a commission?
    * Can I try it first?
    * What can I book with it?
-   * Can I switch from WP Booking System?
+   * Can I bring my bookings from another system? (answer: no self-service import yet)
    Then the help and setup questions from #7. The technical and privacy sections stay, lower down.
 7. **"Tested up to" and releases:** keep "Tested up to" on the newest WordPress at every release. Release at least once a month, even for a small fix, so the plugin shows as maintained.
 8. **Reviews:** a month after a business takes its first online booking, ask it once to leave a review on WordPress.org. Never offer anything in return; WordPress.org forbids that.
