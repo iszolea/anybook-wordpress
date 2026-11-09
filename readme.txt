@@ -18,7 +18,7 @@ The plugin is a small connector. Prices, the calendar, bookings, payments and em
 
 * **Connect in two clicks.** Click Connect to Anybook, sign in as your business's Owner and click Allow. Anybook lets your website show the widget. No keys or passwords are copied.
 * **A booking page made for you.** The plugin can make a "Book online" page, which Anybook uses for your guests' email links. It stays a draft until the Owner clicks Allow on Anybook.
-* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colours and with your own button wording, or an availability overview: a calendar of the weeks ahead where guests click a free day to book.
+* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colors and with your own button wording, or an availability overview: a calendar of the weeks ahead where guests click a free day to book.
 * **Status at a glance.** The settings page shows whether your site is allowed, where your guest page is and whether online booking is on.
 * **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks common speed plugins to leave it alone. If the widget does not appear, exclude booking-widget.js and booking-overview.js from delaying and combining in your speed plugin.
 
@@ -26,7 +26,7 @@ You need an Anybook account. Anybook is a paid service; the plugin itself is fre
 
 = The Anybook booking block =
 
-Add the **Anybook booking** block anywhere in the block editor. In its sidebar choose what it shows (all your units, one unit, your appointments or one service, listed from your Anybook account), its colours (your theme's palette is offered), the wording of the booking button and two headings, and whether it opens guests' email links. Choose **Availability overview** to show which days are free in the weeks ahead instead; then choose the weeks shown (2 to 26, 12 if left alone), whether prices show, which units (all of them if none is ticked) and whether appointments have one row per service or one row per team member for one service. The overview uses the colours on the plugin's settings page. A guest who clicks a free day gets the booking widget. The editor shows a preview card; the live widget shows on the published page. A Shortcode block holding `[anybook ...]` can be turned into the block, keeping its choices.
+Add the **Anybook booking** block anywhere in the block editor. In its sidebar choose what it shows (all your units, one unit, your appointments or one service, listed from your Anybook account), its colors (your theme's palette is offered), the wording of the booking button and two headings, and whether it opens guests' email links. Choose **Availability overview** to show which days are free in the weeks ahead instead; then choose the weeks shown (2 to 26, 12 if left alone), whether prices show, which units (all of them if none is ticked) and whether appointments have one row per service or one row per team member for one service. The overview uses the colors on the plugin's settings page. A guest who clicks a free day gets the booking widget. The editor shows a preview card; the live widget shows on the published page. A Shortcode block holding `[anybook ...]` can be turned into the block, keeping its choices.
 
 = Shortcode =
 
@@ -35,7 +35,7 @@ For the classic editor and page builders, `[anybook]` shows the same widget with
 * `show="all"`, `show="unit"`, `show="appointments"` or `show="service"`: what to show (all units if left out).
 * `unit="belle"`: one unit (its code in Anybook).
 * `service="cut"`: one service; `services="yes"` also means appointments.
-* `accent="#0b6e4f"` and `text="#1f2933"`: colours.
+* `accent="#0b6e4f"` and `text="#1f2933"`: colors.
 * `guest_links="yes"`: this widget opens guests' email links when a page has several.
 * `button_text="Book now"`, `details_heading="About you"`, `dates_text="Pick your dates"`: wording.
 
@@ -100,7 +100,7 @@ Staff who are not the Owner can enter the business code instead (Anybook shows i
 
 = Does the plugin store a password or key? =
 
-No. It stores your business's public code and name, the booking site address, the booking page it made and your default colours.
+No. It stores your business's public code and name, the booking site address, the booking page it made and your default colors.
 
 = What happens when I uninstall the plugin? =
 
@@ -116,7 +116,7 @@ Every site of such a network has the same address (example.com) as far as browse
 
 = Can I use a booking site other than site.anybookapp.com? =
 
-The settings page accepts only Anybook's own addresses (anybookapp.com and its subdomains), and only from an administrator who may add scripts to the site (on a network, the super admin). For any other address, for example your own test install of Anybook, add `define( 'ANYBOOK_SITE', 'https://your-address' );` to wp-config.php.
+The settings page accepts only https://site.anybookapp.com, and only from an administrator who may add scripts to the site (on a network, the super admin). On a local or development WordPress (environment type `local` or `development`) it also accepts localhost. For any other address, for example your own test install of Anybook, add `define( 'ANYBOOK_SITE', 'https://your-address' );` to wp-config.php.
 
 = Where is the source code of the block? =
 

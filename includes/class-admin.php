@@ -201,7 +201,7 @@ class Admin {
 		self::redirect( self::page_url( Connection::save_code( $code ) ) );
 	}
 
-	/** Default colours, and the booking site address under Advanced. */
+	/** Default colors, and the booking site address under Advanced. */
 	public static function handle_save_settings() {
 		self::check( 'anybook_save_settings' );
 		$notice  = 'saved';
@@ -217,7 +217,7 @@ class Admin {
 			$raw   = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
 			$clean = Settings::clean_colour( $raw );
 			if ( '' !== $raw && '' === $clean ) {
-				$notice = 'bad-colour'; // The colour saved before stays.
+				$notice = 'bad-colour'; // The color saved before stays.
 				continue;
 			}
 			$changes[ $key ] = $clean;
@@ -319,8 +319,8 @@ class Admin {
 			'bad-code'           => array( 'error', __( 'That is not a business code. Codes are letters, numbers and dashes, like bribie.', 'anybook' ) ),
 			'unknown-business'   => array( 'error', __( 'Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business.', 'anybook' ) ),
 			'unreachable'        => array( 'error', __( 'Anybook could not be reached. Please try again in a minute.', 'anybook' ) ),
-			'bad-colour'         => array( 'error', __( 'A colour was not saved: colours are written like #0b6e4f. The colour saved before is kept.', 'anybook' ) ),
-			'bad-site'           => array( 'error', __( 'The booking site must be an Anybook address, like https://site.anybookapp.com, or a test address on this computer (localhost). For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
+			'bad-colour'         => array( 'error', __( 'A color was not saved: colors are written like #0b6e4f. The color saved before is kept.', 'anybook' ) ),
+			'bad-site'           => array( 'error', __( 'The booking site must be https://site.anybookapp.com. For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
 			'site-not-allowed'   => array( 'error', __( 'Only an administrator who may add scripts to this site can change the booking site address. Other settings were saved.', 'anybook' ) ),
 			'origin-mismatch'    => array( 'error', __( 'Your WordPress admin and your website have different addresses, so Connect would allow the wrong one. Enter your business code below instead.', 'anybook' ) ),
 			'checked-recently'   => array( 'info', __( 'Anybook was asked less than 30 seconds ago. The status below is its answer.', 'anybook' ) ),
@@ -572,7 +572,7 @@ class Admin {
 	}
 
 	/**
-	 * Default colours (once connected) and the booking site address (for those who may change it).
+	 * Default colors (once connected) and the booking site address (for those who may change it).
 	 *
 	 * @param array $settings Stored settings.
 	 */
@@ -588,15 +588,15 @@ class Admin {
 			<input type="hidden" name="action" value="anybook_save_settings" />
 			<?php wp_nonce_field( 'anybook_save_settings' ); ?>
 			<?php if ( $connected ) : ?>
-				<h2><?php esc_html_e( 'Widget colours', 'anybook' ); ?></h2>
+				<h2><?php esc_html_e( 'Widget colors', 'anybook' ); ?></h2>
 				<p><?php esc_html_e( 'Used by every booking widget on this site unless its block or shortcode sets its own.', 'anybook' ); ?></p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="anybook_accent"><?php esc_html_e( 'Main colour', 'anybook' ); ?></label></th>
+						<th scope="row"><label for="anybook_accent"><?php esc_html_e( 'Main color', 'anybook' ); ?></label></th>
 						<td><input type="text" id="anybook_accent" name="anybook_accent" value="<?php echo esc_attr( $settings['accent'] ); ?>" placeholder="#0b6e4f" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="anybook_text"><?php esc_html_e( 'Text colour', 'anybook' ); ?></label></th>
+						<th scope="row"><label for="anybook_text"><?php esc_html_e( 'Text color', 'anybook' ); ?></label></th>
 						<td><input type="text" id="anybook_text" name="anybook_text" value="<?php echo esc_attr( $settings['text'] ); ?>" placeholder="#1f2933" pattern="#([0-9a-fA-F]{3}){1,2}" /></td>
 					</tr>
 				</table>
@@ -613,7 +613,7 @@ class Admin {
 							<?php elseif ( $site_form ) : ?>
 								<label for="anybook_site" class="screen-reader-text"><?php esc_html_e( 'Booking site address', 'anybook' ); ?></label>
 								<input type="url" id="anybook_site" name="anybook_site" class="regular-text" value="<?php echo esc_attr( Settings::site() ); ?>" />
-								<p class="description"><?php esc_html_e( 'Leave as https://site.anybookapp.com unless Anybook gave you another anybookapp.com address. Any other address can only be set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Leave as https://site.anybookapp.com. Any other address can only be set by ANYBOOK_SITE in wp-config.php.', 'anybook' ); ?></p>
 							<?php else : ?>
 								<code><?php echo esc_html( Settings::site() ); ?></code>
 							<?php endif; ?>

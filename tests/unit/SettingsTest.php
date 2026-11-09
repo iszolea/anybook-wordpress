@@ -70,18 +70,11 @@ class SettingsTest extends TestCase {
 		$this->assertSame( 'https://admin.example.com', Settings::admin_origin() );
 	}
 
-	public function test_anybook_hosts() {
-		$this->assertTrue( Settings::is_anybook_host( 'anybookapp.com' ) );
-		$this->assertTrue( Settings::is_anybook_host( 'site.anybookapp.com' ) );
-		$this->assertTrue( Settings::is_anybook_host( 'test.site.anybookapp.com' ) );
-		$this->assertFalse( Settings::is_anybook_host( 'xanybookapp.com' ) );
-		$this->assertFalse( Settings::is_anybook_host( 'anybookapp.com.evil.example' ) );
-		$this->assertFalse( Settings::is_anybook_host( 'app.anybook-app.com' ) );
-		$this->assertFalse( Settings::is_anybook_host( '.anybookapp.com' ) );
-	}
-
 	public function test_form_sites() {
-		$this->assertSame( 'https://test.anybookapp.com', Settings::form_site( 'https://test.anybookapp.com/' ) );
+		$this->assertSame( 'https://site.anybookapp.com', Settings::form_site( 'https://site.anybookapp.com/' ) );
+		foreach ( array( 'https://dev.anybookapp.com', 'https://demo.anybookapp.com', 'https://x.anybookapp.com', 'https://anybookapp.com', 'https://dev.anybookapp.com:8443' ) as $other ) {
+			$this->assertSame( '', Settings::form_site( $other ), $other );
+		}
 		$this->assertSame( 'http://localhost:5000', Settings::form_site( 'http://localhost:5000' ) );
 		$this->assertSame( 'https://anybook.localhost', Settings::form_site( 'https://anybook.localhost' ) );
 		$this->assertSame( '', Settings::form_site( 'https://evil.example' ) );
@@ -110,12 +103,23 @@ class SettingsTest extends TestCase {
 		$this->assertSame( 'https://site.anybookapp.com', Settings::site() );
 	}
 
-	public function test_the_dev_address_is_not_used_from_the_settings() {
-		$dev = 'https://' . Settings::DEV_HOST;
-		$this->assertSame( '', Settings::form_site( $dev ) );
-		$this->assertSame( '', Settings::form_site( $dev . ':8443' ) );
-		$this->connect( array( 'site' => $dev . ':443' ) );
+	public function test_other_anybook_hosts_are_not_used_from_the_settings() {
+		$this->connect( array( 'site' => 'https://dev.anybookapp.com:443' ) );
 		$this->assertSame( Settings::DEFAULT_SITE, Settings::site() );
+	}
+
+	public function test_localhost_is_accepted_only_on_local_or_development_sites() {
+		foreach ( array( 'local', 'development' ) as $env ) {
+			$this->env = $env;
+			$this->assertSame( 'http://localhost:5000', Settings::form_site( 'http://localhost:5000' ), $env );
+		}
+		foreach ( array( 'staging', 'production' ) as $env ) {
+			$this->env = $env;
+			foreach ( array( 'http://localhost:5000', 'http://127.0.0.1:5000', 'https://anybook.localhost' ) as $site ) {
+				$this->assertSame( '', Settings::form_site( $site ), $env . ' ' . $site );
+			}
+			$this->assertSame( 'https://site.anybookapp.com', Settings::form_site( 'https://site.anybookapp.com' ) );
+		}
 	}
 
 	public function test_shared_origins() {

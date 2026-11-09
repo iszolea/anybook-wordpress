@@ -26,13 +26,10 @@ class Settings {
 	const DEFAULT_SITE = 'https://site.anybookapp.com';
 
 	/**
-	 * The Dev install's host, the default of early builds, which saved it. It is never used from the settings:
-	 * a site that saved it moves to DEFAULT_SITE, and only ANYBOOK_SITE in wp-config.php can reach it.
+	 * The only hosts the settings page accepts (https). Any other address, including Anybook's Dev and Demo
+	 * installs, can only come from ANYBOOK_SITE in wp-config.php (review S-M1, WPP-01).
 	 */
-	const DEV_HOST = 'dev.anybookapp.com';
-
-	/** Anybook's own domain: the settings page accepts a booking site on it or its subdomains only (review S-M1). */
-	const ANYBOOK_DOMAIN = 'anybookapp.com';
+	const ANYBOOK_HOSTS = array( 'site.anybookapp.com' );
 
 	/**
 	 * The wp-config.php constant that sets any other booking site (a test install, for example). Only whoever can
@@ -116,9 +113,9 @@ class Settings {
 	}
 
 	/**
-	 * A booking site the settings page may save, or ''. Anybook's own hosts (https only), or a developer's own
-	 * machine; any other host must come from ANYBOOK_SITE (review S-M1), so a site admin cannot load a script from
-	 * a host of their choosing and a lookalike address is refused.
+	 * A booking site the settings page may save, or ''. The live Anybook host (https only), or a developer's own
+	 * machine on a local or development WordPress; any other host must come from ANYBOOK_SITE (review S-M1), so a
+	 * site admin cannot load a script from a host of their choosing and a lookalike address is refused.
 	 *
 	 * @param mixed $value Raw input.
 	 */
@@ -128,24 +125,18 @@ class Settings {
 			return '';
 		}
 		$host = (string) wp_parse_url( $clean, PHP_URL_HOST );
-		if ( self::DEV_HOST === $host ) {
-			return '';
-		}
 		if ( self::is_local_host( $host ) ) {
-			return $clean;
+			return self::local_sites_allowed() ? $clean : '';
 		}
-		return ( 0 === strpos( $clean, 'https://' ) && self::is_anybook_host( $host ) ) ? $clean : '';
+		return ( 0 === strpos( $clean, 'https://' ) && in_array( $host, self::ANYBOOK_HOSTS, true ) ) ? $clean : '';
 	}
 
 	/**
-	 * Whether a host is anybookapp.com or one of its subdomains.
-	 *
-	 * @param string $host Lower-case host.
+	 * Whether this WordPress is a local or development install, the only kind that may use a booking site on
+	 * localhost (WPP-02): on a live server it would let an admin make the server call its own loopback services.
 	 */
-	public static function is_anybook_host( $host ) {
-		$host   = strtolower( (string) $host );
-		$suffix = '.' . self::ANYBOOK_DOMAIN;
-		return self::ANYBOOK_DOMAIN === $host || ( strlen( $host ) > strlen( $suffix ) && substr( $host, -strlen( $suffix ) ) === $suffix );
+	public static function local_sites_allowed() {
+		return in_array( wp_get_environment_type(), array( 'local', 'development' ), true );
 	}
 
 	/** Whether the booking site is a developer's own machine (then the server may call it on any port). */
