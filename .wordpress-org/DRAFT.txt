@@ -1,9 +1,0 @@
-DRAFTS FOR THE OWNER'S APPROVAL (PBI 30564, Step 7), not approved yet.
-
-banner-1544x500.png, banner-772x250.png, icon-256x256.png and icon-128x128.png are plain drafts drawn by
-tools/draft-assets.mjs. screenshot-1.png to screenshot-3.png are taken from the real plugin by tests/e2e/run.sh
-(settings page once connected, the block in the editor, the widget on the Book online page); their captions are
-in readme.txt under Screenshots.
-
-Once the owner approves these images (or replaces them), delete this file: tools/release.sh --submit refuses to
-upload the directory's images while it is here.
