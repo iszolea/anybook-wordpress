@@ -143,3 +143,10 @@ The screenshot captions in the draft readme already match this list. Don't relea
 | E. First month $1 (like Twice Commerce) | $1, then the $10 special | Almost free, and the card is proven at once | Odd next to a price that is already $10 |
 
 **Recommendation:** A for now, with the live demo made prominent on the plugin page. Revisit B after the first month of plugin installs. The $10 opening special already does what a trial does, and the owner wants no unpaid accounts. Nothing changes until the owner decides. If the owner chooses B, C or D, the app's sign-up and billing change first, then the website, Terms and plugin page say the same thing on the same day.
+
+## Review notes (2026-11-10, second pass)
+
+* **Two claims were removed from the readme because the product does not support them as written:** a customer-facing "upload your WP Booking System export" import (the WP Booking System importer is a command-line tool the Anybook team runs; there is no self-service import), and "waivers with several signers" (the user guide describes one signer confirmed by an emailed code). "Items counted from stock" became "places counted for each time", the user guide's wording.
+* **Still to check by a person before release:** Apple Pay and Google Pay (the website says it; the user guide does not mention them; the readme says "where your Stripe account has them switched on"), and the QR-code line (user guide, "Take a charge or the balance by QR code").
+* **The opening special's length disagrees:** website and this readme say 6 months, the user guide says 12 months. The owner must pick one.
+* The full table of 48 plugins, the ranking plan and the trial options (with billing effects) are in `C:\Users\jnich\Projects\Anybook\research\`: `wp-plugin-pitch-research.md`, `wp-plugin-ranking-plan.md`, `wp-plugin-free-trial-options.md`.
