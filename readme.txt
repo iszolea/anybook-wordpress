@@ -24,6 +24,14 @@ The plugin is a small connector. Prices, the calendar, bookings, payments and em
 
 You need an Anybook account. Anybook is a paid service; the plugin itself is free and has no locked features. See [anybookapp.com](https://anybookapp.com) for plans and prices.
 
+= Getting help =
+
+Anybook has no phone or email help desk. Help comes in three ways:
+
+1. **The help assistant in Anybook.** This is the fastest. Click the round **?** button in the top bar of Anybook, type your question and press Enter. It answers from the Anybook user guide.
+2. **The Anybook user guide.** It covers every feature, including this plugin. Open it from the help window in Anybook (the **User guide** button).
+3. **The support forum on WordPress.org.** Post here if the first two do not solve it. It is watched, but a reply may take a day.
+
 = The Anybook booking block =
 
 Add the **Anybook booking** block anywhere in the block editor. In its sidebar choose what it shows (all your units, one unit, your appointments or one service, listed from your Anybook account), its colors (your theme's palette is offered), the wording of the booking button and two headings, and whether it opens guests' email links. Choose **Availability overview** to show which days are free in the weeks ahead instead; then choose the weeks shown (2 to 26, 12 if left alone), whether prices show, which units (all of them if none is ticked) and whether appointments have one row per service or one row per team member for one service. The overview uses the colors on the plugin's settings page. A guest who clicks a free day gets the booking widget. The editor shows a preview card; the live widget shows on the published page. A Shortcode block holding `[anybook ...]` can be turned into the block, keeping its choices.
@@ -98,6 +106,49 @@ Staff who are not the Owner can enter the business code instead (Anybook shows i
 
 == Frequently Asked Questions ==
 
+= Where do I get help? =
+
+The fastest help is the help assistant inside Anybook: click the round **?** button in the top bar and ask your question. The Anybook user guide (open it from the help window in Anybook) covers every feature. You can also post on the support forum here on WordPress.org: it is watched, and a reply may take a day. There is no phone or email support.
+
+= How do I connect the plugin to Anybook? =
+
+Open **Anybook** in the admin menu and click **Connect to Anybook**. Sign in to Anybook as your business's Owner, check that the address shown is your website, and click **Allow**. You come back to WordPress, which says "Connected to Anybook". Anybook adds your website to its allowed websites for you. No keys or passwords are copied.
+
+If you are not the Owner, enter your business code under "Or enter your business code" and click **Save code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
+
+= How do I choose which unit (or units) a booking block shows? =
+
+Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="belle"]`, or for the overview `[anybook show="overview" units="belle,kayak"]`.
+
+= How do I set the colors, and what is a hex code? =
+
+A hex code is a color written as a # and 3 or 6 letters or digits (0 to 9, a to f), for example `#0b6e4f` or `#fff`. Set the colors for every widget on the plugin's settings page (Anybook in the admin menu, **Widget colors**: Main color and Text color). A block sets its own under **Colors** in its sidebar, and a shortcode with `accent="#0b6e4f"` and `text="#1f2933"`. A block or shortcode color wins over the settings page.
+
+If a value is not a color like that, the settings page does not save it: it says so and keeps the color saved before. In a block or shortcode a bad value is ignored, and the settings page color is used (or the widget's own, if there is none).
+
+= How do I set my customer page? =
+
+Your customer page is the page on your website where guests' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your guest page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
+
+The easiest way: tick **Make a booking page for me ("Book online") and use it as the guest page** before you click **Connect to Anybook**, then tick the guest page choice on Anybook before you click **Allow**. If your site has no guest page yet, the plugin's settings page shows **Set your guest page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, guests' email links do not work.
+
+= The widget does not show. What should I check? =
+
+Open **Anybook** in the admin menu: the Status list shows which of these is wrong.
+
+* The plugin is not connected yet.
+* Your business is still waiting for Anybook's approval.
+* Online booking is off in Anybook (Settings, Online booking).
+* This website is not on your allowed websites in Anybook. "www" and no "www" count as different addresses.
+* Your WordPress admin and your website have different addresses, so Connect cannot add the right one: add your website's address in Anybook yourself.
+* The "Book online" page is still a draft, or someone changed it so it no longer holds the widget.
+* A speed plugin delays or combines the widget's script. Exclude booking-widget.js and booking-overview.js in its settings.
+* Your site sends a content security policy that blocks it. The settings page lists the lines your policy needs.
+* Your business has no units or services guests can book online.
+* The shortcode is in a page builder the plugin does not know. Put it in the page's main content as well.
+
+The settings page asks Anybook again at most every ten minutes; **Check again** asks at once. If the widget still does not show, ask the help assistant in Anybook or post on the support forum.
+
 = Does the plugin store a password or key? =
 
 No. It stores your business's public code and name, the booking site address, the booking page it made and your default colors.
@@ -129,6 +180,9 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 3. The booking widget on the "Book online" page.
 
 == Changelog ==
+
+= 0.1.2 (not released) =
+* The readme now has a Getting help section and answers to common questions: connecting, choosing units, colors, the customer page and a widget that does not show.
 
 = 0.1.1 =
 * New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
