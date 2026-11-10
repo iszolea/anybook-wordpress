@@ -1,14 +1,14 @@
 === Anybook – Online Booking for Rentals, Tours, Classes & Appointments ===
 Contributors: anybookapp
-Tags: booking, booking calendar, rental booking, tour booking, appointment booking
+Tags: boat rental booking, kayak rental, cabin booking, tour booking, rental booking
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.1
+Stable tag: 0.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Rentals, stays, tours and classes in one booking calendar. Guests book and pay on your site. One flat price, every feature, no commission.
+Boat, kayak, cabin and houseboat rentals, tours and classes in one booking calendar. Security deposits, no commission, one flat price.
 
 == Description ==
 
@@ -16,7 +16,7 @@ Rentals, stays, tours and classes in one booking calendar. Guests book and pay o
 
 Your guests book, pay and sign on your own website, under your name. They never see Anybook, and Anybook takes no commission on their bookings.
 
-**Built for rentals, stays and tours:** deposits now and the balance later, security bonds held on the card, waivers signed online, and several units in one checkout. Appointments are covered too, in the same account.
+**Built for rentals, stays and tours:** deposits now and the balance later, security deposits (bonds) held on the card, waivers signed online, and several units in one checkout. Appointments are covered too, in the same account.
 
 **Nothing to maintain.** Your bookings, calendar and payments live in Anybook, not in your WordPress database, so there are no booking add-ons to update and nothing to lose if your site breaks. **One price, nothing to add on:** every feature is included on every plan.
 
@@ -260,8 +260,8 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 
 == Changelog ==
 
-= 0.1.2 (not released) =
-* A clearer plugin page: what Anybook does and what it costs, new screenshots, a Getting help section, and answers to common questions (connecting, choosing units, colors, the customer page and a widget that does not show).
+= 0.1.2 =
+* A clearer plugin page, with boat, kayak, cabin and houseboat rentals first: what Anybook does and what it costs, new screenshots, a Getting help section, and answers to common questions (connecting, choosing units, colors, the customer page and a widget that does not show).
 
 = 0.1.1 =
 * New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
