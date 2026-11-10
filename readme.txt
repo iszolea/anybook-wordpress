@@ -8,13 +8,17 @@ Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Rentals, tours, classes and appointments in one booking calendar. Guests book and pay on your own website. Flat price, no commission.
+Rentals, stays, tours and classes in one booking calendar. Guests book and pay on your site. One flat price, every feature, no commission.
 
 == Description ==
 
 **Anybook takes bookings for anything you rent out or run: by the night, the day, the hour, the seat or the item.** Boats and houseboats, cabins, kayaks and bikes, tours and charters, classes, and appointments with your team, all in one booking calendar.
 
 Your guests book, pay and sign on your own website, under your name. They never see Anybook, and Anybook takes no commission on their bookings.
+
+**Built for rentals, stays and tours:** deposits now and the balance later, security bonds held on the card, waivers signed online, and several units in one checkout. Appointments are covered too, in the same account.
+
+**Nothing to maintain.** Your bookings, calendar and payments live in Anybook, not in your WordPress database, so there are no booking add-ons to update and nothing to lose if your site breaks. **One price, nothing to add on:** every feature is included on every plan.
 
 This plugin puts the Anybook booking widget on your WordPress site in two clicks. Anybook is an online booking service with a monthly price; the plugin itself is free and has no locked features (see "What it costs", below).
 
