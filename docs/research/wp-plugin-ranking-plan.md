@@ -48,7 +48,30 @@ booking, booking calendar, rental booking, tour booking, appointment booking.
 
 ## 8. What to measure
 
-Once a week for the first two months, write down: position in the directory for "booking", "booking calendar", "rental booking", "tour booking" and "appointment booking" (search, note the rank); active installs; ratings; resolved threads. Change one thing at a time so the effect can be read.
+Once a week for the first two months, write down: position in the directory for the searches in the baseline table below (plus any new niche words) (search, note the rank); active installs; ratings; resolved threads. Change one thing at a time so the effect can be read.
+
+## Baseline: search positions on 2026-11-10 (after the 0.1.2 release)
+
+Measured with the WordPress.org API (`api.wordpress.org/plugins/info/1.2`, `action=query_plugins`, search text, up to 250 results, our slug `anybook`). Before 0.1.2 (old tags: appointments, booking, booking calendar, online booking, reservations) we were in none of the niche searches. Tags now: boat rental booking, kayak rental, cabin booking, tour booking, rental booking.
+
+| Search | Results | Our position |
+|---|---|---|
+| houseboat | 3 | 2 |
+| kayak rental | 12 | 7 |
+| cabin booking | 21 | 12 |
+| boat rental booking | 32 | 18 |
+| boat rental | 33 | 20 |
+| free boat rental booking | 25 | 15 |
+| security deposit booking | 141 | 94 |
+| rental booking | 300 | not in the top 100 |
+| free rental booking | 221 | not in the top 250 |
+| free booking system | 808 | not in the top 250 |
+| free booking | 1,662 | not in the top 250 |
+| booking | 2,479 | not in the top 250 |
+| booking calendar | 1,085 | not in the top 250 |
+| online booking | 929 | not in the top 250 |
+
+Active installs and ratings: none yet. A free trial would help "free" searches; parked by the owner on 2026-11-10 (revisit about 2026-12-10, see `wp-plugin-free-trial-options.md`). To re-measure, run the same searches and write the new date beside this table.
 
 ## Owner decisions needed
 
