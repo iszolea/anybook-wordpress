@@ -172,9 +172,9 @@ Anything you rent out or run, by the night, the day, the hour, the seat or the i
 
 No. Booking, paying, signing the agreement, checking in and managing a booking all happen in the widget on your website. Guests' email links come back to your website too.
 
-= Can I bring my bookings from another booking system? =
+= Can I bring my bookings from WP Booking System? =
 
-Anybook does not have a self-service import yet. You can add your upcoming bookings by hand, or through the API, while your old system keeps running, and switch when you are ready. Ask the help assistant in Anybook if your situation is different.
+Yes, from a WP Booking System export file. Anybook brings your bookings with you: it matches your calendars to your units, checks the numbers against the original and lists anything it couldn't bring across. For now this is done on request, not as a self-service upload. Ask the help assistant in Anybook to start it. Your old system can keep running until you are ready to switch.
 
 = Where do I get help? =
 
