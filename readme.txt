@@ -20,6 +20,8 @@ Your guests book, pay and sign on your own website, under your name. They never 
 
 **Nothing to maintain.** Your bookings, calendar and payments live in Anybook, not in your WordPress database, so there are no booking add-ons to update and nothing to lose if your site breaks. **One price, nothing to add on:** every feature is included on every plan.
 
+**See it on a live WordPress site:** [wp-demo.anybookapp.com](https://wp-demo.anybookapp.com) is a made-up boat hire business using this plugin. Nothing is charged and no email is sent.
+
 This plugin puts the Anybook booking widget on your WordPress site in two clicks. Anybook is an online booking service with a monthly price; the plugin itself is free and has no locked features (see "What it costs", below).
 
 = What you get =
@@ -249,14 +251,12 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 
 == Screenshots ==
 
-1. The booking widget on a phone: guests choose their dates, with prices on the calendar.
-2. Checkout: a deposit now and the rest later, paid by card.
+1. The booking widget on a WordPress page: guests choose their dates, with prices on the calendar, the extras they can add and the security bond shown before checkout.
+2. A boat that runs trips at set times: busy days show "few left" or "full", and a click shows the start times.
 3. The availability overview: free days for the weeks ahead, one click to book.
-4. Booking several units at once, in one checkout.
-5. The online waiver, signed before arrival.
-6. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
-7. The Anybook booking block in the editor, with its choices in the sidebar.
-8. The plugin's settings page once connected: your business, your website and your guest page.
+4. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
+5. The Anybook booking block in the editor, with its choices in the sidebar.
+6. The plugin's settings page once connected: your business, your website and your guest page.
 
 == Changelog ==
 
