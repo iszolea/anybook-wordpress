@@ -1,6 +1,6 @@
-=== Anybook Online Booking ===
+=== Anybook – Online Booking for Rentals, Tours, Classes & Appointments ===
 Contributors: anybookapp
-Tags: booking, booking calendar, appointments, reservations, online booking
+Tags: booking, booking calendar, rental booking, tour booking, appointment booking
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -8,21 +8,81 @@ Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Take bookings and card payments on your website with the Anybook booking widget.
+Rentals, stays, tours and classes in one booking calendar. Guests book and pay on your site. One flat price, every feature, no commission.
 
 == Description ==
 
-Anybook Online Booking puts your Anybook booking widget on your WordPress site. Guests choose dates, times or a service, book and pay by card without leaving your website.
+**Anybook takes bookings for anything you rent out or run: by the night, the day, the hour, the seat or the item.** Boats and houseboats, cabins, kayaks and bikes, tours and charters, classes, and appointments with your team, all in one booking calendar.
+
+Your guests book, pay and sign on your own website, under your name. They never see Anybook, and Anybook takes no commission on their bookings.
+
+**Built for rentals, stays and tours:** deposits now and the balance later, security bonds held on the card, waivers signed online, and several units in one checkout. Appointments are covered too, in the same account.
+
+**Nothing to maintain.** Your bookings, calendar and payments live in Anybook, not in your WordPress database, so there are no booking add-ons to update and nothing to lose if your site breaks. **One price, nothing to add on:** every feature is included on every plan.
+
+**See it on a live WordPress site:** [wp-demo.anybookapp.com](https://wp-demo.anybookapp.com) is a made-up boat hire business using this plugin. Nothing is charged and no email is sent.
+
+This plugin puts the Anybook booking widget on your WordPress site in two clicks. Anybook is an online booking service with a monthly price; the plugin itself is free and has no locked features (see "What it costs", below).
+
+= What you get =
+
+**Take bookings for anything**
+
+* Nights with changeover days, whole days, hourly time slots with a set number of places, places counted for each time (for example the seats in a class or several of the same item), and appointments with a team member, mixed in one account.
+* An availability overview: a calendar of the weeks ahead where guests click a free day to book.
+* Guests can book several units in one checkout and one payment.
+* The booking widget's first load is under 12 KB, and it shows free dates straight away, even on a phone.
+
+**Get paid, and keep the bond**
+
+* Card payments through your own Stripe account, so the money goes straight to you.
+* Deposits now, with the balance charged automatically later.
+* Security bonds held on the guest's card, or charged and refunded: your choice.
+* Gift vouchers, sold online and over the counter.
+* Payment at the counter or the dock by QR code, on the guest's own phone.
+* Sync with Xero: invoices, payments, refunds and card payouts.
+
+**Paperwork that writes and signs itself**
+
+* Rental agreements and waivers signed online before arrival, confirmed with an emailed code, with a signed copy sent to the guest and to you.
+* Check-in before arrival: driver's license details, ID and an emergency contact.
+* A visual builder for your emails, invoices and contracts.
+
+**Run the day from one screen**
+
+* A daily manifest with pickup and return check-in.
+* Automation rules that send emails, add notes and tasks, and call webhooks.
+* A follow-up email for unfinished bookings, and offers before arrival.
+* Staff logins with roles and two-step verification, and an API and webhooks on every plan.
+
+= What it costs =
+
+* **Price:** from US$15 a month per site (one business location), priced by bookings a month:
+  * US$15 for up to 100;
+  * US$39 for up to 500;
+  * US$79 for up to 3,000.
+* **What's included:** every feature on every plan. Never a percentage of your bookings.
+* **Opening special, for a limited time:** US$10 a month for your first 6 months, on any plan.
+* **Billing:** monthly, and you can cancel anytime. Stripe's normal card fees apply.
+* **More:** plans and details at [anybookapp.com](https://anybookapp.com/#pricing).
+
+= Getting help =
+
+Anybook has no phone or email help desk. Help comes in three ways:
+
+1. **The help assistant in Anybook.** This is the fastest. Click the round **?** button in the top bar of Anybook, type your question and press Enter. It answers from the Anybook user guide.
+2. **The Anybook user guide.** It covers every feature, including this plugin. Open it from the help window in Anybook (the **User guide** button).
+3. **The support forum on WordPress.org.** Post here if the first two do not solve it. It is watched, but a reply may take a day.
+
+= What the plugin does =
 
 The plugin is a small connector. Prices, the calendar, bookings, payments and emails all stay on Anybook, so improvements to the widget reach your site without a plugin update.
 
 * **Connect in two clicks.** Click Connect to Anybook, sign in as your business's Owner and click Allow. Anybook lets your website show the widget. No keys or passwords are copied.
 * **A booking page made for you.** The plugin can make a "Book online" page, which Anybook uses for your guests' email links. It stays a draft until the Owner clicks Allow on Anybook.
-* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colors and with your own button wording, or an availability overview: a calendar of the weeks ahead where guests click a free day to book.
+* **A block and a shortcode.** Show all your units, one unit, your appointments or one service, in your colors and with your own button wording, or the availability overview.
 * **Status at a glance.** The settings page shows whether your site is allowed, where your guest page is and whether online booking is on.
 * **Friendly with speed plugins.** The widget's script loads only on pages that show it, in the page's head, and asks common speed plugins to leave it alone. If the widget does not appear, exclude booking-widget.js and booking-overview.js from delaying and combining in your speed plugin.
-
-You need an Anybook account. Anybook is a paid service; the plugin itself is free and has no locked features. See [anybookapp.com](https://anybookapp.com) for plans and prices.
 
 = The Anybook booking block =
 
@@ -98,6 +158,73 @@ Staff who are not the Owner can enter the business code instead (Anybook shows i
 
 == Frequently Asked Questions ==
 
+= What does it cost? =
+
+From US$15 a month per site, by how many bookings it takes: US$15 for up to 100 a month, US$39 for up to 500 and US$79 for up to 3,000. Every plan has every feature. For a limited time, the opening special is US$10 a month for your first 6 months, on any plan. You pay monthly and can cancel anytime. Stripe's normal card fees apply to card payments. The plugin itself is free.
+
+= Is there a free trial? =
+
+No. The first month is paid when you sign up, at the opening special of US$10, and you can cancel anytime.
+
+= Does Anybook take a commission on my bookings? =
+
+No. You pay the monthly price, and Stripe's normal card fees. Nothing is added to your guests' bookings, and the money goes straight to your own Stripe account.
+
+= What can I take bookings for? =
+
+Anything you rent out or run, by the night, the day, the hour, the seat or the item. For example: boats, houseboats and cabins; kayaks, bikes and equipment; tours, charters and classes; and appointments with your team at salons and spas. One account can mix them.
+
+= Do my guests leave my website? =
+
+No. Booking, paying, signing the agreement, checking in and managing a booking all happen in the widget on your website. Guests' email links come back to your website too.
+
+= Can I bring my bookings from WP Booking System? =
+
+Yes, from a WP Booking System export file. Anybook brings your bookings with you: it matches your calendars to your units, checks the numbers against the original and lists anything it couldn't bring across. For now this is done on request, not as a self-service upload. Ask the help assistant in Anybook to start it. Your old system can keep running until you are ready to switch.
+
+= Where do I get help? =
+
+The fastest help is the help assistant inside Anybook: click the round **?** button in the top bar and ask your question. The Anybook user guide (open it from the help window in Anybook) covers every feature. You can also post on the support forum here on WordPress.org: it is watched, and a reply may take a day. There is no phone or email support.
+
+= How do I connect the plugin to Anybook? =
+
+Open **Anybook** in the admin menu and click **Connect to Anybook**. Sign in to Anybook as your business's Owner, check that the address shown is your website, and click **Allow**. You come back to WordPress, which says "Connected to Anybook". Anybook adds your website to its allowed websites for you. No keys or passwords are copied.
+
+If you are not the Owner, enter your business code under "Or enter your business code" and click **Save code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
+
+= How do I choose which unit (or units) a booking block shows? =
+
+Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="belle"]`, or for the overview `[anybook show="overview" units="belle,kayak"]`.
+
+= How do I set the colors, and what is a hex code? =
+
+A hex code is a color written as a # and 3 or 6 letters or digits (0 to 9, a to f), for example `#0b6e4f` or `#fff`. Set the colors for every widget on the plugin's settings page (Anybook in the admin menu, **Widget colors**: Main color and Text color). A block sets its own under **Colors** in its sidebar, and a shortcode with `accent="#0b6e4f"` and `text="#1f2933"`. A block or shortcode color wins over the settings page.
+
+If a value is not a color like that, the settings page does not save it: it says so and keeps the color saved before. In a block or shortcode a bad value is ignored, and the settings page color is used (or the widget's own, if there is none).
+
+= How do I set my customer page? =
+
+Your customer page is the page on your website where guests' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your guest page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
+
+The easiest way: tick **Make a booking page for me ("Book online") and use it as the guest page** before you click **Connect to Anybook**, then tick the guest page choice on Anybook before you click **Allow**. If your site has no guest page yet, the plugin's settings page shows **Set your guest page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, guests' email links do not work.
+
+= The widget does not show. What should I check? =
+
+Open **Anybook** in the admin menu: the Status list shows which of these is wrong.
+
+* The plugin is not connected yet.
+* Your business is still waiting for Anybook's approval.
+* Online booking is off in Anybook (Settings, Online booking).
+* This website is not on your allowed websites in Anybook. "www" and no "www" count as different addresses.
+* Your WordPress admin and your website have different addresses, so Connect cannot add the right one: add your website's address in Anybook yourself.
+* The "Book online" page is still a draft, or someone changed it so it no longer holds the widget.
+* A speed plugin delays or combines the widget's script. Exclude booking-widget.js and booking-overview.js in its settings.
+* Your site sends a content security policy that blocks it. The settings page lists the lines your policy needs.
+* Your business has no units or services guests can book online.
+* The shortcode is in a page builder the plugin does not know. Put it in the page's main content as well.
+
+The settings page asks Anybook again at most every ten minutes; **Check again** asks at once. If the widget still does not show, ask the help assistant in Anybook or post on the support forum.
+
 = Does the plugin store a password or key? =
 
 No. It stores your business's public code and name, the booking site address, the booking page it made and your default colors.
@@ -124,11 +251,17 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 
 == Screenshots ==
 
-1. The Anybook settings page once connected: the status of your business, your website and your guest page.
-2. The Anybook booking block in the editor, with its choices in the sidebar.
-3. The booking widget on the "Book online" page.
+1. The booking widget on a WordPress page: guests choose their dates, with prices on the calendar, the extras they can add and the security bond shown before checkout.
+2. A boat that runs trips at set times: busy days show "few left" or "full", and a click shows the start times.
+3. The availability overview: free days for the weeks ahead, one click to book.
+4. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
+5. The Anybook booking block in the editor, with its choices in the sidebar.
+6. The plugin's settings page once connected: your business, your website and your guest page.
 
 == Changelog ==
+
+= 0.1.2 (not released) =
+* A clearer plugin page: what Anybook does and what it costs, new screenshots, a Getting help section, and answers to common questions (connecting, choosing units, colors, the customer page and a widget that does not show).
 
 = 0.1.1 =
 * New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
