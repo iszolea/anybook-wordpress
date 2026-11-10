@@ -1,7 +1,7 @@
 """Saves the WordPress.org SVN password for the Anybook plugin into Windmill (admins workspace,
 secret variable f/anybook/wordpress_org_svn_password). You type it; it is never shown or written to disk.
 
-Run:  python C:\\Users\\jnich\\Projects\\Anybook\\save-svn-password.py
+Run:  python C:\\Users\\jnich\\Projects\\Anybook\\anybook-wordpress\\tools\\save-svn-password.py
 """
 import getpass
 import sys
