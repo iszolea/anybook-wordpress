@@ -231,7 +231,7 @@ No. It stores your business's public code and name, the booking site address, th
 
 = What happens when I uninstall the plugin? =
 
-Its settings are removed, on every site of a network. Your booking page stays (it is your page) and your Anybook account is not changed. Remove the website from allowed websites in Anybook if you no longer use it.
+Its settings are removed, on every site of a network. A Book online page the plugin made, if you have not changed it, becomes a draft; a page you have edited is left as it is. Your Anybook account is not changed. Remove the website from allowed websites in Anybook if you no longer use it.
 
 = My site sends a content security policy. =
 
