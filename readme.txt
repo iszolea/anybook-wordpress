@@ -124,13 +124,15 @@ Your visitors' browsers contact Anybook as well:
 
 * **On pages that show the booking widget**, each visitor's browser loads the widget script from the Anybook booking site (https://site.anybookapp.com/widget/booking-widget.js), and on pages that show the availability overview its script (https://site.anybookapp.com/widget/booking-overview.js) and, once the overview shows, the script that opens the widget from it and the widget's own script (booking-overview-open.js and booking-widget.js, from the same address). The widget loads further parts of itself, named booking-*.js, from the same address as a guest moves through it. Each of these requests sends Anybook the visitor's IP address, browser details and the address of the page, even if they do not book. When a guest books, what they type in the booking form (such as name, email address, phone number and booking details) is sent from their browser to Anybook. For card payments the widget loads Stripe (https://stripe.com), and card details go to Stripe. The widget stores nothing in the browser.
 
+Anybook stores booking details on its server in France (EU). Anybook's privacy policy is at https://anybookapp.com/privacy.
+
 The plugin loads remote scripts only on pages that show the widget or the availability overview, never in the WordPress admin, and only once a business is connected. They are part of the Anybook service and are the widget itself, so they are not in the plugin. They load over https from the booking site's plain address, so changes to the widget reach your site without a plugin update.
 
 Anybook terms of service: https://anybookapp.com/terms
 Anybook privacy policy: https://anybookapp.com/privacy
 Stripe terms: https://stripe.com/legal and privacy policy: https://stripe.com/privacy
 
-The plugin adds no tracking and stores no booking, guest or payment details on your website. It suggests words for your privacy policy under Settings, Privacy.
+The plugin adds no tracking and stores no booking, customer or payment details on your website. It suggests words for your privacy policy under Settings, Privacy.
 
 == Source code and build ==
 
