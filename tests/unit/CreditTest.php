@@ -9,8 +9,8 @@ use Brain\Monkey\Functions;
 /** The "Booking by Anybook" credit: written on the server from Anybook's status answer, never from its HTML, never by contacting Anybook on a page view. */
 class CreditTest extends TestCase {
 
-	const FOLLOWED   = '<p class="anybook-credit">Booking by <a href="https://anybookapp.com">Anybook</a></p>';
-	const NOFOLLOWED = '<p class="anybook-credit">Booking by <a href="https://anybookapp.com" rel="nofollow">Anybook</a></p>';
+	const FOLLOWED   = '<p class="anybook-credit"><a href="https://anybookapp.com/">Booking by Anybook</a></p>';
+	const NOFOLLOWED = '<p class="anybook-credit"><a href="https://anybookapp.com/" rel="nofollow">Booking by Anybook</a></p>';
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -35,6 +35,27 @@ class CreditTest extends TestCase {
 		$this->assertSame( CreditTest::widget() . self::FOLLOWED, $html );
 	}
 
+	public function test_ugc_is_passed_on_too() {
+		$this->status_says( array( 'required' => true, 'free' => true, 'rel' => 'ugc' ) );
+		$this->assertStringContainsString( ' rel="ugc">Booking by Anybook</a>', Renderer::render() );
+	}
+
+	public function test_the_link_is_separate_from_the_widget_and_plain_text() {
+		$this->status_says( array( 'required' => true, 'free' => true, 'rel' => 'follow' ) );
+		$html = Renderer::render();
+		$this->assertStringStartsWith( CreditTest::widget() . '<p', $html ); // after the widget element closes, never inside it
+		$this->assertStringContainsString( '>Booking by Anybook</a>', $html );
+		$this->assertStringNotContainsString( 'display:none', $html );
+	}
+
+	public function test_a_trial_gets_no_separate_link_only_the_free_plan_does() {
+		$this->status_says( array( 'required' => true, 'free' => false, 'rel' => 'follow' ) );
+		$this->assertSame( CreditTest::widget(), Renderer::render() );
+		Credit::reset_page();
+		$this->status_says( array( 'required' => true, 'free' => true, 'rel' => 'follow' ) );
+		$this->assertStringContainsString( 'anybook-credit', Renderer::render() );
+	}
+
 	public function test_a_paying_business_has_no_line() {
 		$this->status_says( array( 'required' => false, 'rel' => 'follow', 'html' => self::FOLLOWED ) );
 		$this->assertSame( CreditTest::widget(), Renderer::render() );
@@ -51,7 +72,7 @@ class CreditTest extends TestCase {
 		$this->assertSame( CreditTest::widget() . self::NOFOLLOWED, Renderer::render() );
 		Credit::reset_page();
 		$this->status_says( array( 'required' => true, 'rel' => 'sponsored' ) );
-		$this->assertStringContainsString( ' rel="sponsored">Anybook</a>', Renderer::render() );
+		$this->assertStringContainsString( ' rel="sponsored">Booking by Anybook</a>', Renderer::render() );
 		Credit::reset_page();
 		$this->status_says( array( 'required' => true, 'rel' => 'noopener" onclick="x' ) );
 		$this->assertSame( CreditTest::widget() . self::FOLLOWED, Renderer::render() );

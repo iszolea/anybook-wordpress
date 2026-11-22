@@ -12,25 +12,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Writes the credit line on the server, in the page's own HTML, next to the booking widget (Anybook's Free plan and free days ask for it).
+ * Writes the credit link on the server, in the page's own HTML, as a separate plain link after the booking widget, outside it (Anybook's Free plan asks for it; a trial or paid plan does not).
  *
  * Anybook's site-status answer says whether the credit is required for this business and with which `rel`. That answer is only read when an
  * administrator or editor acts (the settings page, the editor), as every call of this plugin is, and kept in an option. A visitor's page view
  * reads that option and never contacts Anybook. The line is always made here from fixed text and a checked `rel`: the HTML in Anybook's answer
  * is outside data and is never printed.
  *
- * The link is followed by default; Anybook can ask for `nofollow` or `sponsored` and the plugin passes that on. Nothing is claimed about search.
+ * The link is followed by default; Anybook can ask for `nofollow`, `ugc` or `sponsored` and the plugin passes that on. Anybook accepts any rel, but needs the link visible on a public page that search engines may read (no noindex, no sign-in, not blocked by robots.txt). Nothing is claimed about search.
  */
 class Credit {
 
 	/** The option that keeps what Anybook last said about this business. */
 	const OPTION = 'anybook_credit';
 
-	/** The link: the brand, nothing else. */
-	const URL = 'https://anybookapp.com';
+	/** The link: the home page, anchor text the brand only ("Booking by Anybook"), never a keyword. */
+	const URL = 'https://anybookapp.com/';
 
 	/** The `rel` values the plugin will write. "follow" is no rel at all. */
-	const RELS = array( 'follow', 'nofollow', 'sponsored' );
+	const RELS = array( 'follow', 'nofollow', 'ugc', 'sponsored' );
 
 	/**
 	 * Whether the line has been written on this page already (once is enough).
@@ -95,7 +95,7 @@ class Credit {
 	public static function line( $rel ) {
 		$rel   = self::clean_rel( $rel );
 		$attrs = 'follow' === $rel ? '' : ' rel="' . esc_attr( $rel ) . '"';
-		return '<p class="anybook-credit">Booking by <a href="' . esc_url( self::URL ) . '"' . $attrs . '>Anybook</a></p>';
+		return '<p class="anybook-credit"><a href="' . esc_url( self::URL ) . '"' . $attrs . '>Booking by Anybook</a></p>';
 	}
 
 	/**

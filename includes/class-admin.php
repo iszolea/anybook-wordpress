@@ -459,7 +459,7 @@ class Admin {
 				if ( ! empty( $status['credit']['required'] ) ) {
 					self::line(
 						true,
-						__( 'Your Anybook plan asks for a small "Booking by Anybook" link under your booking widget. The plugin adds it for you; a paid plan removes it.', 'anybook' )
+						__( 'Your Anybook Free plan asks for a separate "Booking by Anybook" link after your booking widget. The plugin adds it for you as normal text on the page. Keep that page public and open to search engines (no noindex, no sign-in); a paid plan does not need the link.', 'anybook' )
 					);
 				}
 				self::line(
