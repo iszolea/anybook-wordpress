@@ -214,8 +214,8 @@ class Client {
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 404 === $code ) {
-			// Anybook answers 404 alike for an unknown code and a business not approved yet: it never says which (ADR-19).
-			return new \WP_Error( 'anybook_unknown_business', __( 'Anybook does not show this business yet: it is waiting for Anybook\'s approval, or the business code is wrong.', 'anybook' ) );
+			// Anybook answers 404 alike for an unknown code and a business whose sign-up is not finished: it never says which (ADR-19).
+			return new \WP_Error( 'anybook_unknown_business', __( 'Anybook does not show this business yet: your sign-up in Anybook is not finished, or the business code is wrong.', 'anybook' ) );
 		}
 		if ( 200 !== $code ) {
 			/* translators: %d: HTTP status code. */

@@ -93,7 +93,7 @@ Add the **Anybook booking** block anywhere in the block editor. In its sidebar c
 For the classic editor and page builders, `[anybook]` shows the same widget with the same choices:
 
 * `show="all"`, `show="unit"`, `show="appointments"` or `show="service"`: what to show (all units if left out).
-* `unit="belle"`: one unit (its code in Anybook).
+* `unit="kayak"`: one unit (its code in Anybook).
 * `service="cut"`: one service; `services="yes"` also means appointments.
 * `accent="#0b6e4f"` and `text="#1f2933"`: colors.
 * `guest_links="yes"`: this widget opens guests' email links when a page has several.
@@ -103,7 +103,7 @@ The availability overview: `[anybook show="overview"]`, with these choices:
 
 * `weeks="12"`: how many weeks it shows, 2 to 26 (12 if left out).
 * `prices="yes"`: show prices.
-* `units="belle,kayak"`: only these units (their codes in Anybook, separated by commas); all units if left out.
+* `units="kayak,haircut"`: only these units (their codes in Anybook, separated by commas); all units if left out.
 * `rows="people" service="..."`: one row per team member for that one service (its id or code in Anybook); otherwise one row per service.
 
 = Page builders =
@@ -194,7 +194,7 @@ If you are not the Owner, enter your business code under "Or enter your business
 
 = How do I choose which unit (or units) a booking block shows? =
 
-Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="belle"]`, or for the overview `[anybook show="overview" units="belle,kayak"]`.
+Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="kayak"]`, or for the overview `[anybook show="overview" units="kayak,haircut"]`.
 
 = How do I set the colors, and what is a hex code? =
 
@@ -213,7 +213,7 @@ The easiest way: tick **Make a booking page for me ("Book online") and use it as
 Open **Anybook** in the admin menu: the Status list shows which of these is wrong.
 
 * The plugin is not connected yet.
-* Your business is still waiting for Anybook's approval.
+* Your Anybook sign-up is not finished yet.
 * Online booking is off in Anybook (Settings, Online booking).
 * This website is not on your allowed websites in Anybook. "www" and no "www" count as different addresses.
 * Your WordPress admin and your website have different addresses, so Connect cannot add the right one: add your website's address in Anybook yourself.

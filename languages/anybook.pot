@@ -71,7 +71,7 @@ msgid "Connected to Anybook. Next, add the Anybook booking block to a page, or u
 msgstr ""
 
 #: includes/class-admin.php:310
-msgid "Connected. Anybook has not approved your business yet, so the booking widget will not show until it does."
+msgid "Connected. Your Anybook sign-up is not finished yet, so the booking widget will not show. Finish sign-up in Anybook, then click Check again."
 msgstr ""
 
 #: includes/class-admin.php:311
@@ -91,7 +91,7 @@ msgid "Only your business's Owner can connect a website on Anybook. Ask the Owne
 msgstr ""
 
 #: includes/class-admin.php:315
-msgid "Your business is not approved on Anybook yet. Connect again once Anybook has approved it."
+msgid "Your Anybook sign-up is not finished yet. Finish it in Anybook, then connect again."
 msgstr ""
 
 #: includes/class-admin.php:316
@@ -107,11 +107,11 @@ msgid "Anybook sent back something the plugin could not read. Please click Conne
 msgstr ""
 
 #: includes/class-admin.php:319
-msgid "That is not a business code. Codes are letters, numbers and dashes, like bribie."
+msgid "That is not a business code. Codes are letters, numbers and dashes, like sunny-kayaks."
 msgstr ""
 
 #: includes/class-admin.php:320
-msgid "Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business."
+msgid "Anybook has no active business with that code. Check the code, or finish your sign-up in Anybook first."
 msgstr ""
 
 #: includes/class-admin.php:321
@@ -176,7 +176,7 @@ msgid "Business code"
 msgstr ""
 
 #: includes/class-admin.php:391
-msgid "for example bribie"
+msgid "for example sunny-kayaks"
 msgstr ""
 
 #: includes/class-admin.php:392
@@ -216,11 +216,11 @@ msgid "Only this page is affected: your visitors' booking widget loads straight 
 msgstr ""
 
 #: includes/class-admin.php:457
-msgid "Your business is approved on Anybook."
+msgid "Your Anybook sign-up is finished."
 msgstr ""
 
 #: includes/class-admin.php:457
-msgid "Your business is waiting for Anybook's approval."
+msgid "Your Anybook sign-up is not finished yet. Finish it in Anybook, then click Check again."
 msgstr ""
 
 #: includes/class-admin.php:461
@@ -408,7 +408,7 @@ msgid "This site is not connected to Anybook yet."
 msgstr ""
 
 #: includes/class-client.php:218
-msgid "Anybook does not show this business yet: it is waiting for Anybook's approval, or the business code is wrong."
+msgid "Anybook does not show this business yet: your sign-up in Anybook is not finished, or the business code is wrong."
 msgstr ""
 
 #. translators: %d: HTTP status code.
