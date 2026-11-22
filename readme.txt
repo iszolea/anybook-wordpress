@@ -168,7 +168,7 @@ No. The first month is paid when you sign up, at the opening special of US$10, a
 
 = Why is there a "Booking by Anybook" link under my booking widget? =
 
-Anybook's Free plan asks for a "Booking by Anybook" link after the widget. It is a separate plain link in your page's own HTML, and the plugin writes it for you. Keep the page public and open to search engines (no noindex, no sign-in, not blocked by robots.txt). It goes away once your business is on a paid plan or a trial (it can take up to ten minutes after you next open the plugin's settings page). Nothing else is added, and the link goes only to the anybookapp.com home page.
+Anybook's Free plan asks for a "Booking by Anybook" link after the widget. It is a separate plain link in your page's own HTML, and the plugin writes it for you. Keep the page public and open to search engines (no noindex, no sign-in or password, not blocked by robots.txt; in WordPress leave Settings, Reading, "Discourage search engines" unticked). A page hidden from Google counts as the link missing. It goes away once your business is on a paid plan or a trial (it can take up to ten minutes after you next open the plugin's settings page). Nothing else is added, and the link goes only to the anybookapp.com home page.
 
 = Does Anybook take a commission on my bookings? =
 
