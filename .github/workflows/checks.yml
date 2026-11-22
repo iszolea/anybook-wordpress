@@ -1,0 +1,15 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP lint, PHPUnit and PHPCS
+        run: bash tools/docker-test.sh
+      - name: JavaScript lint, tests and build comparison
+        run: bash tools/docker-js.sh
