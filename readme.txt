@@ -258,6 +258,14 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 5. The Anybook booking block in the editor, with its choices in the sidebar.
 6. The plugin's settings page once connected: your business, your website and your guest page.
 
+== Upgrade Notice ==
+
+= 0.1.2 =
+A clearer plugin page and answers to common questions. Safe to update.
+
+= 0.1.1 =
+Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or later.
+
 == Changelog ==
 
 = 0.1.2 =
