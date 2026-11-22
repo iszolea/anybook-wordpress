@@ -67,7 +67,11 @@ msgid "You can also enter your business code below: Anybook shows it to every st
 msgstr ""
 
 #: includes/class-admin.php:309
-msgid "Connected to Anybook. Next, add the Anybook booking block to a page, or use your Book online page if you asked for one: it is now published."
+msgid "Connected to Anybook. Next, add the Anybook booking block to a page."
+msgstr ""
+
+#: includes/class-admin.php:310
+msgid "Connected to Anybook. Your Book online page is now published."
 msgstr ""
 
 #: includes/class-admin.php:310
@@ -140,6 +144,10 @@ msgid "Anybook was asked less than 30 seconds ago. The status below is its answe
 msgstr ""
 
 #: includes/class-admin.php:327
+msgid "View page"
+msgstr ""
+
+#: includes/class-admin.php:341
 msgid "Your booking page is published."
 msgstr ""
 
@@ -180,7 +188,7 @@ msgid "for example sunny-kayaks"
 msgstr ""
 
 #: includes/class-admin.php:392
-msgid "Save code"
+msgid "Connect with this code"
 msgstr ""
 
 #: includes/class-admin.php:414

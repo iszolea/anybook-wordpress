@@ -127,7 +127,7 @@ class AdminTest extends TestCase {
 	}
 
 	public function test_each_notice_code_has_words_and_a_type() {
-		$codes = array( 'connected', 'connected-pending', 'disconnected', 'saved', 'error-cancelled', 'error-not-owner', 'error-not-approved', 'error-other', 'bad-state', 'bad-return', 'bad-code', 'unknown-business', 'unreachable', 'bad-colour', 'bad-site', 'site-not-allowed', 'origin-mismatch', 'checked-recently', 'page-published', 'page-failed' );
+		$codes = array( 'connected', 'connected-page', 'connected-pending', 'disconnected', 'saved', 'error-cancelled', 'error-not-owner', 'error-not-approved', 'error-other', 'bad-state', 'bad-return', 'bad-code', 'unknown-business', 'unreachable', 'bad-colour', 'bad-site', 'site-not-allowed', 'origin-mismatch', 'checked-recently', 'page-published', 'page-failed' );
 		foreach ( $codes as $code ) {
 			$notice = Admin::notice( $code );
 			$this->assertIsArray( $notice, $code );
@@ -142,6 +142,28 @@ class AdminTest extends TestCase {
 		$this->assertStringContainsString( 'Settings saved.', $this->page() );
 		$_GET['anybook_notice'] = '<b>hi</b>';
 		$this->assertStringNotContainsString( 'hi</b>', $this->page() );
+	}
+
+	public function test_each_connected_case_shows_only_its_own_sentence() {
+		$_GET['anybook_notice'] = 'connected';
+		$html                   = $this->page();
+		$this->assertStringContainsString( 'Connected to Anybook. Next, add the Anybook booking block to a page.', $html );
+		$this->assertStringNotContainsString( 'Book online page', $html );
+		$this->assertStringNotContainsString( 'View page', $html );
+
+		$id                     = \Anybook\Booking_Page::ensure_draft();
+		\Anybook\Booking_Page::publish( $id );
+		$_GET['anybook_notice'] = 'connected-page';
+		$html                   = $this->page();
+		$this->assertStringContainsString( 'Connected to Anybook. Your Book online page is now published.', $html );
+		$this->assertStringContainsString( '<a href="https://example.com/book/">View page</a>', $html );
+		$this->assertStringNotContainsString( 'add the Anybook booking block', $html );
+	}
+
+	public function test_the_code_form_button_says_it_connects() {
+		$html = $this->page();
+		$this->assertStringContainsString( 'Connect with this code', $html );
+		$this->assertStringNotContainsString( 'Save code', $html );
 	}
 
 	public function test_saving_keeps_good_colours_and_refuses_bad_ones() {

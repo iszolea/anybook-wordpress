@@ -84,7 +84,7 @@ out=$(wp eval '
 	$url = Anybook\Connection::start( 1, "x", true );
 	parse_str( parse_url( $url, PHP_URL_QUERY ), $q );
 	echo Anybook\Connection::handle_return( array( "state" => $q["state"], "anybook_slug" => "bribie" ), 1 );')
-[ "$out" = "connected" ] && [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "allow: $out, $(wp post get "$id" --field=post_status)"
+[ "$out" = "connected-page" ] && [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "allow: $out, $(wp post get "$id" --field=post_status)"
 pass "booking page: a draft until the Owner agrees, then published"
 
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')

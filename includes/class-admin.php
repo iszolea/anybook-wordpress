@@ -306,7 +306,8 @@ class Admin {
 	public static function notice( $code ) {
 		$fallback = __( 'You can also enter your business code below: Anybook shows it to every staff member under Settings, Online booking.', 'anybook' );
 		$notices  = array(
-			'connected'          => array( 'success', __( 'Connected to Anybook. Next, add the Anybook booking block to a page, or use your Book online page if you asked for one: it is now published.', 'anybook' ) ),
+			'connected'          => array( 'success', __( 'Connected to Anybook. Next, add the Anybook booking block to a page.', 'anybook' ) ),
+			'connected-page'     => array( 'success', __( 'Connected to Anybook. Your Book online page is now published.', 'anybook' ) ),
 			'connected-pending'  => array( 'warning', __( 'Connected. Your Anybook sign-up is not finished yet, so the booking widget will not show. Finish sign-up in Anybook, then click Check again.', 'anybook' ) ),
 			'disconnected'       => array( 'success', __( 'Disconnected. The booking widget no longer shows on this website, and your Book online page shows visitors nothing until you connect again. To stop this website showing your widget for good, remove it from allowed websites in Anybook too.', 'anybook' ) ),
 			'saved'              => array( 'success', __( 'Settings saved.', 'anybook' ) ),
@@ -343,7 +344,15 @@ class Admin {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Anybook Online Booking', 'anybook' ); ?></h1>
 			<?php if ( $notice ) : ?>
-				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible"><p><?php echo esc_html( $notice[1] ); ?></p></div>
+				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible"><p>
+					<?php
+					echo esc_html( $notice[1] );
+					$page_link = 'connected-page' === $code ? Booking_Page::current_id() : 0;
+					if ( $page_link ) {
+						echo ' <a href="' . esc_url( get_permalink( $page_link ) ) . '">' . esc_html__( 'View page', 'anybook' ) . '</a>';
+					}
+					?>
+				</p></div>
 			<?php endif; ?>
 			<?php if ( Settings::shares_origin() ) : ?>
 				<div class="notice notice-warning inline"><p>
@@ -389,7 +398,7 @@ class Admin {
 			<?php wp_nonce_field( 'anybook_save_code' ); ?>
 			<label for="anybook_code" class="screen-reader-text"><?php esc_html_e( 'Business code', 'anybook' ); ?></label>
 			<input type="text" id="anybook_code" name="anybook_code" class="regular-text" placeholder="<?php esc_attr_e( 'for example sunny-kayaks', 'anybook' ); ?>" pattern="[A-Za-z0-9_\-]{1,64}" required />
-			<?php submit_button( __( 'Save code', 'anybook' ), 'secondary', 'submit', false ); ?>
+			<?php submit_button( __( 'Connect with this code', 'anybook' ), 'secondary', 'submit', false ); ?>
 		</form>
 		<?php
 	}

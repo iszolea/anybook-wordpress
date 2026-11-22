@@ -190,7 +190,7 @@ The fastest help is the help assistant inside Anybook: click the round **?** but
 
 Open **Anybook** in the admin menu and click **Connect to Anybook**. Sign in to Anybook as your business's Owner, check that the address shown is your website, and click **Allow**. You come back to WordPress, which says "Connected to Anybook". Anybook adds your website to its allowed websites for you. No keys or passwords are copied.
 
-If you are not the Owner, enter your business code under "Or enter your business code" and click **Save code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
+If you are not the Owner, enter your business code under "Or enter your business code" and click **Connect with this code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
 
 = How do I choose which unit (or units) a booking block shows? =
 
