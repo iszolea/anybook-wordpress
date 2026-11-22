@@ -456,6 +456,12 @@ class Admin {
 					$status['approved'],
 					$status['approved'] ? __( 'Your business is approved on Anybook.', 'anybook' ) : __( 'Your business is waiting for Anybook\'s approval.', 'anybook' )
 				);
+				if ( ! empty( $status['credit']['required'] ) ) {
+					self::line(
+						true,
+						__( 'Your Anybook plan asks for a small "Booking by Anybook" link under your booking widget. The plugin adds it for you; a paid plan removes it.', 'anybook' )
+					);
+				}
 				self::line(
 					$status['onlineBooking'],
 					$status['onlineBooking'] ? __( 'Online booking is on.', 'anybook' ) : __( 'Online booking is off on Anybook (Settings, Online booking).', 'anybook' )

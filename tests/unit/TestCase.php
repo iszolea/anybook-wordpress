@@ -63,6 +63,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
 				return true;
 			}
 		);
+		Functions\when( 'delete_option' )->alias(
+			function ( $name ) use ( $t ) {
+				unset( $t->options[ $name ], $t->autoload[ $name ] );
+				return true;
+			}
+		);
 		Functions\when( 'get_transient' )->alias(
 			function ( $name ) use ( $t ) {
 				return array_key_exists( $name, $t->transients ) ? $t->transients[ $name ] : false;

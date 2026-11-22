@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Anybook Online Booking
  * Description:       Take bookings and card payments on your website with the Anybook booking widget.
- * Version:           0.1.2
+ * Version:           0.1.3
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            Anybook
@@ -28,11 +28,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ANYBOOK_VERSION', '0.1.2' );
+define( 'ANYBOOK_VERSION', '0.1.3' );
 define( 'ANYBOOK_FILE', __FILE__ );
 define( 'ANYBOOK_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once ANYBOOK_DIR . 'includes/class-settings.php';
+require_once ANYBOOK_DIR . 'includes/class-credit.php';
 require_once ANYBOOK_DIR . 'includes/class-client.php';
 require_once ANYBOOK_DIR . 'includes/class-connection.php';
 require_once ANYBOOK_DIR . 'includes/class-booking-page.php';

@@ -20,6 +20,7 @@ function anybook_uninstall_site() {
 	global $wpdb;
 	delete_option( 'anybook_settings' );
 	delete_option( 'anybook_connected' );
+	delete_option( 'anybook_credit' );
 	delete_transient( 'anybook_status' );
 	delete_transient( 'anybook_catalog' );
 	// Per-user records: pending connect states (anybook_state_{user id}) and refresh limits (anybook_refresh_{user id}).
