@@ -62,10 +62,11 @@ class Renderer {
 
 		if ( ! empty( $options['overview'] ) ) {
 			Assets::enqueue_overview();
-			return '<booking-overview' . self::overview_attributes( $options ) . '></booking-overview>';
+			return '<booking-overview' . self::overview_attributes( $options ) . '></booking-overview>' . Credit::html();
 		}
 		Assets::enqueue();
-		return '<booking-widget' . self::attributes( $options ) . '></booking-widget>';
+		// The credit line follows the widget in the page's own HTML, when Anybook asks for it (Free plan and free days): written here on the server, once a page.
+		return '<booking-widget' . self::attributes( $options ) . '></booking-widget>' . Credit::html();
 	}
 
 	/**

@@ -70,6 +70,10 @@ class Client {
 		$body = self::get_json( $url, $use_cache ? self::TIMEOUT_QUICK : self::TIMEOUT );
 		$data = is_wp_error( $body ) ? $body : self::normalise_status( $body );
 		self::remember( 'anybook_status', $key, $data );
+		if ( ! is_wp_error( $data ) ) {
+			// What Anybook said about the credit is kept, so a visitor's page view can write the line without asking Anybook (Credit).
+			Credit::remember( $slug, $data['credit'] );
+		}
 		return $data;
 	}
 
@@ -102,6 +106,27 @@ class Client {
 			'hasUnits'      => ! empty( $body['hasUnits'] ),
 			'hasServices'   => ! empty( $body['hasServices'] ),
 			'cspSources'    => $csp,
+			'credit'        => self::normalise_credit( isset( $body['credit'] ) ? $body['credit'] : null ),
+		);
+	}
+
+	/**
+	 * The credit part of the status answer: whether Anybook asks for the "Booking by Anybook" line, and with which `rel`. Only those two are kept. The HTML
+	 * that Anybook also sends is outside data and is dropped: the plugin makes the line itself (Credit::line).
+	 *
+	 * @param mixed $credit The answer's `credit`, or null when Anybook did not send one (an older Anybook asks for nothing).
+	 * @return array `required` (bool) and `rel` (follow, nofollow or sponsored).
+	 */
+	public static function normalise_credit( $credit ) {
+		if ( ! is_array( $credit ) ) {
+			return array(
+				'required' => false,
+				'rel'      => 'follow',
+			);
+		}
+		return array(
+			'required' => ! empty( $credit['required'] ) && true === $credit['required'],
+			'rel'      => Credit::clean_rel( isset( $credit['rel'] ) ? $credit['rel'] : '' ),
 		);
 	}
 

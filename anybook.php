@@ -33,6 +33,7 @@ define( 'ANYBOOK_FILE', __FILE__ );
 define( 'ANYBOOK_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once ANYBOOK_DIR . 'includes/class-settings.php';
+require_once ANYBOOK_DIR . 'includes/class-credit.php';
 require_once ANYBOOK_DIR . 'includes/class-client.php';
 require_once ANYBOOK_DIR . 'includes/class-connection.php';
 require_once ANYBOOK_DIR . 'includes/class-booking-page.php';

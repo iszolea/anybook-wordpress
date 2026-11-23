@@ -138,6 +138,7 @@ class Connection {
 			)
 		);
 		Settings::clear_cache();
+		Credit::forget();
 	}
 
 	/**

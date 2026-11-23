@@ -117,7 +117,7 @@ This plugin connects your website to **Anybook** (https://anybookapp.com), the b
 Your website contacts Anybook only after an administrator or editor has done one of these things:
 
 * **When you click Connect to Anybook**, your browser goes to the Anybook booking site with your website's name and address, the address of the plugin's settings page to come back to, a single-use check value, and the address of your booking page if you chose to make one. Anybook sends your browser back with your business's code and name.
-* **When you connect or enter a business code, and when you open the plugin's settings page**, your web server asks Anybook's public API whether your business exists and whether your website is allowed, sending your business code and your website's address. No personal data is sent. The answer is kept for ten minutes (a failure for one minute).
+* **When you connect or enter a business code, and when you open the plugin's settings page**, your web server asks Anybook's public API whether your business exists and whether your website is allowed, sending your business code and your website's address. No personal data is sent. The answer is kept for ten minutes (a failure for one minute). The answer also says whether your Anybook plan asks for a small "Booking by Anybook" link under the widget (Free plan and free days) and whether it should be followed; that one fact is kept in your site's options so a visitor's page view can write the link without contacting Anybook.
 * **When someone edits a page with the Anybook booking block**, your web server asks Anybook's public API for your business's units and services (sending your business code) to fill the block's choices; the answer is kept for ten minutes.
 
 Your visitors' browsers contact Anybook as well:
@@ -167,6 +167,10 @@ From US$15 a month per site, by how many bookings it takes: US$15 for up to 100 
 = Is there a free trial? =
 
 No. The first month is paid when you sign up, at the opening special of US$10, and you can cancel anytime.
+
+= Why is there a "Booking by Anybook" link under my booking widget? =
+
+Anybook's Free plan and its free days ask for a small "Booking by Anybook" link next to the widget. The plugin writes it for you, in your page's own HTML, and it goes away once your business is on a paid plan (it can take up to ten minutes after you next open the plugin's settings page). Nothing else is added, and the link goes only to anybookapp.com.
 
 = Does Anybook take a commission on my bookings? =
 
@@ -263,7 +267,7 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 == Upgrade Notice ==
 
 = 0.1.3 =
-The suggested privacy policy text now says where Anybook keeps booking details, and links its privacy policy. Safe to update.
+On Anybook's Free plan, a small "Booking by Anybook" link under the widget, written on your server. The suggested privacy policy text now says where Anybook keeps booking details. Safe to update.
 
 = 0.1.2 =
 A clearer plugin page and answers to common questions. Safe to update.
@@ -274,6 +278,7 @@ Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or
 == Changelog ==
 
 = 0.1.3 =
+* New: on Anybook's Free plan and during its free days, a small "Booking by Anybook" link appears under the booking widget. The plugin writes it on your server, in the page's own HTML, from what Anybook says on the settings page's status check; a paid plan removes it. Nothing is added to a page of a business that has no credit to show, and a visitor's page view never contacts Anybook.
 * The suggested privacy policy text and this readme now say where Anybook keeps booking details (on its server in France, in the European Union) and link Anybook's privacy policy, as anybookapp.com/privacy does.
 * "Customers" instead of "guests" throughout this readme.
 
