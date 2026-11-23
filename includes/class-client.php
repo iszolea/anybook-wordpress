@@ -125,7 +125,8 @@ class Client {
 			);
 		}
 		return array(
-			'required' => ! empty( $credit['required'] ) && true === $credit['required'],
+			// The separate link is for the Free plan only (AB#801): `free` false means a trial or a paid plan. An older Anybook sends no `free`: then `required` alone decides.
+			'required' => ! empty( $credit['required'] ) && true === $credit['required'] && ( ! array_key_exists( 'free', $credit ) || true === $credit['free'] ),
 			'rel'      => Credit::clean_rel( isset( $credit['rel'] ) ? $credit['rel'] : '' ),
 		);
 	}
