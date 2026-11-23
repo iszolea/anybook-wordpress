@@ -105,6 +105,10 @@ class Connection {
 		// The Owner agreed on Anybook: only now is the page drafted for this connect published (review Q1).
 		if ( $record['page_made'] && in_array( $notice, array( 'connected', 'connected-pending' ), true ) ) {
 			Booking_Page::publish( Booking_Page::current_id() );
+			if ( 'connected' === $notice ) {
+				// The settings page then says the Book online page is published, and links to it.
+				return 'connected-page';
+			}
 		}
 		return $notice;
 	}

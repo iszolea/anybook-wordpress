@@ -6,7 +6,7 @@
 #   footer elsewhere); Elementor-style content; the availability overview (its own script, both scripts on a page with
 #   both); Autoptimize and LiteSpeed Cache with their script optimisations on
 #   leave the widget's tag alone; Plugin Check (must run, no errors, only allowed warnings); readme "Tested up to"
-#   is this WordPress; then multisite: the shared-address warning, and uninstall clears every site and keeps the page.
+#   is this WordPress; then multisite: the shared-address warning, and uninstall clears every site and drafts the untouched page.
 #
 #   bash tests/smoke/smoke.sh            (the committed tree, as git archive packs it for release)
 #
@@ -84,7 +84,7 @@ out=$(wp eval '
 	$url = Anybook\Connection::start( 1, "x", true );
 	parse_str( parse_url( $url, PHP_URL_QUERY ), $q );
 	echo Anybook\Connection::handle_return( array( "state" => $q["state"], "anybook_slug" => "bribie" ), 1 );')
-[ "$out" = "connected" ] && [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "allow: $out, $(wp post get "$id" --field=post_status)"
+[ "$out" = "connected-page" ] && [ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "allow: $out, $(wp post get "$id" --field=post_status)"
 pass "booking page: a draft until the Owner agrees, then published"
 
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
@@ -245,7 +245,7 @@ wpv=$(wp core version | cut -d. -f1,2)
 	|| fail "readme Tested up to is not this WordPress ($wpv)"
 pass "readme Tested up to: $wpv"
 
-# Multisite: a subdirectory network warns about the shared address; uninstall clears every site and keeps the page.
+# Multisite: a subdirectory network warns about the shared address; uninstall clears every site and drafts the untouched page.
 wp core multisite-convert --title="Smoke network"
 wp site create --slug=two
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
@@ -256,7 +256,7 @@ wp plugin deactivate anybook
 wp plugin uninstall anybook --skip-delete
 left=$(wp eval 'echo (int) (bool) get_option( "anybook_settings" ), (int) (bool) get_option( "anybook_connected" ); switch_to_blog( 2 ); echo (int) (bool) get_option( "anybook_settings" ), (int) (bool) get_option( "anybook_connected" ), (int) (bool) get_transient( "anybook_status" ), (int) (bool) get_transient( "anybook_refresh_1" ); restore_current_blog();')
 [ "$left" = "000000" ] || fail "uninstall left data behind: $left"
-[ "$(wp post get "$id" --field=post_status)" = "publish" ] || fail "uninstall touched the booking page"
-pass "uninstall cleared both sites and kept the booking page"
+[ "$(wp post get "$id" --field=post_status)" = "draft" ] || fail "uninstall did not turn the untouched booking page into a draft"
+pass "uninstall cleared both sites and made the untouched booking page a draft"
 
 echo "== smoke passed"

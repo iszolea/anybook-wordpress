@@ -2,8 +2,11 @@
 /**
  * Removes the plugin's data when it is deleted from the Plugins screen (ADR-10, ADR-11).
  *
- * The option and transients go, on every site of a network. The booking page stays: it is the business's own
- * content. Anybook is not contacted: the business's account and allowed websites are its own to change.
+ * The option and transients go, on every site of a network. The booking page stays, as the business's own content,
+ * with one exception: a page the plugin made and the business never edited (it still holds exactly what the plugin
+ * wrote) becomes a draft, so visitors are not left with a published page showing a raw [anybook] shortcode or
+ * nothing. An edited page is left as it is. Anybook is not contacted: the business's account and allowed websites
+ * are its own to change.
  *
  * @package Anybook
  */
@@ -16,8 +19,32 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 /**
  * Deletes the plugin's option and transients on the current site.
  */
-function anybook_uninstall_site() {
+$anybook_uninstall_site = function () {
 	global $wpdb;
+	// The page id is read before the option goes. Classes are not loaded here, so the two contents the plugin writes
+	// (Booking_Page::BLOCK_CONTENT and SHORTCODE_CONTENT) are copied.
+	$anybook_settings = get_option( 'anybook_settings', array() );
+	$anybook_page_id  = is_array( $anybook_settings ) && ! empty( $anybook_settings['page_id'] ) ? (int) $anybook_settings['page_id'] : 0;
+	if ( $anybook_page_id > 0 ) {
+		$anybook_page = get_post( $anybook_page_id );
+		if ( $anybook_page && 'page' === $anybook_page->post_type && 'publish' === $anybook_page->post_status
+			&& in_array(
+				$anybook_page->post_content,
+				array(
+					'<!-- wp:anybook/booking {"guestLinks":true} /-->',
+					"<!-- wp:shortcode -->\n[anybook guest_links=\"yes\"]\n<!-- /wp:shortcode -->",
+				),
+				true
+			)
+		) {
+			wp_update_post(
+				array(
+					'ID'          => $anybook_page_id,
+					'post_status' => 'draft',
+				)
+			);
+		}
+	}
 	delete_option( 'anybook_settings' );
 	delete_option( 'anybook_connected' );
 	delete_option( 'anybook_credit' );
@@ -35,7 +62,7 @@ function anybook_uninstall_site() {
 			)
 		);
 	}
-}
+};
 
 if ( is_multisite() ) {
 	$anybook_site_ids = get_sites(
@@ -46,9 +73,9 @@ if ( is_multisite() ) {
 	);
 	foreach ( $anybook_site_ids as $anybook_site_id ) {
 		switch_to_blog( $anybook_site_id );
-		anybook_uninstall_site();
+		$anybook_uninstall_site();
 		restore_current_blog();
 	}
 } else {
-	anybook_uninstall_site();
+	$anybook_uninstall_site();
 }

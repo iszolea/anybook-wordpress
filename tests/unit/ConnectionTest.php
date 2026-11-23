@@ -126,7 +126,7 @@ class ConnectionTest extends TestCase {
 		$this->drafted_page();
 		list( , $query ) = $this->start_connect( 'https://example.com/book/', true );
 		$this->assertSame( 'draft', $this->posts[42]->post_status, 'nothing public while the Owner is on Anybook' );
-		$this->assertSame( 'connected', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => 'bribie' ), 7 ) );
+		$this->assertSame( 'connected-page', Connection::handle_return( array( 'state' => $query['state'], 'anybook_slug' => 'bribie' ), 7 ) );
 		$this->assertSame( 'publish', $this->posts[42]->post_status );
 	}
 
