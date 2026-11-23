@@ -93,7 +93,7 @@ Add the **Anybook booking** block anywhere in the block editor. In its sidebar c
 For the classic editor and page builders, `[anybook]` shows the same widget with the same choices:
 
 * `show="all"`, `show="unit"`, `show="appointments"` or `show="service"`: what to show (all units if left out).
-* `unit="belle"`: one unit (its code in Anybook).
+* `unit="kayak"`: one unit (its code in Anybook).
 * `service="cut"`: one service; `services="yes"` also means appointments.
 * `accent="#0b6e4f"` and `text="#1f2933"`: colors.
 * `guest_links="yes"`: this widget opens customers' email links when a page has several.
@@ -103,7 +103,7 @@ The availability overview: `[anybook show="overview"]`, with these choices:
 
 * `weeks="12"`: how many weeks it shows, 2 to 26 (12 if left out).
 * `prices="yes"`: show prices.
-* `units="belle,kayak"`: only these units (their codes in Anybook, separated by commas); all units if left out.
+* `units="kayak,haircut"`: only these units (their codes in Anybook, separated by commas); all units if left out.
 * `rows="people" service="..."`: one row per team member for that one service (its id or code in Anybook); otherwise one row per service.
 
 = Page builders =
@@ -192,11 +192,11 @@ The fastest help is the help assistant inside Anybook: click the round **?** but
 
 Open **Anybook** in the admin menu and click **Connect to Anybook**. Sign in to Anybook as your business's Owner, check that the address shown is your website, and click **Allow**. You come back to WordPress, which says "Connected to Anybook". Anybook adds your website to its allowed websites for you. No keys or passwords are copied.
 
-If you are not the Owner, enter your business code under "Or enter your business code" and click **Save code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
+If you are not the Owner, enter your business code under "Or enter your business code" and click **Connect with this code** (Anybook shows the code under Settings, Online booking). That connects the plugin only: the Owner must then add this website to allowed websites in Anybook (Settings, Online booking). Anybook counts a website with "www" and without "www" as two different addresses, so add the one your site uses.
 
 = How do I choose which unit (or units) a booking block shows? =
 
-Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="belle"]`, or for the overview `[anybook show="overview" units="belle,kayak"]`.
+Select the **Anybook booking** block. In its sidebar, under **What to show**, choose **All units**, **One unit**, **Appointments** or **One service**. For **One unit**, pick the unit from the list, which comes from your Anybook account. If the list cannot load, press **Try again**, or type the unit's code as Anybook shows it. For several units at once, choose **Availability overview** and tick the units you want under **Units**; with none ticked, all your units show. In a shortcode, use `[anybook show="unit" unit="kayak"]`, or for the overview `[anybook show="overview" units="kayak,haircut"]`.
 
 = How do I set the colors, and what is a hex code? =
 
@@ -215,7 +215,7 @@ The easiest way: tick **Make a booking page for me ("Book online") and use it as
 Open **Anybook** in the admin menu: the Status list shows which of these is wrong.
 
 * The plugin is not connected yet.
-* Your business is still waiting for Anybook's approval.
+* Your Anybook sign-up is not finished yet.
 * Online booking is off in Anybook (Settings, Online booking).
 * This website is not on your allowed websites in Anybook. "www" and no "www" count as different addresses.
 * Your WordPress admin and your website have different addresses, so Connect cannot add the right one: add your website's address in Anybook yourself.
@@ -233,7 +233,7 @@ No. It stores your business's public code and name, the booking site address, th
 
 = What happens when I uninstall the plugin? =
 
-Its settings are removed, on every site of a network. Your booking page stays (it is your page) and your Anybook account is not changed. Remove the website from allowed websites in Anybook if you no longer use it.
+Its settings are removed, on every site of a network. A Book online page the plugin made, if you have not changed it, becomes a draft; a page you have edited is left as it is. Your Anybook account is not changed. Remove the website from allowed websites in Anybook if you no longer use it.
 
 = My site sends a content security policy. =
 
@@ -259,6 +259,17 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 4. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
 5. The Anybook booking block in the editor, with its choices in the sidebar.
 6. The plugin's settings page once connected: your business, your website and your guest page.
+
+== Upgrade Notice ==
+
+= 0.1.3 =
+The suggested privacy policy text now says where Anybook keeps booking details, and links its privacy policy. Safe to update.
+
+= 0.1.2 =
+A clearer plugin page and answers to common questions. Safe to update.
+
+= 0.1.1 =
+Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or later.
 
 == Changelog ==
 
