@@ -39,6 +39,7 @@ class Plugin {
 		$paragraphs = array(
 			__( 'Our booking pages use the Anybook booking widget, which Anybook (anybookapp.com) provides. Pages with the widget load it from Anybook, so when you open them your browser sends Anybook your IP address, your browser\'s details and the address of the page, even if you do not book.', 'anybook' ),
 			__( 'When you book, what you type in the booking form (such as your name, email address, phone number and booking details) is sent from your browser to Anybook, which takes the booking for us. The widget stores nothing in your browser.', 'anybook' ),
+			__( 'Anybook keeps the booking details on its server in France, in the European Union. Anybook\'s privacy policy: https://anybookapp.com/privacy', 'anybook' ),
 			__( 'Card payments are made through Stripe. At the payment step the widget loads Stripe, which receives your card details (not this website or Anybook) and may set its own cookies to prevent fraud.', 'anybook' ),
 			__( 'This website itself stores no booking or payment details.', 'anybook' ),
 		);
