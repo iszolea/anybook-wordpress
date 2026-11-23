@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Anybook Online Booking
+ * Plugin Name:       Anybook – Online Booking for Rentals, Tours, Classes & Appointments
  * Description:       Take bookings and card payments on your website with the Anybook booking widget.
  * Version:           0.1.3
  * Requires at least: 6.6
