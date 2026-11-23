@@ -18,6 +18,8 @@
 #       directory (tags/<Stable tag>), and the images from .wordpress-org/ to assets. The code is not touched and no
 #       tag is created. Use it for text, tags, banner and screenshot changes. Same password route as --submit.
 #
+# --submit refuses to run when SKIP_BUILD_CHECK is set. --zip and --submit fail when readme.txt's "Tested up to" is
+# higher than the WordPress in the test container (tools/check-tested-up-to.sh).
 # Without --zip, --submit or --page it refuses to run.
 set -euo pipefail
 export MSYS_NO_PATHCONV=1
@@ -28,7 +30,7 @@ SVN_SECRET=f/anybook/wordpress_org_svn_password
 SVN_USER=${ANYBOOK_SVN_USER:-anybookapp}
 VPSMCP_DIR=${VPSMCP_DIR:-/c/Users/jnich/Projects/AiNativeHalo/tools}
 
-usage() { sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-1}"; }
+usage() { sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-1}"; }
 die() { echo "release: $*" >&2; exit 1; }
 
 MODE="" GO_AHEAD=""
@@ -45,6 +47,11 @@ while [ $# -gt 0 ]; do
 	shift
 done
 [ -n "$MODE" ] || { echo "release: refusing to run without --zip (build only), --submit (publish a version) or --page (update the plugin page only)." >&2; usage; }
+# The first thing --submit does: the build check can be skipped to build a zip for looking, never to release.
+if [ "$MODE" = submit ] && [ -n "${SKIP_BUILD_CHECK:-}" ]; then
+	echo "SKIP_BUILD_CHECK is not allowed with --submit." >&2
+	exit 1
+fi
 [ "$MODE" = zip ] || [ -n "$GO_AHEAD" ] || die "--submit and --page need --go-ahead \"<who, when>\": the owner's word to release this version"
 
 # The committed tree only: what is released is what was reviewed.
@@ -65,7 +72,8 @@ PY
 
 # --page: the page only (readme, tags, images). No version, build or zip checks: the code is not released.
 if [ "$MODE" = page ]; then
-	STABLE=$(sed -n 's/^Stable tag: *//p' readme.txt | tr -d '')
+	STABLE=$(sed -n 's/^Stable tag: *//p' readme.txt | tr -d '
+')
 	[ -n "$STABLE" ] && [ "$STABLE" != trunk ] || die "readme.txt has no usable Stable tag"
 	[ ! -e .wordpress-org/DRAFT.txt ] || die ".wordpress-org/ holds draft images the owner has not approved (DRAFT.txt)"
 	echo "== updating the plugin page (readme in trunk and tags/$STABLE, and assets) at $SVN_URL as $SVN_USER (go-ahead: $GO_AHEAD)"
@@ -100,6 +108,10 @@ BLOCK=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' blocks/booking/block.json)
 	|| die "versions disagree: header $VERSION, readme Stable tag $STABLE, ANYBOOK_VERSION $CONST, block.json $BLOCK"
 grep -q "^= $VERSION =" readme.txt || die "readme.txt has no changelog entry for $VERSION"
 [ "$(git ls-files build/booking | wc -l)" -ge 4 ] || die "build/booking is not committed"
+# "Tested up to" must not be higher than the WordPress the test container runs (the smoke test's image).
+WP_TESTED=$(docker run --rm wordpress:latest php -r 'include "/usr/src/wordpress/wp-includes/version.php"; echo $wp_version;') \
+	|| die "could not read the WordPress version from the test container"
+bash tools/check-tested-up-to.sh readme.txt "$WP_TESTED" || die "Tested up to is higher than the WordPress that was tested"
 if [ -z "${SKIP_BUILD_CHECK:-}" ]; then
 	bash tools/docker-js.sh >/dev/null || die "build/ does not match blocks/ (run WRITE=1 bash tools/docker-js.sh and commit)"
 fi

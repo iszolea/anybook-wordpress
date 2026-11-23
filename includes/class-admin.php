@@ -306,18 +306,19 @@ class Admin {
 	public static function notice( $code ) {
 		$fallback = __( 'You can also enter your business code below: Anybook shows it to every staff member under Settings, Online booking.', 'anybook' );
 		$notices  = array(
-			'connected'          => array( 'success', __( 'Connected to Anybook. Next, add the Anybook booking block to a page, or use your Book online page if you asked for one: it is now published.', 'anybook' ) ),
-			'connected-pending'  => array( 'warning', __( 'Connected. Anybook has not approved your business yet, so the booking widget will not show until it does.', 'anybook' ) ),
+			'connected'          => array( 'success', __( 'Connected to Anybook. Next, add the Anybook booking block to a page.', 'anybook' ) ),
+			'connected-page'     => array( 'success', __( 'Connected to Anybook. Your Book online page is now published.', 'anybook' ) ),
+			'connected-pending'  => array( 'warning', __( 'Connected. Your Anybook sign-up is not finished yet, so the booking widget will not show. Finish sign-up in Anybook, then click Check again.', 'anybook' ) ),
 			'disconnected'       => array( 'success', __( 'Disconnected. The booking widget no longer shows on this website, and your Book online page shows visitors nothing until you connect again. To stop this website showing your widget for good, remove it from allowed websites in Anybook too.', 'anybook' ) ),
 			'saved'              => array( 'success', __( 'Settings saved.', 'anybook' ) ),
 			'error-cancelled'    => array( 'warning', __( 'Connecting was cancelled on Anybook. Nothing was changed there, and a booking page made for this connect stays a draft.', 'anybook' ) ),
 			'error-not-owner'    => array( 'warning', __( 'Only your business\'s Owner can connect a website on Anybook. Ask the Owner to click Connect here, or enter your business code below.', 'anybook' ) ),
-			'error-not-approved' => array( 'warning', __( 'Your business is not approved on Anybook yet. Connect again once Anybook has approved it.', 'anybook' ) . ' ' . $fallback ),
+			'error-not-approved' => array( 'warning', __( 'Your Anybook sign-up is not finished yet. Finish it in Anybook, then connect again.', 'anybook' ) . ' ' . $fallback ),
 			'error-other'        => array( 'error', __( 'Anybook could not connect this site.', 'anybook' ) . ' ' . $fallback ),
 			'bad-state'          => array( 'error', __( 'That connect link has expired or was already used. Please click Connect to Anybook again.', 'anybook' ) ),
 			'bad-return'         => array( 'error', __( 'Anybook sent back something the plugin could not read. Please click Connect to Anybook again.', 'anybook' ) ),
-			'bad-code'           => array( 'error', __( 'That is not a business code. Codes are letters, numbers and dashes, like bribie.', 'anybook' ) ),
-			'unknown-business'   => array( 'error', __( 'Anybook has no approved business with that code. Check the code, or try again once Anybook has approved your business.', 'anybook' ) ),
+			'bad-code'           => array( 'error', __( 'That is not a business code. Codes are letters, numbers and dashes, like sunny-kayaks.', 'anybook' ) ),
+			'unknown-business'   => array( 'error', __( 'Anybook has no active business with that code. Check the code, or finish your sign-up in Anybook first.', 'anybook' ) ),
 			'unreachable'        => array( 'error', __( 'Anybook could not be reached. Please try again in a minute.', 'anybook' ) ),
 			'bad-colour'         => array( 'error', __( 'A color was not saved: colors are written like #0b6e4f. The color saved before is kept.', 'anybook' ) ),
 			'bad-site'           => array( 'error', __( 'The booking site must be https://site.anybookapp.com. For any other address, set ANYBOOK_SITE in wp-config.php. Other settings were saved.', 'anybook' ) ),
@@ -343,7 +344,15 @@ class Admin {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Anybook Online Booking', 'anybook' ); ?></h1>
 			<?php if ( $notice ) : ?>
-				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible"><p><?php echo esc_html( $notice[1] ); ?></p></div>
+				<div class="notice notice-<?php echo esc_attr( $notice[0] ); ?> is-dismissible"><p>
+					<?php
+					echo esc_html( $notice[1] );
+					$page_link = 'connected-page' === $code ? Booking_Page::current_id() : 0;
+					if ( $page_link ) {
+						echo ' <a href="' . esc_url( get_permalink( $page_link ) ) . '">' . esc_html__( 'View page', 'anybook' ) . '</a>';
+					}
+					?>
+				</p></div>
 			<?php endif; ?>
 			<?php if ( Settings::shares_origin() ) : ?>
 				<div class="notice notice-warning inline"><p>
@@ -388,8 +397,8 @@ class Admin {
 			<input type="hidden" name="action" value="anybook_save_code" />
 			<?php wp_nonce_field( 'anybook_save_code' ); ?>
 			<label for="anybook_code" class="screen-reader-text"><?php esc_html_e( 'Business code', 'anybook' ); ?></label>
-			<input type="text" id="anybook_code" name="anybook_code" class="regular-text" placeholder="<?php esc_attr_e( 'for example bribie', 'anybook' ); ?>" pattern="[A-Za-z0-9_\-]{1,64}" required />
-			<?php submit_button( __( 'Save code', 'anybook' ), 'secondary', 'submit', false ); ?>
+			<input type="text" id="anybook_code" name="anybook_code" class="regular-text" placeholder="<?php esc_attr_e( 'for example sunny-kayaks', 'anybook' ); ?>" pattern="[A-Za-z0-9_\-]{1,64}" required />
+			<?php submit_button( __( 'Connect with this code', 'anybook' ), 'secondary', 'submit', false ); ?>
 		</form>
 		<?php
 	}
@@ -454,7 +463,7 @@ class Admin {
 			} else {
 				self::line(
 					$status['approved'],
-					$status['approved'] ? __( 'Your business is approved on Anybook.', 'anybook' ) : __( 'Your business is waiting for Anybook\'s approval.', 'anybook' )
+					$status['approved'] ? __( 'Your Anybook sign-up is finished.', 'anybook' ) : __( 'Your Anybook sign-up is not finished yet. Finish it in Anybook, then click Check again.', 'anybook' )
 				);
 				if ( ! empty( $status['credit']['required'] ) ) {
 					self::line(
