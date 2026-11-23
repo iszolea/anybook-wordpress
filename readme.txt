@@ -262,6 +262,9 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 
 == Upgrade Notice ==
 
+= 0.1.3 =
+The suggested privacy policy text now says where Anybook keeps booking details, and links its privacy policy. Safe to update.
+
 = 0.1.2 =
 A clearer plugin page and answers to common questions. Safe to update.
 
