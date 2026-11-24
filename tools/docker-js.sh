@@ -5,13 +5,15 @@
 #   bash tools/docker-js.sh            check only: fails if build/ is not what the source builds to
 #   WRITE=1 bash tools/docker-js.sh    also writes the fresh build into build/ (after changing blocks/)
 #
-# The source is copied into the container; node_modules lives in a Docker volume (anybook-wp-node) reused
-# between runs. Containers are removed when they stop.
+# The source is copied into the container, and each run installs its own node_modules there. It is never shared: two
+# runs at once, or one stopped half-way, broke the old shared node_modules volume ("npm error enoent"). What is shared
+# is npm's download cache, a Docker volume (anybook-wp-npm-cache) that is safe for several runs at once. A run after the
+# first needs no network for packages it has seen, and a dropped connection is retried. Containers are removed when they stop.
 set -euo pipefail
 export MSYS_NO_PATHCONV=1
 cd "$(dirname "$0")/.."
 SRC="$(pwd -W 2>/dev/null || pwd)"
-VOL=anybook-wp-node
+CACHE=anybook-wp-npm-cache
 # The image is pinned (version and digest), so the build does not change under us.
 IMAGE=node:20.20.2@sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5
 
@@ -30,8 +32,13 @@ if [ -n "${WRITE:-}" ]; then
 	FINISH='rm -rf /out/* && cp -r /tmp/build/. /out/ && echo "== build/ written"'
 fi
 
-docker run --rm -v "$SRC:/src:ro" -v "$VOL:/work/node_modules" "${OUT[@]}" "$IMAGE" sh -c "$COPY \
-	&& echo '== npm ci' && npm ci --no-audit --no-fund --loglevel=error \
+# npm ci from the cache first (--prefer-offline), with npm's own retries for each download, and the whole install tried
+# up to three times with a pause, so one slow or dropped connection does not fail the check. (Single quotes: the
+# container's shell reads $n.)
+INSTALL='n=1; until npm ci --no-audit --no-fund --loglevel=error --prefer-offline --fetch-retries=5 --fetch-retry-mintimeout=10000 --fetch-retry-maxtimeout=120000; do if [ "$n" -ge 3 ]; then exit 1; fi; echo "== npm ci failed (try $n of 3), again in 20 s"; n=$((n + 1)); sleep 20; rm -rf node_modules; done'
+
+docker run --rm -v "$SRC:/src:ro" -v "$CACHE:/root/.npm" "${OUT[@]}" "$IMAGE" sh -c "$COPY \
+	&& echo '== npm ci' && { $INSTALL; } \
 	&& echo '== lint' && npm run -s lint:js && npm run -s lint:style \
 	&& echo '== unit tests' && npm run -s test:unit \
 	&& echo '== build' && npx wp-scripts build --webpack-src-dir=blocks --output-path=/tmp/build >/dev/null \

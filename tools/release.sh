@@ -24,7 +24,7 @@
 #
 # On this Windows PC, run it with Git Bash (plain "bash" there is a broken WSL bash), from the plugin's folder:
 #   "C:\Program Files\Git\bin\bash.exe" tools/release.sh --submit --go-ahead "<who, when>"
-# It says each step as it goes; the build check takes one to three minutes and the SVN commit about a minute.
+# It says each step as it goes; the build check takes about five to eight minutes and the SVN commit about a minute.
 set -euo pipefail
 export MSYS_NO_PATHCONV=1
 cd "$(dirname "$0")/.."
@@ -117,7 +117,7 @@ WP_TESTED=$(docker run --rm wordpress:latest php -r 'include "/usr/src/wordpress
 	|| die "could not read the WordPress version from the test container"
 bash tools/check-tested-up-to.sh readme.txt "$WP_TESTED" || die "Tested up to is higher than the WordPress that was tested"
 if [ -z "${SKIP_BUILD_CHECK:-}" ]; then
-	echo "== checking that build/ is what blocks/ builds to (lint, tests and a fresh build in Docker: one to three minutes)"
+	echo "== checking that build/ is what blocks/ builds to (lint, tests and a fresh build in Docker: about five to eight minutes on this PC)"
 	JSLOG=$(mktemp)
 	bash tools/docker-js.sh >"$JSLOG" 2>&1 || { tail -20 "$JSLOG" >&2; rm -f "$JSLOG"; die "build/ does not match blocks/, or the block's checks failed (above; run WRITE=1 bash tools/docker-js.sh and commit)"; }
 	rm -f "$JSLOG"
