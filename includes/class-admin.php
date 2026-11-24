@@ -652,8 +652,8 @@ class Admin {
 	/**
 	 * One status line with a tick or a warning.
 	 *
-	 * @param bool|null $ok  Whether this is fine (null: neither, only so).
-	 * @param string $text What to say.
+	 * @param bool|null $ok   Whether this is fine (null: neither, only so).
+	 * @param string    $text What to say.
 	 */
 	private static function line( $ok, $text ) {
 		// null: neither OK nor a fault, only so (AB#988: the customer page on another website).
