@@ -60,8 +60,14 @@ fi
 
 # The committed tree only: what is released is what was reviewed.
 [ -z "$(git status --porcelain)" ] || die "the working tree has changes; commit or set them aside first"
+# Windows Python cannot use a Git Bash path (/c/Users/...), and MSYS_NO_PATHCONV=1 above stops Git Bash changing it, so the folder is
+# handed over in Windows form (the owner's 0.1.4 run: "ModuleNotFoundError: No module named 'vpsmcp'").
+vpsmcp_dir() {
+	[ -f "$VPSMCP_DIR/vpsmcp.py" ] || die "vpsmcp.py is not in $VPSMCP_DIR (set VPSMCP_DIR to the AiNativeHalo tools folder)"
+	if command -v cygpath >/dev/null 2>&1; then cygpath -w "$VPSMCP_DIR"; else printf '%s' "$VPSMCP_DIR"; fi
+}
 read_secret() {
-	VPSMCP_DIR="$VPSMCP_DIR" python - "$SVN_SECRET" <<'PY'
+	VPSMCP_DIR="$(vpsmcp_dir)" python - "$SVN_SECRET" <<'PY'
 import os, sys
 sys.path.insert(0, os.environ["VPSMCP_DIR"])
 import vpsmcp
@@ -73,6 +79,12 @@ if not value:
 sys.stdout.write(value)
 PY
 }
+# The password, read once and checked before Docker or svn start: a failed or empty read stops here with the reason. It stays in
+# this shell's memory only and goes to the container on stdin; it is never printed, logged or written to disk.
+svn_password() {
+	SVN_PASS=$(read_secret) || die "could not read the SVN password from Windmill ($SVN_SECRET); nothing was sent to WordPress.org"
+	[ -n "$SVN_PASS" ] || die "the SVN password read from Windmill ($SVN_SECRET) is empty; nothing was sent to WordPress.org"
+}
 
 # --page: the page only (readme, tags, images). No version, build or zip checks: the code is not released.
 if [ "$MODE" = page ]; then
@@ -82,7 +94,8 @@ if [ "$MODE" = page ]; then
 	[ ! -e .wordpress-org/DRAFT.txt ] || die ".wordpress-org/ holds draft images the owner has not approved (DRAFT.txt)"
 	echo "== updating the plugin page (readme in trunk and tags/$STABLE, and assets) at $SVN_URL as $SVN_USER (go-ahead: $GO_AHEAD)"
 	SRC="$(pwd -W 2>/dev/null || pwd)"
-	read_secret | docker run --rm -i -v "$SRC:/src:ro" -e STABLE="$STABLE" -e SVN_URL="$SVN_URL" -e SVN_USER="$SVN_USER" 		-e GO_AHEAD="$GO_AHEAD" alpine:3.20 sh -euc '
+	svn_password
+	printf '%s\n' "$SVN_PASS" | docker run --rm -i -v "$SRC:/src:ro" -e STABLE="$STABLE" -e SVN_URL="$SVN_URL" -e SVN_USER="$SVN_USER" 		-e GO_AHEAD="$GO_AHEAD" alpine:3.20 sh -euc '
 		apk add -q --no-cache subversion rsync >/dev/null
 		IFS= read -r PASS || true
 		[ -n "$PASS" ] || { echo "no SVN password" >&2; exit 1; }
@@ -135,7 +148,8 @@ echo "== $ZIP ($(wc -c <"$ZIP") bytes, sha256 $(sha256sum "$ZIP" | cut -d' ' -f1
 echo "== releasing $VERSION to $SVN_URL as $SVN_USER (go-ahead: $GO_AHEAD): reading the SVN password from Windmill, then checking out and committing (about a minute)"
 SRC="$(pwd -W 2>/dev/null || pwd)"
 # svn runs in a throwaway container; the password goes in on stdin only.
-read_secret | docker run --rm -i -v "$SRC:/src:ro" -e VERSION="$VERSION" -e SVN_URL="$SVN_URL" -e SVN_USER="$SVN_USER" \
+svn_password
+printf '%s\n' "$SVN_PASS" | docker run --rm -i -v "$SRC:/src:ro" -e VERSION="$VERSION" -e SVN_URL="$SVN_URL" -e SVN_USER="$SVN_USER" \
 	-e GO_AHEAD="$GO_AHEAD" alpine:3.20 sh -euc '
 	apk add -q --no-cache subversion unzip rsync >/dev/null
 	IFS= read -r PASS || true
