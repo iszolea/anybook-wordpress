@@ -46,7 +46,7 @@ class Renderer {
 	 *     @type bool   $services    Show the appointment steps.
 	 *     @type string $accent      Main colour, #rrggbb.
 	 *     @type string $text        Text colour, #rrggbb.
-	 *     @type bool   $guest_links This widget opens guests' email links (#bw=) when a page has several.
+	 *     @type bool   $guest_links This widget opens customers' email links (#bw=) when a page has several.
 	 *     @type array  $texts       Wording overrides, key to words (for example toPayment).
 	 * }
 	 * @return string HTML.
@@ -85,7 +85,7 @@ class Renderer {
 	 *     @type string $rows            Overview: services (one row per service) or people (one per team member).
 	 *     @type string $accent          Main colour.
 	 *     @type string $text            Text colour.
-	 *     @type bool   $guest_links     Use this widget for guests' email links.
+	 *     @type bool   $guest_links     Use this widget for customers' email links.
 	 *     @type string $button_text     Words on the "Book and go to payment" button.
 	 *     @type string $details_heading The "Your details" heading.
 	 *     @type string $dates_text      The "Choose your arrival date..." line.

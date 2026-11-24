@@ -31,7 +31,7 @@ class Connection {
 	 * Starts a connect for this user and gives the Anybook address to send the browser to.
 	 *
 	 * @param int    $user_id    The WordPress user connecting.
-	 * @param string $guest_page Address of the booking page to offer as the guest page, or ''.
+	 * @param string $guest_page Address of the booking page to offer as the customer page, or ''.
 	 * @param bool   $page_made  Whether that page is a draft made for this connect (published once the Owner agrees).
 	 */
 	public static function start( $user_id, $guest_page = '', $page_made = false ) {
@@ -52,7 +52,7 @@ class Connection {
 	 * The address of Anybook's connect page for a state (contracts.md: GET /connect/wordpress).
 	 *
 	 * @param string $state      Single-use state.
-	 * @param string $guest_page Guest page to offer, or ''.
+	 * @param string $guest_page Customer page to offer, or ''.
 	 */
 	public static function connect_url( $state, $guest_page = '' ) {
 		$args = array(
@@ -115,7 +115,7 @@ class Connection {
 
 	/**
 	 * The fallback: an admin types the business code (staff who are not the Owner, or a site Anybook cannot
-	 * return to). It saves the business only; allowed websites and the guest page stay as set on Anybook.
+	 * return to). It saves the business only; allowed websites and the customer page stay as set on Anybook.
 	 *
 	 * @param string $code Typed code.
 	 * @return string A notice code.

@@ -90,9 +90,9 @@ async function connect() {
 	await admin.close();
 	check( ( await visitor.request.get( `${ WP_URL }/?page_id=${ pageId }` ) ).status() === 404, 'the draft is visible to visitors' );
 
-	// Allow, with the guest page ticked (AC-2).
+	// Allow, with the customer page ticked (AC-2).
 	const box = page.locator( '#connect-guest-page-box, #connect-replace-box' );
-	check( ( await box.count() ) > 0, 'Anybook offers no guest page choice' );
+	check( ( await box.count() ) > 0, 'Anybook offers no customer page choice' );
 	await box.first().check();
 	await page.locator( '#connect-allow' ).click();
 	await page.waitForURL( ( url ) => url.href.startsWith( `${ WP_URL }/wp-admin/admin.php?page=anybook` ) );

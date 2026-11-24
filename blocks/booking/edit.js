@@ -218,7 +218,7 @@ export function UnitsChooser( { value, items, loading, failed, onChange } ) {
 		return (
 			<p>
 				{ __(
-					'Your business has no units guests can book online.',
+					'Your business has no units customers can book online.',
 					'anybook'
 				) }
 			</p>
@@ -328,7 +328,7 @@ export function OverviewChoices( { attributes, setAttributes, catalog } ) {
 					loading={ catalog.loading }
 					failed={ failed }
 					empty={ __(
-						'Your business has no services guests can book online.',
+						'Your business has no services customers can book online.',
 						'anybook'
 					) }
 					onChange={ ( service ) => setAttributes( { service } ) }
@@ -530,17 +530,17 @@ function WidgetPanels( { attributes, setAttributes } ) {
 				/>
 			</PanelBody>
 			<PanelBody
-				title={ __( 'Guest links', 'anybook' ) }
+				title={ __( 'Customer links', 'anybook' ) }
 				initialOpen={ false }
 			>
 				<ToggleControl
 					__nextHasNoMarginBottom
 					label={ __(
-						'Use this widget for guests’ email links',
+						'Use this widget for customers’ email links',
 						'anybook'
 					) }
 					help={ __(
-						'Turn on for the widget on your guest page, so links in guests’ emails (manage, pay, extras) open here.',
+						'Turn on for the widget on your customer page, so links in customers’ emails (manage, pay, extras) open here.',
 						'anybook'
 					) }
 					checked={ !! attributes.guestLinks }
@@ -623,7 +623,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							loading={ catalog.loading }
 							failed={ failed }
 							empty={ __(
-								'Your business has no units guests can book online.',
+								'Your business has no units customers can book online.',
 								'anybook'
 							) }
 							onChange={ ( unit ) => setAttributes( { unit } ) }
@@ -637,7 +637,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							loading={ catalog.loading }
 							failed={ failed }
 							empty={ __(
-								'Your business has no services guests can book online.',
+								'Your business has no services customers can book online.',
 								'anybook'
 							) }
 							onChange={ ( service ) =>
@@ -683,7 +683,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 					{ ! overview && attributes.guestLinks && (
 						<p className="anybook-booking-preview__note">
-							{ __( 'Opens guests’ email links.', 'anybook' ) }
+							{ __( 'Opens customers’ email links.', 'anybook' ) }
 						</p>
 					) }
 					<p className="anybook-booking-preview__note">

@@ -189,7 +189,7 @@ class Settings {
 	 * A booking site address the plugin will talk to, or '' if it is not acceptable.
 	 *
 	 * Https only, with no user name, password, path, query or fragment. Plain http is allowed only for a local
-	 * test install (localhost, 127.0.0.1, *.localhost), the same list as Anybook's local guest pages.
+	 * test install (localhost, 127.0.0.1, *.localhost), the same list as Anybook's local customer pages.
 	 *
 	 * @param mixed $value Raw input.
 	 */

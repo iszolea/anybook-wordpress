@@ -4,17 +4,17 @@ Tags: boat rental booking, kayak rental, cabin booking, tour booking, rental boo
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Boat, kayak, cabin and houseboat rentals, tours and classes in one booking calendar. Security deposits, no commission, one flat price.
+Boat, kayak, cabin and houseboat rentals, tours and classes in one booking calendar. Free Forever. 30 Day Trial. Conditions apply. No commission.
 
 == Description ==
 
 **Anybook takes bookings for anything you rent out or run: by the night, the day, the hour, the seat or the item.** Boats and houseboats, cabins, kayaks and bikes, tours and charters, classes, and appointments with your team, all in one booking calendar.
 
-Your customers book, pay and sign on your own website, under your name. They never see Anybook, and Anybook takes no commission on their bookings.
+Your customers book, pay and sign on your own website, under your name, and Anybook takes no commission on their bookings. On Free Forever a small "Booking by Anybook" link shows next to the widget; paid plans can remove it.
 
 **Built for rentals, stays and tours:** deposits now and the balance later, security deposits (bonds) held on the card, waivers signed online, and several units in one checkout. Appointments are covered too, in the same account.
 
@@ -22,7 +22,7 @@ Your customers book, pay and sign on your own website, under your name. They nev
 
 **See it on a live WordPress site:** [wp-demo.anybookapp.com](https://wp-demo.anybookapp.com) is a made-up boat hire business using this plugin. Nothing is charged and no email is sent.
 
-This plugin puts the Anybook booking widget on your WordPress site in two clicks. Anybook is an online booking service with a monthly price; the plugin itself is free and has no locked features (see "What it costs", below).
+This plugin puts the Anybook booking widget on your WordPress site in two clicks. **Free Forever. 30 Day Trial. Conditions apply.** Anybook is an online booking service. Start on the 30 Day Trial (any paid plan, no card needed), then pick a plan or move to Free Forever. The plugin itself is free and has no locked features (see "What it costs", below).
 
 = What you get =
 
@@ -53,16 +53,16 @@ This plugin puts the Anybook booking widget on your WordPress site in two clicks
 * A daily manifest with pickup and return check-in.
 * Automation rules that send emails, add notes and tasks, and call webhooks.
 * A follow-up email for unfinished bookings, and offers before arrival.
-* Staff logins with roles and two-step verification, and an API and webhooks on every plan.
+* Staff logins with roles and two-step verification, and an API and webhooks on every plan, Free Forever included (with limited usage).
 
 = What it costs =
 
-* **Price:** from US$15 a month per site (one business location), priced by bookings a month:
-  * US$15 for up to 100;
-  * US$39 for up to 500;
-  * US$79 for up to 3,000.
+**Free Forever. 30 Day Trial. Conditions apply.** [Free Forever conditions](https://anybookapp.com/free-forever)
+
+* **Free Forever:** all functions, free for good, with limited usage: 1 unit, 1 staff login, 30 bookings and 100 emails a month, 15 MB, a small API (1 key, 5 calls a minute, 100 a day) and 1 webhook. No card. It needs the widget on a public website that search engines can index, with the small "Booking by Anybook" link, which this plugin adds for you.
+* **30 Day Trial:** any paid plan, nothing held back, no card needed. Every new site starts on it, then picks a plan or moves to Free Forever.
+* **Paid plans:** from US$15 a month per site (one business location), priced by bookings a month: US$15 for up to 100; US$39 for up to 500; US$79 for up to 3,000.
 * **What's included:** every feature on every plan. Never a percentage of your bookings.
-* **Opening special, for a limited time:** US$10 a month for your first 6 months, on any plan.
 * **Billing:** monthly, and you can cancel anytime. Stripe's normal card fees apply.
 * **More:** plans and details at [anybookapp.com](https://anybookapp.com/#pricing).
 
@@ -117,7 +117,7 @@ This plugin connects your website to **Anybook** (https://anybookapp.com), the b
 Your website contacts Anybook only after an administrator or editor has done one of these things:
 
 * **When you click Connect to Anybook**, your browser goes to the Anybook booking site with your website's name and address, the address of the plugin's settings page to come back to, a single-use check value, and the address of your booking page if you chose to make one. Anybook sends your browser back with your business's code and name.
-* **When you connect or enter a business code, and when you open the plugin's settings page**, your web server asks Anybook's public API whether your business exists and whether your website is allowed, sending your business code and your website's address. No personal data is sent. The answer is kept for ten minutes (a failure for one minute). The answer also says whether your Anybook plan is the Free plan, which asks for a separate "Booking by Anybook" link after the widget, and which rel the link may carry; that one fact is kept in your site's options so a visitor's page view can write the link without contacting Anybook.
+* **When you connect or enter a business code, and when you open the plugin's settings page**, your web server asks Anybook's public API whether your business exists and whether your website is allowed, sending your business code and your website's address. No personal data is sent. The answer is kept for ten minutes (a failure for one minute). The answer also says whether your Anybook plan is Free Forever, which asks for a separate "Booking by Anybook" link after the widget, and which rel the link may carry; that one fact is kept in your site's options so a visitor's page view can write the link without contacting Anybook.
 * **When someone edits a page with the Anybook booking block**, your web server asks Anybook's public API for your business's units and services (sending your business code) to fill the block's choices; the answer is kept for ten minutes.
 
 Your visitors' browsers contact Anybook as well:
@@ -162,15 +162,15 @@ Staff who are not the Owner can enter the business code instead (Anybook shows i
 
 = What does it cost? =
 
-From US$15 a month per site, by how many bookings it takes: US$15 for up to 100 a month, US$39 for up to 500 and US$79 for up to 3,000. Every plan has every feature. For a limited time, the opening special is US$10 a month for your first 6 months, on any plan. You pay monthly and can cancel anytime. Stripe's normal card fees apply to card payments. The plugin itself is free.
+Free Forever (all functions, limited usage, no card) or a 30 Day Trial of any paid plan (no card), then from US$15 a month per site: US$15 for up to 100 bookings a month, US$39 for up to 500, US$79 for up to 3,000. Every plan has every feature. No commission. Stripe's normal card fees apply to card payments. The plugin itself is free. Conditions: https://anybookapp.com/free-forever
 
 = Is there a free trial? =
 
-No. The first month is paid when you sign up, at the opening special of US$10, and you can cancel anytime.
+Yes. Every new site starts on a 30 Day Trial of any paid plan, with nothing held back and no card needed. After 30 days you pick a plan or move to Free Forever. Conditions apply: https://anybookapp.com/free-forever
 
 = Why is there a "Booking by Anybook" link under my booking widget? =
 
-Anybook's Free plan asks for a "Booking by Anybook" link after the widget. It is a separate plain link in your page's own HTML, and the plugin writes it for you. Keep the page public and open to search engines (no noindex, no sign-in or password, not blocked by robots.txt; in WordPress leave Settings, Reading, "Discourage search engines" unticked). A page hidden from Google counts as the link missing. It goes away once your business is on a paid plan or a trial (it can take up to ten minutes after you next open the plugin's settings page). Nothing else is added, and the link goes only to the anybookapp.com home page.
+Anybook's Free Forever asks for a "Booking by Anybook" link after the widget. It is a separate plain link in your page's own HTML, and the plugin writes it for you. Keep the page public and open to search engines (no noindex, no sign-in or password, not blocked by robots.txt; in WordPress leave Settings, Reading, "Discourage search engines" unticked). A page hidden from Google counts as the link missing. It goes away once your business is on a paid plan or a trial (it can take up to ten minutes after you next open the plugin's settings page). Nothing else is added, and the link goes only to the anybookapp.com home page.
 
 = Does Anybook take a commission on my bookings? =
 
@@ -210,9 +210,9 @@ If a value is not a color like that, the settings page does not save it: it says
 
 = How do I set my customer page? =
 
-Your customer page is the page on your website where customers' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your guest page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
+Your customer page is the page on your website where customers' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your customer page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
 
-The easiest way: tick **Make a booking page for me ("Book online") and use it as the guest page** before you click **Connect to Anybook**, then tick the guest page choice on Anybook before you click **Allow**. If your site has no guest page yet, the plugin's settings page shows **Set your guest page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, guests' email links do not work.
+The easiest way: tick **Make a booking page for me ("Book online") and use it as the customer page** before you click **Connect to Anybook**, then tick the customer page choice on Anybook before you click **Allow**. If your site has no customer page yet, the plugin's settings page shows **Set your customer page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, customers' email links do not work.
 
 = The widget does not show. What should I check? =
 
@@ -262,9 +262,12 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 3. The availability overview: free days for the weeks ahead, one click to book.
 4. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
 5. The Anybook booking block in the editor, with its choices in the sidebar.
-6. The plugin's settings page once connected: your business, your website and your guest page.
+6. The plugin's settings page once connected: your business, your website and your customer page.
 
 == Upgrade Notice ==
+
+= 0.1.4 =
+"Customers" instead of "guests" on the plugin's page, a plain note for a customer page on another website, and an in-page Disconnect question. The readme now describes Free Forever and the 30 Day Trial. Safe to update.
 
 = 0.1.3 =
 On Anybook's Free plan, a separate "Booking by Anybook" link after the widget, written on your server. The suggested privacy policy text now says where Anybook keeps booking details. Safe to update.
@@ -277,6 +280,12 @@ Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or
 
 == Changelog ==
 
+= 0.1.4 =
+* The plugin's Anybook page and its notices say "customers" and "customer page" instead of "guests" and "guest page", as Anybook does.
+* A customer page on another website is shown as a plain note in the status list, not as something to fix: leaving the customer page box unticked on Anybook is a normal choice.
+* Disconnect asks "are you sure" in the page itself (Yes, disconnect or Cancel; Esc cancels) instead of the browser's pop-up.
+* Readme: Free Forever and the 30 Day Trial replace the opening special; wording says Free Forever instead of Free plan.
+
 = 0.1.3 =
 * New: on Anybook's Free plan, a separate "Booking by Anybook" link (to the Anybook home page) appears after the booking widget. The plugin writes it on your server, in the page's own HTML, from what Anybook says on the settings page's status check; a paid plan removes it. Nothing is added to a page of a business that has no credit to show, and a visitor's page view never contacts Anybook.
 * The suggested privacy policy text and this readme now say where Anybook keeps booking details (on its server in France, in the European Union) and link Anybook's privacy policy, as anybookapp.com/privacy does.
@@ -286,7 +295,7 @@ Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or
 * A clearer plugin page, with boat, kayak, cabin and houseboat rentals first: what Anybook does and what it costs, new screenshots, a Getting help section, and answers to common questions (connecting, choosing units, colors, the customer page and a widget that does not show).
 
 = 0.1.1 =
-* New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
+* New: an availability overview in the block and shortcode, a calendar of the weeks ahead where customers click a free day to book.
 * The readme now explains where the block's source is and how to build it, and `package-lock.json` ships with the plugin.
 * The settings page loads its small style and script the WordPress way instead of inline.
 * Now needs WordPress 6.6, which the block's editor script depends on.
