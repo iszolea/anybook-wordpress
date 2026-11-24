@@ -75,7 +75,9 @@ class Admin {
 	/**
 	 * The settings page's small style and its "are you sure" for Disconnect, on this page only. The question is asked in the
 	 * page (AB#988), not in the browser's own pop-up: it looks like the rest of the admin, the keyboard reaches it (focus goes
-	 * to its first button, Esc cancels) and it can be filmed. Without scripts the form submits as it is.
+	 * to its first button, Esc cancels) and it can be filmed. Without scripts the form submits as it is. "Yes" sends the form with
+	 * HTMLFormElement.prototype.submit: the Disconnect button is named "submit" (submit_button), which hides the form's own
+	 * submit() (Screencasts on 0.1.4: "f.submit is not a function"; blocks/booking/test/admin-disconnect.test.js).
 	 *
 	 * @param string $hook The admin page being loaded.
 	 */
@@ -88,7 +90,7 @@ class Admin {
 		wp_add_inline_style( self::ASSET_HANDLE, '.anybook-inline-form{display:inline}.anybook-status .anybook-ok{color:#00a32a}.anybook-status .anybook-warn{color:#d63638}.anybook-status .anybook-info{color:#646970}.anybook-confirm{padding:8px 12px}.anybook-confirm p{margin:0 0 8px}' );
 		wp_register_script( self::ASSET_HANDLE, false, array(), ANYBOOK_VERSION, true );
 		wp_enqueue_script( self::ASSET_HANDLE );
-		wp_add_inline_script( self::ASSET_HANDLE, 'document.addEventListener("submit",function(e){var f=e.target,m=f.getAttribute("data-anybook-confirm");if(!m||f.getAttribute("data-anybook-sure")){return;}e.preventDefault();if(f.nextElementSibling&&f.nextElementSibling.classList.contains("anybook-confirm")){f.nextElementSibling.querySelector("button").focus();return;}var b=document.createElement("div"),p=document.createElement("p"),y=document.createElement("button"),n=document.createElement("button"),k=f.querySelector("[type=submit]");b.className="notice notice-warning inline anybook-confirm";b.setAttribute("role","alertdialog");p.textContent=m;b.setAttribute("aria-label",m);y.type="button";y.className="button button-primary";y.textContent=f.getAttribute("data-anybook-yes")||"OK";n.type="button";n.className="button";n.textContent=f.getAttribute("data-anybook-no")||"Cancel";function no(){b.remove();if(k){k.focus();}}y.addEventListener("click",function(){f.setAttribute("data-anybook-sure","1");f.submit();});n.addEventListener("click",no);b.addEventListener("keydown",function(ev){if("Escape"===ev.key){no();}});b.appendChild(p);b.appendChild(y);b.appendChild(document.createTextNode(" "));b.appendChild(n);f.after(b);y.focus();});' );
+		wp_add_inline_script( self::ASSET_HANDLE, 'document.addEventListener("submit",function(e){var f=e.target,m=f.getAttribute("data-anybook-confirm");if(!m||f.getAttribute("data-anybook-sure")){return;}e.preventDefault();if(f.nextElementSibling&&f.nextElementSibling.classList.contains("anybook-confirm")){f.nextElementSibling.querySelector("button").focus();return;}var b=document.createElement("div"),p=document.createElement("p"),y=document.createElement("button"),n=document.createElement("button"),k=f.querySelector("[type=submit]");b.className="notice notice-warning inline anybook-confirm";b.setAttribute("role","alertdialog");p.textContent=m;b.setAttribute("aria-label",m);y.type="button";y.className="button button-primary";y.textContent=f.getAttribute("data-anybook-yes")||"OK";n.type="button";n.className="button";n.textContent=f.getAttribute("data-anybook-no")||"Cancel";function no(){b.remove();if(k){k.focus();}}y.addEventListener("click",function(){f.setAttribute("data-anybook-sure","1");HTMLFormElement.prototype.submit.call(f);});n.addEventListener("click",no);b.addEventListener("keydown",function(ev){if("Escape"===ev.key){no();}});b.appendChild(p);b.appendChild(y);b.appendChild(document.createTextNode(" "));b.appendChild(n);f.after(b);y.focus();});' );
 	}
 
 	/**
