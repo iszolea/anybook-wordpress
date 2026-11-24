@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * The scripts are the documented service (readme, External services), loaded from the booking site's plain
  * address with no version, so a widget release reaches every site at once. They are the only remote code the
- * plugin loads. Each runs `defer`, in the head when the page is known to hold it (so a guest's #bw= email link
+ * plugin loads. Each runs `defer`, in the head when the page is known to hold it (so a customer's #bw= email link
  * is read before any tag manager can tidy the address), otherwise in the footer. Speed plugins are asked, through
  * their own filters and attributes, to leave both alone: combined, delayed or moved, the widget can miss the
  * guest link.

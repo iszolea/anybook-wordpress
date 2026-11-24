@@ -73,7 +73,9 @@ class Admin {
 	}
 
 	/**
-	 * The settings page's small style and its "are you sure" for Disconnect, on this page only.
+	 * The settings page's small style and its "are you sure" for Disconnect, on this page only. The question is asked in the
+	 * page (AB#988), not in the browser's own pop-up: it looks like the rest of the admin, the keyboard reaches it (focus goes
+	 * to its first button, Esc cancels) and it can be filmed. Without scripts the form submits as it is.
 	 *
 	 * @param string $hook The admin page being loaded.
 	 */
@@ -83,10 +85,10 @@ class Admin {
 		}
 		wp_register_style( self::ASSET_HANDLE, false, array(), ANYBOOK_VERSION );
 		wp_enqueue_style( self::ASSET_HANDLE );
-		wp_add_inline_style( self::ASSET_HANDLE, '.anybook-inline-form{display:inline}.anybook-status .anybook-ok{color:#00a32a}.anybook-status .anybook-warn{color:#d63638}' );
+		wp_add_inline_style( self::ASSET_HANDLE, '.anybook-inline-form{display:inline}.anybook-status .anybook-ok{color:#00a32a}.anybook-status .anybook-warn{color:#d63638}.anybook-status .anybook-info{color:#646970}.anybook-confirm{padding:8px 12px}.anybook-confirm p{margin:0 0 8px}' );
 		wp_register_script( self::ASSET_HANDLE, false, array(), ANYBOOK_VERSION, true );
 		wp_enqueue_script( self::ASSET_HANDLE );
-		wp_add_inline_script( self::ASSET_HANDLE, 'document.addEventListener("submit",function(e){var m=e.target.getAttribute("data-anybook-confirm");if(m&&!window.confirm(m)){e.preventDefault();}});' );
+		wp_add_inline_script( self::ASSET_HANDLE, 'document.addEventListener("submit",function(e){var f=e.target,m=f.getAttribute("data-anybook-confirm");if(!m||f.getAttribute("data-anybook-sure")){return;}e.preventDefault();if(f.nextElementSibling&&f.nextElementSibling.classList.contains("anybook-confirm")){f.nextElementSibling.querySelector("button").focus();return;}var b=document.createElement("div"),p=document.createElement("p"),y=document.createElement("button"),n=document.createElement("button"),k=f.querySelector("[type=submit]");b.className="notice notice-warning inline anybook-confirm";b.setAttribute("role","alertdialog");p.textContent=m;b.setAttribute("aria-label",m);y.type="button";y.className="button button-primary";y.textContent=f.getAttribute("data-anybook-yes")||"OK";n.type="button";n.className="button";n.textContent=f.getAttribute("data-anybook-no")||"Cancel";function no(){b.remove();if(k){k.focus();}}y.addEventListener("click",function(){f.setAttribute("data-anybook-sure","1");f.submit();});n.addEventListener("click",no);b.addEventListener("keydown",function(ev){if("Escape"===ev.key){no();}});b.appendChild(p);b.appendChild(y);b.appendChild(document.createTextNode(" "));b.appendChild(n);f.after(b);y.focus();});' );
 	}
 
 	/**
@@ -257,7 +259,7 @@ class Admin {
 	}
 
 	/**
-	 * Publishes the booking page the plugin made, for when Anybook already uses it as the guest page but the return
+	 * Publishes the booking page the plugin made, for when Anybook already uses it as the customer page but the return
 	 * from Connect never arrived (the tab was closed after Allow, or the 15 minutes ran out).
 	 */
 	public static function handle_publish_page() {
@@ -358,7 +360,7 @@ class Admin {
 				<div class="notice notice-warning inline"><p>
 					<?php
 					/* translators: %s: this website's address, like https://example.com. */
-					echo esc_html( sprintf( __( 'Other websites share this website\'s address (%s), for example the other sites of a network that uses folders. Whatever your business allows for this address, it allows for them too: they could show your booking widget and read what guests type in it. Give your booking website its own domain or subdomain before you connect.', 'anybook' ), Settings::site_origin() ) );
+					echo esc_html( sprintf( __( 'Other websites share this website\'s address (%s), for example the other sites of a network that uses folders. Whatever your business allows for this address, it allows for them too: they could show your booking widget and read what customers type in it. Give your booking website its own domain or subdomain before you connect.', 'anybook' ), Settings::site_origin() ) );
 					?>
 				</p></div>
 			<?php endif; ?>
@@ -387,12 +389,12 @@ class Admin {
 				?>
 			</p>
 		<?php else : ?>
-			<p><?php esc_html_e( 'Anybook opens in this window. Sign in as your business\'s Owner and click Allow. Anybook then adds this website to your allowed websites (Anybook shows your booking widget only on websites on that list) and, if you tick it there, makes the booking page below your guest page (the page where guests\' email links open). No keys or passwords are copied.', 'anybook' ); ?></p>
+			<p><?php esc_html_e( 'Anybook opens in this window. Sign in as your business\'s Owner and click Allow. Anybook then adds this website to your allowed websites (Anybook shows your booking widget only on websites on that list) and, if you tick it there, makes the booking page below your customer page (the page where customers\' email links open). No keys or passwords are copied.', 'anybook' ); ?></p>
 			<?php self::render_connect_form( __( 'Connect to Anybook', 'anybook' ) ); ?>
 		<?php endif; ?>
 
 		<h2><?php esc_html_e( 'Or enter your business code', 'anybook' ); ?></h2>
-		<p><?php esc_html_e( 'For staff who are not the Owner. This only connects the plugin: add this website to allowed websites and set your guest page in Anybook yourself (Settings, Online booking).', 'anybook' ); ?></p>
+		<p><?php esc_html_e( 'For staff who are not the Owner. This only connects the plugin: add this website to allowed websites and set your customer page in Anybook yourself (Settings, Online booking).', 'anybook' ); ?></p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="anybook_save_code" />
 			<?php wp_nonce_field( 'anybook_save_code' ); ?>
@@ -420,8 +422,8 @@ class Admin {
 					<?php
 					echo esc_html(
 						Booking_Page::current_id() && '' === $page_problem
-							? __( 'Use my booking page as the guest page', 'anybook' )
-							: __( 'Make a booking page for me ("Book online") and use it as the guest page', 'anybook' )
+							? __( 'Use my booking page as the customer page', 'anybook' )
+							: __( 'Make a booking page for me ("Book online") and use it as the customer page', 'anybook' )
 					);
 					?>
 				</label>
@@ -484,11 +486,12 @@ class Admin {
 						: sprintf( __( 'This website (%s) is not on your allowed websites in Anybook, so the widget will not load here. Connect again as the Owner, or add it in Anybook (Settings, Online booking).', 'anybook' ), $origin )
 				);
 				$guest_messages = array(
-					'this-site' => __( 'Your guest page (where guests\' email links open) is on this website.', 'anybook' ),
-					'elsewhere' => __( 'Your guest page (where guests\' email links open) is on another website.', 'anybook' ),
-					'none'      => __( 'You have no guest page yet. Guests\' email links (to see, change or pay for a booking) need one: see Set your guest page below.', 'anybook' ),
+					'this-site' => __( 'Your customer page (where customers\' email links open) is on this website.', 'anybook' ),
+					'elsewhere' => __( 'Your customer page (where customers\' email links open) is on another website.', 'anybook' ),
+					'none'      => __( 'You have no customer page yet. Customers\' email links (to see, change or pay for a booking) need one: see Set your customer page below.', 'anybook' ),
 				);
-				self::line( 'this-site' === $status['guestPage'], $guest_messages[ $status['guestPage'] ] );
+				// AB#988: a customer page on another website is the Owner's choice (the box left unticked on Anybook), not a fault: a plain line.
+				self::line( 'this-site' === $status['guestPage'] ? true : ( 'elsewhere' === $status['guestPage'] ? null : false ), $guest_messages[ $status['guestPage'] ] );
 			}
 
 			$page_messages = array(
@@ -506,7 +509,7 @@ class Admin {
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="anybook_publish_page" />
 				<?php wp_nonce_field( 'anybook_publish_page' ); ?>
-				<p><?php esc_html_e( 'Anybook already uses this website for your guests\' email links, but the booking page is still a draft.', 'anybook' ); ?>
+				<p><?php esc_html_e( 'Anybook already uses this website for your customers\' email links, but the booking page is still a draft.', 'anybook' ); ?>
 				<?php submit_button( __( 'Publish the booking page', 'anybook' ), 'primary', 'submit', false ); ?></p>
 			</form>
 		<?php endif; ?>
@@ -536,7 +539,7 @@ class Admin {
 				?>
 			</p>
 		<?php endif; ?>
-		<p><?php esc_html_e( 'Do not run session recording (replay) in your analytics on the booking page: it would record what guests type.', 'anybook' ); ?></p>
+		<p><?php esc_html_e( 'Do not run session recording (replay) in your analytics on the booking page: it would record what customers type.', 'anybook' ); ?></p>
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="anybook-inline-form">
 			<input type="hidden" name="action" value="anybook_refresh" />
@@ -546,18 +549,18 @@ class Admin {
 		<a class="button" href="<?php echo esc_url( Settings::site() . '/settings/online-booking' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Anybook online booking settings', 'anybook' ); ?></a>
 
 		<?php
-		// Connect sets the guest page only if the Owner ticks it on Anybook (ADR-19), so it may still be missing.
+		// Connect sets the customer page only if the Owner ticks it on Anybook (ADR-19), so it may still be missing.
 		$needs_guest_page = ! is_wp_error( $status ) && 'this-site' !== $status['guestPage'];
 		?>
-		<h2><?php echo esc_html( $needs_guest_page ? __( 'Set your guest page', 'anybook' ) : __( 'Connect again', 'anybook' ) ); ?></h2>
+		<h2><?php echo esc_html( $needs_guest_page ? __( 'Set your customer page', 'anybook' ) : __( 'Connect again', 'anybook' ) ); ?></h2>
 		<?php if ( Settings::admin_origin() !== Settings::site_origin() ) : ?>
-			<p><?php esc_html_e( 'Your WordPress admin and your website have different addresses, so set the guest page and allowed websites in Anybook (Settings, Online booking).', 'anybook' ); ?></p>
+			<p><?php esc_html_e( 'Your WordPress admin and your website have different addresses, so set the customer page and allowed websites in Anybook (Settings, Online booking).', 'anybook' ); ?></p>
 		<?php else : ?>
 			<p>
 				<?php
 				echo esc_html(
 					$needs_guest_page
-						? __( 'To use a page on this website as your guest page, the Owner clicks below and, on Anybook, ticks the guest page choice before clicking Allow.', 'anybook' )
+						? __( 'To use a page on this website as your customer page, the Owner clicks below and, on Anybook, ticks the customer page choice before clicking Allow.', 'anybook' )
 						: __( 'If a line above needs the Owner on Anybook, the Owner can connect again here.', 'anybook' )
 				);
 				?>
@@ -578,7 +581,8 @@ class Admin {
 		<h2><?php esc_html_e( 'Disconnect', 'anybook' ); ?></h2>
 		<p><?php esc_html_e( 'The widget stops showing on this site. Your booking page stays published but shows visitors nothing until you connect again, and your Anybook account is not changed; remove this website from allowed websites in Anybook as well if you no longer use it.', 'anybook' ); ?></p>
 		<?php $confirm = __( 'Disconnect from Anybook? The booking widget stops showing on this website.', 'anybook' ); ?>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-anybook-confirm="<?php echo esc_attr( $confirm ); ?>">
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" data-anybook-confirm="<?php echo esc_attr( $confirm ); ?>"
+			data-anybook-yes="<?php esc_attr_e( 'Yes, disconnect', 'anybook' ); ?>" data-anybook-no="<?php esc_attr_e( 'Cancel', 'anybook' ); ?>">
 			<input type="hidden" name="action" value="anybook_disconnect" />
 			<?php wp_nonce_field( 'anybook_disconnect' ); ?>
 			<?php submit_button( __( 'Disconnect', 'anybook' ), 'delete', 'submit', false ); ?>
@@ -648,14 +652,15 @@ class Admin {
 	/**
 	 * One status line with a tick or a warning.
 	 *
-	 * @param bool   $ok   Whether this is fine.
+	 * @param bool|null $ok  Whether this is fine (null: neither, only so).
 	 * @param string $text What to say.
 	 */
 	private static function line( $ok, $text ) {
+		// null: neither OK nor a fault, only so (AB#988: the customer page on another website).
 		printf(
 			'<li><span class="dashicons %1$s" aria-hidden="true"></span> <span class="screen-reader-text">%2$s</span>%3$s</li>',
-			esc_attr( $ok ? 'dashicons-yes-alt anybook-ok' : 'dashicons-warning anybook-warn' ),
-			esc_html( $ok ? __( 'OK:', 'anybook' ) : __( 'To fix:', 'anybook' ) ),
+			esc_attr( null === $ok ? 'dashicons-info-outline anybook-info' : ( $ok ? 'dashicons-yes-alt anybook-ok' : 'dashicons-warning anybook-warn' ) ),
+			esc_html( null === $ok ? __( 'Note:', 'anybook' ) : ( $ok ? __( 'OK:', 'anybook' ) : __( 'To fix:', 'anybook' ) ) ),
 			esc_html( $text )
 		);
 	}

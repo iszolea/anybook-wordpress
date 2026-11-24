@@ -4,7 +4,7 @@ Tags: boat rental booking, kayak rental, cabin booking, tour booking, rental boo
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,9 +210,9 @@ If a value is not a color like that, the settings page does not save it: it says
 
 = How do I set my customer page? =
 
-Your customer page is the page on your website where customers' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your guest page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
+Your customer page is the page on your website where customers' email links open, so they can pay for, see or change their booking. Anybook calls it your customer page, and the plugin's settings page calls it your customer page. The Owner sets it, and it needs the Anybook booking block or the `[anybook]` shortcode on it.
 
-The easiest way: tick **Make a booking page for me ("Book online") and use it as the guest page** before you click **Connect to Anybook**, then tick the guest page choice on Anybook before you click **Allow**. If your site has no guest page yet, the plugin's settings page shows **Set your guest page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, guests' email links do not work.
+The easiest way: tick **Make a booking page for me ("Book online") and use it as the customer page** before you click **Connect to Anybook**, then tick the customer page choice on Anybook before you click **Allow**. If your site has no customer page yet, the plugin's settings page shows **Set your customer page**: the Owner clicks it and ticks the same choice on Anybook. You can also type the page's address into **Your customer page** in Anybook (Settings, Online booking). The page must be on your own website, on the allowed websites list, and its address must start with https. Until it is set, customers' email links do not work.
 
 = The widget does not show. What should I check? =
 
@@ -262,9 +262,12 @@ It ships with the plugin, in `blocks/booking/`. See Source code and build, above
 3. The availability overview: free days for the weeks ahead, one click to book.
 4. The daily manifest in Anybook: today's pickups and returns, check-in and bonds.
 5. The Anybook booking block in the editor, with its choices in the sidebar.
-6. The plugin's settings page once connected: your business, your website and your guest page.
+6. The plugin's settings page once connected: your business, your website and your customer page.
 
 == Upgrade Notice ==
+
+= 0.1.4 =
+"Customers" instead of "guests" on the plugin's page, a plain note for a customer page on another website, and an in-page Disconnect question. Safe to update.
 
 = 0.1.3 =
 On Anybook's Free plan, a separate "Booking by Anybook" link after the widget, written on your server. The suggested privacy policy text now says where Anybook keeps booking details. Safe to update.
@@ -277,6 +280,11 @@ Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or
 
 == Changelog ==
 
+= 0.1.4 =
+* The plugin's Anybook page and its notices say "customers" and "customer page" instead of "guests" and "guest page", as Anybook does.
+* A customer page on another website is shown as a plain note in the status list, not as something to fix: leaving the customer page box unticked on Anybook is a normal choice.
+* Disconnect asks "are you sure" in the page itself (Yes, disconnect or Cancel; Esc cancels) instead of the browser's pop-up.
+
 = 0.1.3 =
 * New: on Anybook's Free plan, a separate "Booking by Anybook" link (to the Anybook home page) appears after the booking widget. The plugin writes it on your server, in the page's own HTML, from what Anybook says on the settings page's status check; a paid plan removes it. Nothing is added to a page of a business that has no credit to show, and a visitor's page view never contacts Anybook.
 * The suggested privacy policy text and this readme now say where Anybook keeps booking details (on its server in France, in the European Union) and link Anybook's privacy policy, as anybookapp.com/privacy does.
@@ -286,7 +294,7 @@ Adds an availability overview to the block and shortcode. Needs WordPress 6.6 or
 * A clearer plugin page, with boat, kayak, cabin and houseboat rentals first: what Anybook does and what it costs, new screenshots, a Getting help section, and answers to common questions (connecting, choosing units, colors, the customer page and a widget that does not show).
 
 = 0.1.1 =
-* New: an availability overview in the block and shortcode, a calendar of the weeks ahead where guests click a free day to book.
+* New: an availability overview in the block and shortcode, a calendar of the weeks ahead where customers click a free day to book.
 * The readme now explains where the block's source is and how to build it, and `package-lock.json` ships with the plugin.
 * The settings page loads its small style and script the WordPress way instead of inline.
 * Now needs WordPress 6.6, which the block's editor script depends on.

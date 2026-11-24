@@ -89,10 +89,10 @@ pass "booking page: a draft until the Owner agrees, then published"
 
 html=$(wp eval 'wp_set_current_user( 1 ); require_once ABSPATH . "wp-admin/includes/template.php"; Anybook\Admin::render_page();')
 grep -q 'Connected to Bribie Houseboat Holidays' <<<"$html" || fail "settings page has no connected line"
-grep -q 'Set your guest page' <<<"$html" || fail "settings page does not offer to set the guest page"
+grep -q 'Set your customer page' <<<"$html" || fail "settings page does not offer to set the customer page"
 grep -q 'script-src https://site.anybookapp.com' <<<"$html" || fail "settings page has no CSP lines"
 grep -q 'Other websites share' <<<"$html" && fail "shared-address warning on a single site"
-pass "settings page renders the status, guest page offer and CSP lines"
+pass "settings page renders the status, customer page offer and CSP lines"
 
 body=$(page "/?page_id=$id")
 grep -q '<booking-widget business="bribie" api="https://site.anybookapp.com" guest-links></booking-widget>' <<<"$body" \

@@ -330,8 +330,8 @@ class AdminTest extends TestCase {
 		};
 		$html       = $this->page();
 		$this->assertStringContainsString( 'sign-up is not finished yet', $html );
-		$this->assertStringContainsString( 'You have no guest page yet', $html );
-		$this->assertStringContainsString( 'Set your guest page', $html );
+		$this->assertStringContainsString( 'You have no customer page yet', $html );
+		$this->assertStringContainsString( 'Set your customer page', $html );
 		$this->assertStringContainsString( 'script-src https://site.anybookapp.com https://js.stripe.com', $html );
 		$this->assertStringContainsString( 'data-anybook-confirm="', $html, 'Disconnect asks first' );
 		$this->assertStringContainsString( 'Widget colors', $html );

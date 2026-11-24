@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Makes the business's guest page and keeps an eye on it.
+ * Makes the business's customer page and keeps an eye on it.
  *
  * The page is the business's own content once made: the plugin never deletes it, not even on uninstall (ADR-10).
  * Connect makes it as a draft; it is published only when the Owner has agreed on Anybook (review Q1), so a
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Booking_Page {
 
-	/** What the page holds on a block theme: the Anybook booking block, used for guests' email links. */
+	/** What the page holds on a block theme: the Anybook booking block, used for customers' email links. */
 	const BLOCK_CONTENT = '<!-- wp:anybook/booking {"guestLinks":true} /-->';
 
 	/**
@@ -103,7 +103,7 @@ class Booking_Page {
 	}
 
 	/**
-	 * The address the page has once published, for Anybook's guest page while it is still a draft (a draft's own
+	 * The address the page has once published, for Anybook's customer page while it is still a draft (a draft's own
 	 * permalink is ?page_id=, which would change on publishing).
 	 *
 	 * @param int $id Page id.
