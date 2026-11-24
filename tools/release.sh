@@ -21,6 +21,10 @@
 # --submit refuses to run when SKIP_BUILD_CHECK is set. --zip and --submit fail when readme.txt's "Tested up to" is
 # higher than the WordPress in the test container (tools/check-tested-up-to.sh).
 # Without --zip, --submit or --page it refuses to run.
+#
+# On this Windows PC, run it with Git Bash (plain "bash" there is a broken WSL bash), from the plugin's folder:
+#   "C:\Program Files\Git\bin\bash.exe" tools/release.sh --submit --go-ahead "<who, when>"
+# It says each step as it goes; the build check takes one to three minutes and the SVN commit about a minute.
 set -euo pipefail
 export MSYS_NO_PATHCONV=1
 cd "$(dirname "$0")/.."
@@ -30,7 +34,7 @@ SVN_SECRET=f/anybook/wordpress_org_svn_password
 SVN_USER=${ANYBOOK_SVN_USER:-anybookapp}
 VPSMCP_DIR=${VPSMCP_DIR:-/c/Users/jnich/Projects/AiNativeHalo/tools}
 
-usage() { sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-1}"; }
+usage() { sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-1}"; }
 die() { echo "release: $*" >&2; exit 1; }
 
 MODE="" GO_AHEAD=""
@@ -113,7 +117,11 @@ WP_TESTED=$(docker run --rm wordpress:latest php -r 'include "/usr/src/wordpress
 	|| die "could not read the WordPress version from the test container"
 bash tools/check-tested-up-to.sh readme.txt "$WP_TESTED" || die "Tested up to is higher than the WordPress that was tested"
 if [ -z "${SKIP_BUILD_CHECK:-}" ]; then
-	bash tools/docker-js.sh >/dev/null || die "build/ does not match blocks/ (run WRITE=1 bash tools/docker-js.sh and commit)"
+	echo "== checking that build/ is what blocks/ builds to (lint, tests and a fresh build in Docker: one to three minutes)"
+	JSLOG=$(mktemp)
+	bash tools/docker-js.sh >"$JSLOG" 2>&1 || { tail -20 "$JSLOG" >&2; rm -f "$JSLOG"; die "build/ does not match blocks/, or the block's checks failed (above; run WRITE=1 bash tools/docker-js.sh and commit)"; }
+	rm -f "$JSLOG"
+	echo "== build/ matches blocks/"
 fi
 
 mkdir -p dist
@@ -124,7 +132,7 @@ echo "== $ZIP ($(wc -c <"$ZIP") bytes, sha256 $(sha256sum "$ZIP" | cut -d' ' -f1
 
 # --submit from here on. The directory's images are drafts until the owner approves them (then delete DRAFT.txt).
 [ ! -e .wordpress-org/DRAFT.txt ] || die ".wordpress-org/ holds draft images the owner has not approved (DRAFT.txt)"
-echo "== releasing $VERSION to $SVN_URL as $SVN_USER (go-ahead: $GO_AHEAD)"
+echo "== releasing $VERSION to $SVN_URL as $SVN_USER (go-ahead: $GO_AHEAD): reading the SVN password from Windmill, then checking out and committing (about a minute)"
 SRC="$(pwd -W 2>/dev/null || pwd)"
 # svn runs in a throwaway container; the password goes in on stdin only.
 read_secret | docker run --rm -i -v "$SRC:/src:ro" -e VERSION="$VERSION" -e SVN_URL="$SVN_URL" -e SVN_USER="$SVN_USER" \
