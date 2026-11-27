@@ -22,7 +22,7 @@ Your customers book, pay and sign on your own website, under your name, and Anyb
 
 **See it on a live WordPress site:** [wp-demo.anybookapp.com](https://wp-demo.anybookapp.com) is a made-up boat hire business using this plugin. Nothing is charged and no email is sent.
 
-This plugin puts the Anybook booking widget on your WordPress site in two clicks. **Free Forever. 30 Day Trial. Conditions apply.** Anybook is an online booking service. Start on the 30 Day Trial (any paid plan, no card needed), then pick a plan or move to Free Forever. The plugin itself is free and has no locked features (see "What it costs", below).
+This plugin puts the Anybook booking widget on your WordPress site in two clicks. **Free Forever. 30 Day Trial. Conditions apply.** Anybook is an online booking service. Every new site starts on a 30 Day Trial of any paid plan, with no card needed. Then pick a plan from US$15 a month per site, or move to Free Forever (free for good, with limited usage). No commission. The plugin itself is free and has no locked features (see "What it costs", below).
 
 = What you get =
 
